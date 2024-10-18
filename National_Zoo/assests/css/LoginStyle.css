@@ -1,0 +1,83 @@
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f0f8ff; /* Light blue background */
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  h1 {
+    text-align: center;
+    color: #003366; /* Dark blue heading */
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #006699; /* Medium blue for labels */
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    max-width: 100%; /* Ensure elements don't exceed container width */
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box; /* Ensure padding doesn't overflow the container */
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: #66afe9; /* Soft blue border on focus */
+    box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
+  }
+  
+  button.submit-btn {
+    background-color: #28a745; /* Green button */
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button.submit-btn:hover {
+    background-color: #218838; /* Darker green on hover */
+  }
+  
+  button.submit-btn:active {
+    background-color: #1e7e34;
+  }
+  
+  .note {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #666; /* Grey text for note */
+  }
+  
+  .note a {
+    color: #007bff; /* Link color */
+    text-decoration: none;
+  }
+  
+  .note a:hover {
+    text-decoration: underline; /* Underline on hover */
+  }
