@@ -2,5 +2,5 @@
 </script>
 
 <template>
-    <h1>Hello from Index</h1>
+    <h1>Hello from Home Page</h1>
 </template>

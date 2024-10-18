@@ -169,6 +169,3 @@ const userToken = useCookie('isLoggedIn');
     fetchCountries()
   })
 </script>
-<!-- <style scoped>
-
-</style> -->

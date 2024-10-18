@@ -30,9 +30,7 @@
   const { logIn } = useAuth(); 
  
  const router = useRouter()
-
- const userId  = ref(null)
- const isLoggedIn = ref(false)
+ 
   
   const form = reactive({
     username: '',
@@ -58,16 +56,12 @@
     }
   };
 
-  definePageMeta({
-    middleware : 'redirect-logged-in'
-  });
+  // definePageMeta({
+  //   middleware : 'redirect-logged-in'
+  // });
 
 
 
-//   const navigateToDashBoard = () => {
-//   const myValue = userId;
-//   router.push({ path: '/page-b', query: { myValue } });
-// };
 
 
 

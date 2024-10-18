@@ -1,0 +1,38 @@
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 1.5rem;
+    padding: 1rem;
+    width: 100%; 
+    max-width: 1200px; 
+    margin: 0 auto;
+  }
+  
+  
+  .card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  /* Hover effect */
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Responsive grid breakpoints */
+  @media (max-width: 1024px) {
+    .card-grid {
+      grid-template-columns: repeat(2, 1fr); /* 2 cards per row on medium screens */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .card-grid {
+      grid-template-columns: repeat(1, 1fr); /* 1 card per row on small screens */
+    }
+  }
