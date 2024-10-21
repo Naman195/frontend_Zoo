@@ -7,6 +7,9 @@
         <label for="firstName">First Name</label>
         <input type="text" v-model="form.firstName" required />
       </div>
+     <!-- <CustomInput  label="First Name" type="text" placeholder="Enter name" @success="abc" />
+     <CustomInput  label="last Name" type="text" placeholder="Enter last name" @fail="bcd" />
+     <CustomInput  label="username" type="text" placeholder="Enter username" /> -->
 
       <div class="form-group">
         <label for="lastName">Last Name</label>
@@ -26,7 +29,7 @@
       <div class="form-group">
         <label for="country">Country</label>
         <select v-model="selectedCountry" @change="handleCountryChange" required >
-          <option value="null">Select Country</option>
+          <!-- <option value="null">Select Country</option> -->
           <option v-for="country in countries" :key="country.countryId" :value="country.countryId">
             {{ country.countryName }}
           </option>
@@ -36,7 +39,7 @@
       <div class="form-group">
         <label for="state">State</label>
         <select v-model="selectedState" :disabled="!selectedCountry" @change="handleStateChange"  required >
-          <option value="null">Select State</option>
+          <!-- <option value="null">Select State</option> -->
           <option v-for="state in states" :key="state.stateId" :value="state.stateId">
             {{ state.stateName }}
           </option>
@@ -46,7 +49,7 @@
       <div class="form-group">
         <label for="city">City</label>
         <select v-model="form.address.city.cityId" :disabled="!selectedState" required >
-          <option value="null">Select City</option>
+          <!-- <option value="null">Select City</option> -->
           <option v-for="city in cities" :key="city.cityId" :value="city.cityId">
             {{ city.cityName }}
           </option>
@@ -70,6 +73,7 @@
 
 <script setup>
 import '../assests/css/style.css'
+// import CustomInput from '~/components/CustomInput.vue';
 
 const userToken = useCookie('isLoggedIn');
   const router = useRouter()
@@ -164,6 +168,13 @@ const userToken = useCookie('isLoggedIn');
       console.error('An error occurred during registration:', err)
     }
   }
+
+  // const abc=()=>{
+  //   console.log("abc...")
+  // }
+  // const bcd=()=>{
+  //   console.log("fail....")
+  // }
 
   onBeforeMount(() => {
     fetchCountries()
