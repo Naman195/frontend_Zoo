@@ -81,3 +81,17 @@
   .note a:hover {
     text-decoration: underline; /* Underline on hover */
   }
+
+  .password-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .eye-icon {
+    margin-left: -30px;
+    cursor: pointer;
+  }
+  
+  .eye-icon i {
+    font-size: 18px;
+  }

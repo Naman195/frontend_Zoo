@@ -1,70 +1,73 @@
 <template>
-    <div class="login-container">
-      <h1>User Login Page</h1>
-  
-      <form @submit.prevent="loginUser" class="login-form">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" v-model="form.username" required />
-        </div>
-  
-        <div class="form-group">
+  <div class="login-container">
+    <h1>User Login Page</h1>
+
+    <form @submit.prevent="loginUser" class="login-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" v-model="form.username" required />
+      </div>
+
+      <!-- <div class="form-group">
           <label for="password">Password</label>
           <input type="password" v-model="form.password"  required />
+        </div> -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-container">
+          <input
+            :type="passwordVisible ? 'text' : 'password'"
+            v-model="form.password"
+            required
+          />
+          <span class="eye-icon" @click="togglePasswordVisibility">
+            <i :class="passwordVisible ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+          </span>
         </div>
-  
-        <button type="submit" class="submit-btn">Login</button>
-  
-        <p class="note">
-          If new user, please <NuxtLink to="/userregisteration">sign up</NuxtLink>
-        </p>
-      </form>
-    </div>
-  </template>
-  
-  <script setup >
+      </div>
+      <button type="submit" class="submit-btn">Login</button>
 
-  import "../assests/css/LoginStyle.css";
-  import { useAuth } from '@/composables/useAuth';
+      <p class="note">
+        If new user, please <NuxtLink to="/userregisteration">sign up</NuxtLink>
+      </p>
+    </form>
+  </div>
+</template>
 
-  const { logIn } = useAuth(); 
- 
- const router = useRouter()
- 
-  
-  const form = reactive({
-    username: '',
-    password: '',
-  });
+<script setup>
+import "../assests/css/LoginStyle.css";
+import { useAuth } from "@/composables/useAuth";
 
-  
-  const loginUser = async () => {
-    try {
-      const data = await $fetch('http://localhost:8080/api/zoo/login', {
-        method: 'POST',
-        body: form,
-      });
-      
-      logIn(data.userId);
+const { logIn } = useAuth();
 
-      router.push({ path: '/' });
+const router = useRouter();
+const passwordVisible = ref(false);
 
-      
+const togglePasswordVisibility = () => {
+  passwordVisible.value = !passwordVisible.value;
+};
 
-    } catch (err) {
-      console.error('An error occurred during login:', err);
-    }
-  };
+const form = reactive({
+  username: "",
+  password: "",
+});
 
-  // definePageMeta({
-  //   middleware : 'redirect-logged-in'
-  // });
+const loginUser = async () => {
+  try {
+    const data = await $fetch("http://localhost:8080/api/zoo/login", {
+      method: "POST",
+      body: form,
+    });
 
+    logIn(data.userId);
 
+    router.push({ path: "/" });
+  } catch (err) {
+    console.error("An error occurred during login:", err);
+  }
+};
 
-
-
-
-  </script>
-  
- 
+// definePageMeta({
+//   middleware : 'redirect-logged-in'
+// });
+</script>
