@@ -262,6 +262,9 @@ const userToken = useCookie("isLoggedIn");
 const isProfileVisible = ref(false);
 const isUpdateModalVisible = ref(false);
 
+const token = useCookie("auth");
+
+
 const logoutUser = () => {
   logOut();
   router.push("/userlogin");
@@ -284,7 +287,11 @@ const userId = useCookie("userId");
 const fetchProfile = async () => {
   try {
     const fetchedUser = await $fetch(
-      `http://localhost:8080/api/zoo/users/${userId.value}`
+      `http://localhost:8080/api/auth/user/${userId.value}`, {
+        headers: {
+          "Authorization": `Bearer ${token.value}`
+        }
+      }
     );
     user.value = fetchedUser;
     form.firstName = fetchedUser.firstName;
@@ -329,7 +336,7 @@ const selectedState = ref(null);
 
 const fetchCountries = async () => {
   try {
-    const data = await $fetch(`http://localhost:8080/api/zoo/countries`);
+    const data = await $fetch(`http://localhost:8080/api/auth/countries`);
     countries.value = data;
   } catch (error) {
     console.error("Error fetching countries:", error);
@@ -346,7 +353,7 @@ const fetchStates = async () => {
   if (!selectedCountry.value) return;
   try {
     const data = await $fetch(
-      `http://localhost:8080/api/zoo/state/${selectedCountry.value}`
+      `http://localhost:8080/api/auth/state/${selectedCountry.value}`
     );
     states.value = data;
   } catch (error) {
@@ -363,7 +370,7 @@ const handleStateChange = () => {
 const fetchCities = async () => {
   try {
     const data = await $fetch(
-      `http://localhost:8080/api/zoo/cities/${selectedState.value}`
+      `http://localhost:8080/api/auth/cities/${selectedState.value}`
     );
     cities.value = data;
   } catch (error) {
@@ -373,8 +380,11 @@ const fetchCities = async () => {
 
 const updateUser = async () => {
   try {
-    await $fetch(`http://localhost:8080/api/zoo/userupdate/${userId.value}`, {
+    await $fetch(`http://localhost:8080/api/auth/userupdate/${userId.value}`, {
       method: "PATCH",
+      headers: {
+          "Authorization": `Bearer ${token.value}`
+        },
       body: form,
     });
     alert("User profile updated successfully!");

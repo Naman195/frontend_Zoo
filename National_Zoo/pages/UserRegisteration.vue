@@ -1,111 +1,120 @@
-<template>
-  <div class="register-container">
-    <h1>User Registration Page</h1>
+  <template>
+    <div class="register-container">
+      <h1>User Registration Page</h1>
 
-    <form @submit.prevent="registerUser" class="register-form">
-      <div class="form-group">
-        <label for="firstName">First Name</label>
-        <input type="text" v-model="form.firstName" required />
-      </div>
-      <!-- <CustomInput  label="First Name" type="text" placeholder="Enter name" @success="abc" />
-     <CustomInput  label="last Name" type="text" placeholder="Enter last name" @fail="bcd" />
-     <CustomInput  label="username" type="text" placeholder="Enter username" /> -->
-
-      <div class="form-group">
-        <label for="lastName">Last Name</label>
-        <input type="text" v-model="form.lastName" required />
-      </div>
-
-      <div class="form-group">
-        <label for="userName">Username</label>
-        <input type="text" v-model="form.userName" required />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="password-container">
-          <input
-            :type="passwordVisible ? 'text' : 'password'"
-            v-model="form.password"
-            minlength="8"
-            required
-          />
-          <span class="eye-icon" @click="togglePasswordVisibility">
-            <i :class="passwordVisible ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
-          </span>
+      <form @submit.prevent="registerUser" class="register-form">
+        <div class="register-pair">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" v-model="form.firstName" required />
         </div>
-        <!-- <input type="password" v-model="form.password" minlength="8" required /> -->
+      
+        
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" v-model="form.lastName" required />
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="country">Country</label>
-        <select
-          v-model="selectedCountry"
-          @change="handleCountryChange"
-          required
-        >
-          <!-- <option value="null">Select Country</option> -->
-          <option
-            v-for="country in countries"
-            :key="country.countryId"
-            :value="country.countryId"
+
+
+      <div class="register-pair">
+        <div class="form-group">
+          <label for="userName">Username</label>
+          <input type="text" v-model="form.userName" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-container">
+            <input
+              :type="passwordVisible ? 'text' : 'password'"
+              v-model="form.password"
+              minlength="8"
+              required
+            />
+            <span class="eye-icon" @click="togglePasswordVisibility">
+              <i :class="passwordVisible ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+            </span>
+          </div>
+          <!-- <input type="password" v-model="form.password" minlength="8" required /> -->
+        </div>
+      </div>
+
+      <div class="register-pair">
+        <div class="form-group">
+          <label for="country">Country</label>
+          <select
+            v-model="selectedCountry"
+            @change="handleCountryChange"
+            required
           >
-            {{ country.countryName }}
-          </option>
-        </select>
-      </div>
+            <!-- <option value="null">Select Country</option> -->
+            <option
+              v-for="country in countries"
+              :key="country.countryId"
+              :value="country.countryId"
+            >
+              {{ country.countryName }}
+            </option>
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label for="state">State</label>
-        <select
-          v-model="selectedState"
-          :disabled="!selectedCountry"
-          @change="handleStateChange"
-          required
-        >
-          <!-- <option value="null">Select State</option> -->
-          <option
-            v-for="state in states"
-            :key="state.stateId"
-            :value="state.stateId"
+        <div class="form-group">
+          <label for="state">State</label>
+          <select
+            v-model="selectedState"
+            :disabled="!selectedCountry"
+            @change="handleStateChange"
+            required
           >
-            {{ state.stateName }}
-          </option>
-        </select>
-      </div>
+            <!-- <option value="null">Select State</option> -->
+            <option
+              v-for="state in states"
+              :key="state.stateId"
+              :value="state.stateId"
+            >
+              {{ state.stateName }}
+            </option>
+          </select>
+        </div>
+      
 
-      <div class="form-group">
-        <label for="city">City</label>
-        <select
-          v-model="form.address.city.cityId"
-          :disabled="!selectedState"
-          required
-        >
-          <!-- <option value="null">Select City</option> -->
-          <option
-            v-for="city in cities"
-            :key="city.cityId"
-            :value="city.cityId"
+        <div class="form-group">
+          <label for="city">City</label>
+          <select
+            v-model="form.address.city.cityId"
+            :disabled="!selectedState"
+            required
           >
-            {{ city.cityName }}
-          </option>
-        </select>
+            <!-- <option value="null">Select City</option> -->
+            <option
+              v-for="city in cities"
+              :key="city.cityId"
+              :value="city.cityId"
+            >
+              {{ city.cityName }}
+            </option>
+          </select>
+        </div>
+      </div>
+        <div class="register-pair">
+        <div class="form-group">
+          <label for="street">Street</label>
+          <input type="text" v-model="form.address.street" required />
+        </div>
+
+        <div class="form-group">
+          <label for="zipCode">Zip Code</label>
+          <input type="text" v-model="form.address.zipCode" required />
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="street">Street</label>
-        <input type="text" v-model="form.address.street" required />
-      </div>
-
-      <div class="form-group">
-        <label for="zipCode">Zip Code</label>
-        <input type="text" v-model="form.address.zipCode" required />
-      </div>
-
-      <button type="submit" class="submit-btn">Register</button>
-    </form>
-  </div>
-</template>
+        <button type="submit" class="submit-btn">Register</button>
+      </form>
+    </div>
+  </template>
 
 <script setup>
 import "../assests/css/style.css";
@@ -140,7 +149,7 @@ const togglePasswordVisibility = () => {
 
 const fetchCountries = async () => {
   try {
-    const data = await $fetch(`http://localhost:8080/api/zoo/countries`);
+    const data = await $fetch(`http://localhost:8080/api/auth/countries`);
     countries.value = data;
   } catch (error) {
     console.error("Error fetching countries:", error);
@@ -157,7 +166,7 @@ const fetchStates = async () => {
   if (!selectedCountry) return;
   try {
     const data = await $fetch(
-      `http://localhost:8080/api/zoo/state/${selectedCountry.value}`
+      `http://localhost:8080/api/auth/state/${selectedCountry.value}`
     );
     states.value = data;
   } catch (error) {
@@ -174,7 +183,7 @@ const handleStateChange = () => {
 const fetchCities = async () => {
   try {
     const data = await $fetch(
-      `http://localhost:8080/api/zoo/cities/${selectedState.value}`
+      `http://localhost:8080/api/auth/cities/${selectedState.value}`
     );
     cities.value = data;
   } catch (error) {
@@ -184,7 +193,7 @@ const fetchCities = async () => {
 
 const registerUser = async () => {
   try {
-    const data = await $fetch("http://localhost:8080/api/zoo/create", {
+    const data = await $fetch("http://localhost:8080/api/auth/user/create", {
       method: "POST",
       body: form,
     });

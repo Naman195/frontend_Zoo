@@ -281,6 +281,9 @@ import "../assests/css/AllUsers.css";
 const isUpdateModalVisible = ref(false);
 const userId = ref(null);
 const user = ref(null);
+const token = useCookie("auth");
+
+
 const getUserId = (user) => {
   userId.value = user.userId;
   console.log("Delete User Id", userId.value);
@@ -298,7 +301,11 @@ const toggleUpdateModal = () => {
 const fetchProfile = async () => {
   try {
     const fetchedUser = await $fetch(
-      `http://localhost:8080/api/zoo/users/${userId.value}`
+      `http://localhost:8080/api/auth/user/${userId.value}`,{
+        headers: {
+          "Authorization": `Bearer ${token.value}`
+        }
+      }
     );
     user.value = fetchedUser;
     form.firstName = fetchedUser.firstName;
@@ -335,7 +342,7 @@ const selectedState = ref(null);
 
 const fetchCountries = async () => {
   try {
-    const data = await $fetch(`http://localhost:8080/api/zoo/countries`);
+    const data = await $fetch(`http://localhost:8080/api/auth/countries`);
     countries.value = data;
   } catch (error) {
     console.error("Error fetching countries:", error);
@@ -352,7 +359,7 @@ const fetchStates = async () => {
   if (!selectedCountry.value) return;
   try {
     const data = await $fetch(
-      `http://localhost:8080/api/zoo/state/${selectedCountry.value}`
+      `http://localhost:8080/api/auth/state/${selectedCountry.value}`
     );
     states.value = data;
   } catch (error) {
@@ -369,7 +376,7 @@ const handleStateChange = () => {
 const fetchCities = async () => {
   try {
     const data = await $fetch(
-      `http://localhost:8080/api/zoo/cities/${selectedState.value}`
+      `http://localhost:8080/api/auth/cities/${selectedState.value}`
     );
     cities.value = data;
   } catch (error) {
@@ -379,8 +386,11 @@ const fetchCities = async () => {
 
 const updateUser = async () => {
   try {
-    await $fetch(`http://localhost:8080/api/zoo/userupdate/${userId.value}`, {
+    await $fetch(`http://localhost:8080/api/auth/userupdate/${userId.value}`, {
       method: "PATCH",
+      headers: {
+          "Authorization": `Bearer ${token.value}`
+        },
       body: form,
     });
     alert("User profile updated successfully!");
@@ -400,7 +410,11 @@ const filteredUsers = ref([]);
 
 const fetchUsers = async () => {
   try {
-    const data = await $fetch("http://localhost:8080/api/zoo/users");
+    const data = await $fetch("http://localhost:8080/api/auth/allusers", {
+      headers: {
+          "Authorization": `Bearer ${token.value}`
+        }
+    });
     users.value = data;
 
     filteredUsers.value = users.value.filter(
@@ -423,9 +437,12 @@ const deletedAertClose = () => {
 const deleteUser = async () => {
   try {
     const deleteUser = await $fetch(
-      `http://localhost:8080/api/zoo/delete/${userId.value}`,
+      `http://localhost:8080/api/auth/user/delete/${userId.value}`,
       {
         method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token.value}`
+        }
       }
     );
     fetchUsers();

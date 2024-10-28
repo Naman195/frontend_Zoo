@@ -14,10 +14,17 @@ export default defineNuxtRouteMiddleware((to, from) => {
         return navigateTo('/');
       }
 
+      if(to.path === "/forgotpass"){
+        return navigateTo("/setpass")
+      }
+
       
     }else{
       if(to.path === "/allusers"){
         return navigateTo("/");
+      }
+      if(to.path === "/setpass"){
+        return navigateTo("/forgotpass")
       }
     }
     

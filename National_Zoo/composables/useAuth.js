@@ -16,6 +16,7 @@ export function useAuth() {
     console.log("Hello from logout IN");
     
     const loginCookie = useCookie('isLoggedIn');
+    const token = useCookie("auth");
   const userIdCookie = useCookie('userId', {
     maxAge: 0
   });
@@ -24,21 +25,10 @@ export function useAuth() {
     userIdCookie.value = null; 
     isLoggedIn.value = false; 
     userId.value = null;
+    token.value = null
   };
 
-  
-  // onMounted(() => {
-  //   const storedLoginStatus = useCookie('isLoggedIn').value; 
-  //   const storedUserId = useCookie('userId').value;
-    
-  //   if (storedLoginStatus === 'true' && storedUserId) {
-  //     isLoggedIn.value = true;
-  //     userId.value = storedUserId; 
-  //     console.log("On mounted IN", isLoggedIn);
-  //   }
-  // });
 
-  // console.log("On mounted Out", isLoggedIn.value);
 
   return { isLoggedIn, logIn, logOut, userId };
 }

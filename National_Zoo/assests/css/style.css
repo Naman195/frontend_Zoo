@@ -5,6 +5,7 @@
     background-color: #f0f8ff;  /* Light blue background */
     border-radius: 15px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    
   }
   
   h1 {
@@ -17,7 +18,15 @@
   .register-form {
     display: flex;
     flex-direction: column;
+    /* gap: 1.5rem; */
   }
+
+  .register-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
   
   .form-group {
     margin-bottom: 15px;

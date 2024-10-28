@@ -7,8 +7,8 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss'
   ],
 
-  css: [
-    '@fortawesome/fontawesome-free/css/all.css'
-  ],
+  // css: [
+  //   '@fortawesome/fontawesome-free/css/all.css'
+  // ],
  
 })

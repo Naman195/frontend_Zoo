@@ -52,12 +52,16 @@ const form = reactive({
   password: "",
 });
 
+const token = useCookie("auth", { maxAge: 3600 });
+
 const loginUser = async () => {
   try {
-    const data = await $fetch("http://localhost:8080/api/zoo/login", {
+    const data = await $fetch("http://localhost:8080/api/auth/user/login", {
       method: "POST",
       body: form,
     });
+
+    token.value = data.token;
 
     logIn(data.userId);
 
