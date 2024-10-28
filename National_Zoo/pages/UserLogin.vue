@@ -65,7 +65,7 @@ const loginUser = async () => {
 
     logIn(data.userId);
 
-    router.push({ path: "/" });
+    router.push({ path: "/allusers" });
   } catch (err) {
     console.error("An error occurred during login:", err);
   }

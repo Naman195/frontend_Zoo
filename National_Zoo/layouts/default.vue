@@ -1,4 +1,10 @@
 <template>
+  <div v-if="updateAlert">
+    <ShowAlert
+      :alert-message="'User Updated  Successfully'"
+      @close-modal="closeUpdateAlert"
+    />
+  </div>
   <nav class="bg-gray-800 p-4">
     <div class="container mx-auto flex justify-between items-center">
       <div class="text-white text-lg font-semibold">
@@ -264,6 +270,15 @@ const isUpdateModalVisible = ref(false);
 
 const token = useCookie("auth");
 
+const updateAlert = ref(false);
+
+const afterUpdate = () => {
+  updateAlert.value = true;
+};
+
+const closeUpdateAlert = () => {
+  updateAlert.value = false;
+};
 
 const logoutUser = () => {
   logOut();
@@ -287,10 +302,11 @@ const userId = useCookie("userId");
 const fetchProfile = async () => {
   try {
     const fetchedUser = await $fetch(
-      `http://localhost:8080/api/auth/user/${userId.value}`, {
+      `http://localhost:8080/api/auth/user/${userId.value}`,
+      {
         headers: {
-          "Authorization": `Bearer ${token.value}`
-        }
+          Authorization: `Bearer ${token.value}`,
+        },
       }
     );
     user.value = fetchedUser;
@@ -383,11 +399,11 @@ const updateUser = async () => {
     await $fetch(`http://localhost:8080/api/auth/userupdate/${userId.value}`, {
       method: "PATCH",
       headers: {
-          "Authorization": `Bearer ${token.value}`
-        },
+        Authorization: `Bearer ${token.value}`,
+      },
       body: form,
     });
-    alert("User profile updated successfully!");
+    afterUpdate();
     fetchProfile();
     toggleUpdateModal();
   } catch (err) {

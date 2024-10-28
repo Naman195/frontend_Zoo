@@ -1,55 +1,18 @@
 <template>
-  <div v-if="deletedAert">
-    <div
-      id="alert-border-3"
-      class="flex items-center p-4 mb-4 text-green-800 border-t-4 border-green-300 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800"
-      role="alert"
-    >
-      <svg
-        class="flex-shrink-0 w-4 h-4"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path
-          d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"
-        />
-      </svg>
-      <div class="ms-3 text-sm font-medium">
-        USer Delete SuccesFully
-        <!-- <a href="#" class="font-semibold underline hover:no-underline"
-          >example link</a
-        >. Give it a click if you like. -->
-      </div>
-      <button
-        @click="deletedAertClose"
-        type="button"
-        class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700"
-        data-dismiss-target="#alert-border-3"
-        aria-label="Close"
-      >
-        <span class="sr-only">Dismiss</span>
-        <svg
-          class="w-3 h-3"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 14 14"
-        >
-          <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-          />
-        </svg>
-      </button>
-    </div>
+  <div v-if="deletedAert" class="z-50 absolute top-1/2">
+    <ShowAlert
+      :alert-message="'User Deleted Successfully'"
+      @close-modal="deletedAertClose"
+    />
   </div>
+  <div v-if="updateAlert">
+    <ShowAlert
+      :alert-message="'User Updated  Successfully'"
+      @close-modal="closeUpdateAlert"
+    />
+  </div>
+
   <div class="card-grid">
-    <!-- <div> -->
     <div v-if="openModal" class="z-50 absolute top-1/2">
       <Modal @delete-user="deleteUserApi" @close-modal="openModal = false" />
     </div>
@@ -283,6 +246,15 @@ const userId = ref(null);
 const user = ref(null);
 const token = useCookie("auth");
 
+const updateAlert = ref(false);
+
+const afterUpdate = () => {
+  updateAlert.value = true;
+};
+
+const closeUpdateAlert = () => {
+  updateAlert.value = false;
+};
 
 const getUserId = (user) => {
   userId.value = user.userId;
@@ -301,10 +273,11 @@ const toggleUpdateModal = () => {
 const fetchProfile = async () => {
   try {
     const fetchedUser = await $fetch(
-      `http://localhost:8080/api/auth/user/${userId.value}`,{
+      `http://localhost:8080/api/auth/user/${userId.value}`,
+      {
         headers: {
-          "Authorization": `Bearer ${token.value}`
-        }
+          Authorization: `Bearer ${token.value}`,
+        },
       }
     );
     user.value = fetchedUser;
@@ -389,12 +362,14 @@ const updateUser = async () => {
     await $fetch(`http://localhost:8080/api/auth/userupdate/${userId.value}`, {
       method: "PATCH",
       headers: {
-          "Authorization": `Bearer ${token.value}`
-        },
+        Authorization: `Bearer ${token.value}`,
+      },
       body: form,
     });
-    alert("User profile updated successfully!");
-    fetchProfile();
+    // alert("User profile updated successfully!");
+    afterUpdate();
+    fetchUsers();
+    // fetchProfile();
     toggleUpdateModal();
   } catch (err) {
     console.error("Error updating user:", err);
@@ -412,8 +387,8 @@ const fetchUsers = async () => {
   try {
     const data = await $fetch("http://localhost:8080/api/auth/allusers", {
       headers: {
-          "Authorization": `Bearer ${token.value}`
-        }
+        Authorization: `Bearer ${token.value}`,
+      },
     });
     users.value = data;
 
@@ -441,8 +416,8 @@ const deleteUser = async () => {
       {
         method: "PATCH",
         headers: {
-          "Authorization": `Bearer ${token.value}`
-        }
+          Authorization: `Bearer ${token.value}`,
+        },
       }
     );
     fetchUsers();

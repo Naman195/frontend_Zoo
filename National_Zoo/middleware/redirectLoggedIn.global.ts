@@ -23,9 +23,9 @@ export default defineNuxtRouteMiddleware((to, from) => {
       if(to.path === "/allusers"){
         return navigateTo("/");
       }
-      if(to.path === "/setpass"){
-        return navigateTo("/forgotpass")
-      }
+      // if(to.path === "/setpass"){
+      //   return navigateTo("/forgotpass")
+      // }
     }
     
     
