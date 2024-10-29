@@ -38,7 +38,7 @@
 import "../assests/css/LoginStyle.css";
 import { useAuth } from "@/composables/useAuth";
 
-const { logIn } = useAuth();
+const { logIn, logOut } = useAuth();
 
 const router = useRouter();
 const passwordVisible = ref(false);
@@ -64,6 +64,10 @@ const loginUser = async () => {
     token.value = data.token;
 
     logIn(data.userId);
+
+    setTimeout(() => {
+      logOut();
+    }, 3600 * 1000);
 
     router.push({ path: "/allusers" });
   } catch (err) {
