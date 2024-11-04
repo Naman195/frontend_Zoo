@@ -1,29 +1,25 @@
-  <template>
-    <div v-if="registeredAlert" class="z-50 absolute top-1/2">
+<template>
+  <div v-if="registeredAlert" class="z-50 absolute top-1/2">
     <ShowAlert
       :alert-message="'User Registered Successfully'"
       @close-modal="registerAlertClose"
     />
   </div>
-    <div class="register-container">
-      <h1>User Registration Page</h1>
+  <div class="register-container">
+    <h1>User Registration Page</h1>
 
-      <form @submit.prevent="registerUser" class="register-form">
-        <div class="register-pair">
+    <form @submit.prevent="registerUser" class="register-form">
+      <div class="register-pair">
         <div class="form-group">
           <label for="firstName">First Name</label>
           <input type="text" v-model="form.firstName" required />
         </div>
-      
-        
 
         <div class="form-group">
           <label for="lastName">Last Name</label>
           <input type="text" v-model="form.lastName" required />
         </div>
       </div>
-
-
 
       <div class="register-pair">
         <div class="form-group">
@@ -85,8 +81,9 @@
             </option>
           </select>
         </div>
-      
+      </div>
 
+      <div class="register-pair">
         <div class="form-group">
           <label for="city">City</label>
           <select
@@ -104,8 +101,16 @@
             </option>
           </select>
         </div>
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select v-model="form.role" required>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
       </div>
-        <div class="register-pair">
+
+      <div class="register-pair">
         <div class="form-group">
           <label for="street">Street</label>
           <input type="text" v-model="form.address.street" required />
@@ -117,10 +122,10 @@
         </div>
       </div>
 
-        <button type="submit" class="submit-btn">Register</button>
-      </form>
-    </div>
-  </template>
+      <button type="submit" class="submit-btn">Register</button>
+    </form>
+  </div>
+</template>
 
 <script setup>
 import "../assests/css/style.css";
@@ -141,6 +146,7 @@ const form = reactive({
   lastName: "",
   userName: "",
   password: "",
+  role: "",
   address: {
     street: "",
     zipCode: "",
@@ -217,6 +223,7 @@ const registerUser = async () => {
       form.lastName = "";
       form.userName = "";
       form.password = "";
+      form.role = "";
       form.address.street = "";
       form.address.zipCode = "";
       form.address.city.cityId = null;

@@ -47,8 +47,8 @@
       class="absolute right-0 mt-2 w-64 bg-white shadow-md p-4 rounded-lg"
     >
       <h2 class="font-bold text-lg">User Profile</h2>
-      <p><strong>Name:</strong> {{ user.firstName }} {{ user.lastName }}</p>
-      <p><strong>City:</strong> {{ user.address.city.cityName }}</p>
+      <p><strong>Name:</strong>{{ user.firstName }} {{ user.lastName }}</p>
+      <p><strong>City:</strong>{{ user.address.city.cityName }}</p>
 
       <!-- Buttons container -->
       <div class="flex justify-between mt-4">
@@ -343,6 +343,8 @@ const form = reactive({
     },
   },
 });
+
+// console.log("LoggedIn Person ID", logInState());
 
 const countries = ref([]);
 const states = ref([]);

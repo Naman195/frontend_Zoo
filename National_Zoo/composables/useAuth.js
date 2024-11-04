@@ -1,6 +1,7 @@
 const isLoggedIn = ref(false);
 const userId = ref(null);
 
+
 export function useAuth() {
   const logIn = async (id) => {
     console.log("helooo...........")
@@ -10,6 +11,8 @@ export function useAuth() {
     userIdCookie.value = id; 
     isLoggedIn.value = true; 
     userId.value = id; 
+
+
   };
 
   const logOut = () => {
@@ -28,7 +31,11 @@ export function useAuth() {
     token.value = null
   };
 
+  
 
 
-  return { isLoggedIn, logIn, logOut, userId };
+
+
+
+  return { isLoggedIn, logIn, logOut, userId,  };
 }

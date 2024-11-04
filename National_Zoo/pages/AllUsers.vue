@@ -246,8 +246,28 @@ const userId = ref(null);
 const userID = useCookie("userId");
 const user = ref(null);
 const token = useCookie("auth");
-
 const updateAlert = ref(false);
+
+const countries = ref([]);
+const states = ref([]);
+const cities = ref([]);
+const selectedCountry = ref(null);
+const selectedState = ref(null);
+
+const openModal = ref(false);
+const userLoggedInId = useCookie("userId");
+
+const form = reactive({
+  firstName: "",
+  lastName: "",
+  address: {
+    street: "",
+    zipCode: "",
+    city: {
+      cityId: null,
+    },
+  },
+});
 
 const afterUpdate = () => {
   updateAlert.value = true;
@@ -289,30 +309,12 @@ const fetchProfile = async () => {
     selectedCountry.value = fetchedUser.address.city.state.country.countryId;
     selectedState.value = fetchedUser.address.city.state.stateId;
     form.address.city.cityId = fetchedUser.address.city.cityId;
-    await fetchStates();
-    await fetchCities();
+    fetchStates();
+    fetchCities();
   } catch (error) {
     console.error("Error fetching User:", error);
   }
 };
-
-const form = reactive({
-  firstName: "",
-  lastName: "",
-  address: {
-    street: "",
-    zipCode: "",
-    city: {
-      cityId: null,
-    },
-  },
-});
-
-const countries = ref([]);
-const states = ref([]);
-const cities = ref([]);
-const selectedCountry = ref(null);
-const selectedState = ref(null);
 
 const fetchCountries = async () => {
   try {
@@ -377,9 +379,6 @@ const updateUser = async () => {
   }
 };
 
-const openModal = ref(false);
-const userLoggedInId = useCookie("userId");
-
 const users = ref([]);
 
 const filteredUsers = ref([]);
@@ -396,6 +395,7 @@ const fetchUsers = async () => {
     filteredUsers.value = users.value.filter(
       (user) => user.userId !== userLoggedInId.value
     );
+    fetchProfile();
     // console.log(filteredUsers.value);
   } catch (error) {
     console.error("Error fetching Users:", error);
@@ -432,12 +432,6 @@ const deleteUser = async () => {
 };
 
 onMounted(() => {
-  fetchProfile();
   fetchUsers();
-  
 });
-
-
-
-
 </script>
