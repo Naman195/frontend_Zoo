@@ -1,4 +1,10 @@
   <template>
+    <div v-if="registeredAlert" class="z-50 absolute top-1/2">
+    <ShowAlert
+      :alert-message="'User Registered Successfully'"
+      @close-modal="registerAlertClose"
+    />
+  </div>
     <div class="register-container">
       <h1>User Registration Page</h1>
 
@@ -128,6 +134,7 @@ const states = ref([]);
 const cities = ref([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
+const registeredAlert = ref(false);
 
 const form = reactive({
   firstName: "",
@@ -142,6 +149,14 @@ const form = reactive({
     },
   },
 });
+
+const registerAlert = () => {
+  registeredAlert.value = true;
+};
+
+const registerAlertClose = () => {
+  registeredAlert.value = false;
+};
 
 const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
@@ -211,7 +226,8 @@ const registerUser = async () => {
       cities.value = [];
       states.value = [];
 
-      alert("User registered successfully!");
+      // alert("User registered successfully!");
+      registerAlert();
       router.push("/userlogin");
     } else {
       alert("Error: " + data);
