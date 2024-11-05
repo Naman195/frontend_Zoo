@@ -1,8 +1,10 @@
-const token = useCookie("auth")
-const userId =   useCookie("userId")
-const userLoggedIn = useCookie<string | null | boolean>('isLoggedIn');
+
 
 export default defineNuxtRouteMiddleware((to, from) => {
+
+  const token = useCookie("auth")
+const userId =   useCookie("userId")
+const userLoggedIn = useCookie<string | null | boolean>('isLoggedIn');
 
 if(token.value){
 
