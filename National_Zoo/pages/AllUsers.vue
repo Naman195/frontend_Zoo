@@ -243,7 +243,7 @@ import "../assests/css/AllUsers.css";
 
 const isUpdateModalVisible = ref(false);
 const userId = ref(null);
-const userID = useCookie("userId");
+// const userID = useCookie("userId");
 const user = ref(null);
 const token = useCookie("auth");
 const updateAlert = ref(false);
@@ -294,7 +294,7 @@ const toggleUpdateModal = () => {
 const fetchProfile = async () => {
   try {
     const fetchedUser = await $fetch(
-      `http://localhost:8080/api/auth/user/${userID.value}`,
+      `http://localhost:8080/api/auth/user/${userId.value}`,
       {
         headers: {
           Authorization: `Bearer ${token.value}`,
@@ -395,7 +395,7 @@ const fetchUsers = async () => {
     filteredUsers.value = users.value.filter(
       (user) => user.userId !== userLoggedInId.value
     );
-    fetchProfile();
+    // fetchProfile();
     // console.log(filteredUsers.value);
   } catch (error) {
     console.error("Error fetching Users:", error);

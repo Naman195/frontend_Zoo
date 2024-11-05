@@ -39,6 +39,7 @@ import "../assests/css/LoginStyle.css";
 import { useAuth } from "@/composables/useAuth";
 
 const { logIn, logOut } = useAuth();
+const { userProfile, setUser, getUser } = useUserProfile();
 
 const router = useRouter();
 const passwordVisible = ref(false);
@@ -64,12 +65,12 @@ const loginUser = async () => {
     token.value = data.token;
 
     logIn(data.userId);
+    // await fetchProfile();
+    // setTimeout(() => {
+    //   logOut();
+    // }, 3600 * 1000);
 
-    setTimeout(() => {
-      logOut();
-    }, 3600 * 1000);
-
-    router.push({ path: "/allusers" });
+    router.push({ path: "/" });
   } catch (err) {
     console.error("An error occurred during login:", err);
   }

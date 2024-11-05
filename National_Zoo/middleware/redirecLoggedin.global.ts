@@ -1,0 +1,46 @@
+const token = useCookie("auth")
+const userId =   useCookie("userId")
+const userLoggedIn = useCookie<string | null | boolean>('isLoggedIn');
+
+export default defineNuxtRouteMiddleware((to, from) => {
+
+if(token.value){
+
+
+    
+        if (userLoggedIn.value === true) {
+          console.log("Valid token:", userLoggedIn.value);
+          //  router.push("/")
+         
+          if (to.path === '/userlogin') {
+            return navigateTo('/'); 
+          }
+          if (to.path === '/userregisteration') {
+            return navigateTo('/');
+          }
+    
+          if(to.path === "/forgotpass"){
+            return navigateTo("/setpass")
+          }
+    
+          
+        }else{
+          
+          if(to.path === "/allusers"){
+            return navigateTo("/");
+          }
+          
+        }
+
+    }else{
+        userLoggedIn.value = false;
+        userId.value = null;
+    }
+    
+
+})
+
+
+
+
+

@@ -14,6 +14,11 @@
         <li><NuxtLink to="/" class="hover:text-gray-300">Home</NuxtLink></li>
         <li><NuxtLink to="#" class="hover:text-gray-300">About</NuxtLink></li>
         <li><NuxtLink to="#" class="hover:text-gray-300">Contact</NuxtLink></li>
+        <li>
+          <NuxtLink to="/allusers" class="hover:text-gray-300"
+            >All users</NuxtLink
+          >
+        </li>
         <template v-if="!userToken">
           <li>
             <NuxtLink
@@ -47,8 +52,11 @@
       class="absolute right-0 mt-2 w-64 bg-white shadow-md p-4 rounded-lg"
     >
       <h2 class="font-bold text-lg">User Profile</h2>
-      <p><strong>Name:</strong>{{ user.firstName }} {{ user.lastName }}</p>
-      <p><strong>City:</strong>{{ user.address.city.cityName }}</p>
+      <p>
+        <strong>Name:</strong>{{ userProfile.firstName }}
+        {{ userProfile.lastName }}
+      </p>
+      <p><strong>City:</strong>{{ userProfile.address.city.cityName }}</p>
 
       <!-- Buttons container -->
       <div class="flex justify-between mt-4">
@@ -59,7 +67,12 @@
           Logout
         </button>
         <button
-          @click="toggleUpdateModal"
+          @click="
+            () => {
+              toggleUpdateModal();
+              fillupdateFormData();
+            }
+          "
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-3 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Update Profile
@@ -261,9 +274,11 @@
 // import "../assests/css/Navbar.css";
 import "../assests/css/style.css";
 import { useAuth } from "~/composables/useAuth";
+import { useUserProfile } from "~/composables/useUserProfile";
 
 const router = useRouter();
 const { isLoggedIn, logOut } = useAuth();
+const { userProfile, setUser, getUser } = useUserProfile();
 const userToken = useCookie("isLoggedIn");
 const isProfileVisible = ref(false);
 const isUpdateModalVisible = ref(false);
@@ -271,6 +286,8 @@ const isUpdateModalVisible = ref(false);
 const token = useCookie("auth");
 
 const updateAlert = ref(false);
+
+console.log("UserProfile Values", userProfile);
 
 const afterUpdate = () => {
   updateAlert.value = true;
@@ -293,40 +310,64 @@ const toggleProfile = () => {
 const toggleUpdateModal = () => {
   isUpdateModalVisible.value = !isUpdateModalVisible.value;
   isProfileVisible.value = false;
+  console.log("User LoggedIn data", userProfile);
+};
+
+const fillupdateFormData = () => {
+  console.log("Running..");
+
+  form.firstName = userProfile.value.firstName;
+  form.lastName = userProfile.value.lastName;
+  form.address.street = userProfile.value.address.street;
+  form.address.zipCode = userProfile.value.address.zipCode;
+  selectedCountry.value =
+    userProfile.value.address.city.state.country.countryId;
+  selectedState.value = userProfile.value.address.city.state.stateId;
+  form.address.city.cityId = userProfile.value.address.city.cityId;
+  fetchStates();
+  fetchCities();
 };
 
 // Fetch User Profile
 const user = ref(null);
 const userId = useCookie("userId");
 
-const fetchProfile = async () => {
-  try {
-    const fetchedUser = await $fetch(
-      `http://localhost:8080/api/auth/user/${userId.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-        },
-      }
-    );
-    user.value = fetchedUser;
-    form.firstName = fetchedUser.firstName;
-    form.lastName = fetchedUser.lastName;
-    form.address.street = fetchedUser.address.street;
-    form.address.zipCode = fetchedUser.address.zipCode;
-    selectedCountry.value = fetchedUser.address.city.state.country.countryId;
-    selectedState.value = fetchedUser.address.city.state.stateId;
-    form.address.city.cityId = fetchedUser.address.city.cityId;
-    fetchStates();
-    fetchCities();
-  } catch (error) {
-    console.error("Error fetching User:", error);
-  }
-};
+// const fetchProfile = async () => {
+//   if (userProfile.value) {
+//     return;
+//   }
+
+//   try {
+//     const fetchedUser = await $fetch(
+//       `http://localhost:8080/api/auth/user/${userId.value}`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token.value}`,
+//         },
+//       }
+//     );
+
+//     setUser(fetchedUser);
+//     console.log("userProfile objet", userProfile);
+//     // user.value = fetchedUser;
+//     form.firstName = fetchedUser.firstName;
+//     form.lastName = fetchedUser.lastName;
+//     form.address.street = fetchedUser.address.street;
+//     form.address.zipCode = fetchedUser.address.zipCode;
+//     selectedCountry.value = fetchedUser.address.city.state.country.countryId;
+//     selectedState.value = fetchedUser.address.city.state.stateId;
+//     form.address.city.cityId = fetchedUser.address.city.cityId;
+//     fetchStates();
+//     fetchCities();
+//   } catch (error) {
+//     console.error("Error fetching User:", error);
+//   }
+// };
 
 onBeforeMount(() => {
   if (userToken.value == true) {
-    fetchProfile();
+    getUser();
+    // fetchProfile();
     fetchCountries();
   }
 });
@@ -343,8 +384,6 @@ const form = reactive({
     },
   },
 });
-
-// console.log("LoggedIn Person ID", logInState());
 
 const countries = ref([]);
 const states = ref([]);
@@ -406,8 +445,9 @@ const updateUser = async () => {
       body: form,
     });
     afterUpdate();
-    fetchProfile();
+
     toggleUpdateModal();
+    // router.push("/");
   } catch (err) {
     console.error("Error updating user:", err);
   }
