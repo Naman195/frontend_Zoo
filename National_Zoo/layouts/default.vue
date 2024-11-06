@@ -444,6 +444,7 @@ const updateUser = async () => {
       },
       body: form,
     });
+    setUser(form);
     afterUpdate();
 
     toggleUpdateModal();
