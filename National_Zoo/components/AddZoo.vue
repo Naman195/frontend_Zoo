@@ -1,8 +1,9 @@
 <template>
+  
   <div
     tabindex="-1"
     aria-hidden="true"
-    class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center z-50 w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+    class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
   >
     <div class="relative p-4 w-full max-w-md max-h-full">
       <!-- Modal content -->
@@ -41,6 +42,7 @@
         <div class="p-4 md:p-5 max-h-[60vh] overflow-y-auto">
           <form @submit.prevent="addZoo" class="space-y-4">
             <!-- First Name Field -->
+             
             <div>
               <label
                 for="ZooName"
@@ -56,6 +58,7 @@
               />
             </div>
             <!-- Country Select -->
+            <div class="register-pair">
             <div>
               <label
                 for="country"
@@ -101,7 +104,9 @@
                 </option>
               </select>
             </div>
+            </div>
             <!-- City Select -->
+            <div class="register-pair">
             <div>
               <label
                 for="city"
@@ -126,20 +131,6 @@
             <!-- Street Input -->
             <div>
               <label
-                for="street"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Street</label
-              >
-              <input
-                type="text"
-                id="street"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                required
-              />
-            </div>
-            <!-- Zip Code Input -->
-            <div>
-              <label
                 for="zipCode"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Zip Code</label
@@ -147,6 +138,22 @@
               <input
                 type="text"
                 id="zipCode"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                required
+              />
+            </div>
+            </div>
+
+            <!-- Zip Code Input -->
+            <div>
+              <label
+                for="street"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Street</label
+              >
+              <input
+                type="text"
+                id="street"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                 required
               />
