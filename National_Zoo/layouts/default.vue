@@ -13,7 +13,9 @@
       <ul class="flex items-center space-x-6 text-white">
         <li><NuxtLink to="/" class="hover:text-gray-300">Home</NuxtLink></li>
         <li><NuxtLink to="#" class="hover:text-gray-300">About</NuxtLink></li>
-        <li><NuxtLink to="#" class="hover:text-gray-300">Contact</NuxtLink></li>
+        <li>
+          <NuxtLink to="zoo/allzoo" class="hover:text-gray-300">Zoo's</NuxtLink>
+        </li>
         <li>
           <NuxtLink to="/allusers" class="hover:text-gray-300"
             >All users</NuxtLink
