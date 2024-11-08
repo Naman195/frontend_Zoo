@@ -12,7 +12,7 @@
           class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600"
         >
           <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-            Add Zoo
+            Update Zoo Details
           </h3>
           <button
             @click="emit('close')"
@@ -39,7 +39,7 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 max-h-[60vh] overflow-y-auto">
-          <form @submit.prevent="addZoo" class="space-y-4">
+          <form @submit.prevent="updateZoo" class="space-y-4">
             <!-- First Name Field -->
 
             <div>
@@ -49,8 +49,8 @@
                 >Zoo Name</label
               >
               <input
+                v-model="props.zoo.zooName"
                 type="text"
-                v-model="form.zooName"
                 id="firstName"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                 required
@@ -113,7 +113,7 @@
                   >City</label
                 >
                 <select
-                  v-model="form.address.city.cityId"
+                  v-model="selectedCity"
                   id="city"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                   required
@@ -135,6 +135,7 @@
                   >Zip Code</label
                 >
                 <input
+                  v-model="props.zoo.address.zipCode"
                   type="text"
                   id="zipCode"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
@@ -151,6 +152,7 @@
                 >Street</label
               >
               <input
+                v-model="props.zoo.address.street"
                 type="text"
                 id="street"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
@@ -159,11 +161,11 @@
             </div>
             <!-- Buttons -->
             <button
-              @click="emit('addZoo')"
+              @click="emit('updateZoo')"
               type="submit"
               class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-              Add Zoo
+              Update Zoo
             </button>
           </form>
         </div>
@@ -173,7 +175,18 @@
 </template>
 
 <script setup>
-const emit = defineEmits(["close", "addZoo"]);
+const emit = defineEmits(["close", "updateZoo"]);
+const props = defineProps({
+  zoo: {
+    type: Object,
+    required: true,
+  },
+});
+
+console.log("Zoo Objext Is", props.zoo.zooName);
+console.log("Zoo Country Is", props.zoo.address.city.cityName);
+console.log("Zoo Country Is", props.zoo.address.city.state.stateName);
+console.log("Zoo Country Is", props.zoo.address.city.state.country.countryName);
 
 const token = useCookie("auth");
 const countries = ref([]);
@@ -181,30 +194,34 @@ const states = ref([]);
 const cities = ref([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
+const selectedCity = ref(null);
+let zooId = null;
+zooId = props.zoo.zooId;
+console.log("ZooId Is", zooId);
 
-const form = reactive({
-  zooName: "",
-  address: {
-    street: "",
-    zipCode: "",
-    city: {
-      cityId: null,
-    },
-  },
-});
+selectedCountry.value = props.zoo.address.city.state.country.countryId;
+selectedState.value = props.zoo.address.city.state.stateId;
+selectedCity.value = props.zoo.address.city.cityId;
 
 const fetchCountries = async () => {
   try {
     const data = await $fetch(`http://localhost:8080/api/auth/countries`);
     countries.value = data;
+    // Fetch states after setting the selected country
+    if (selectedCountry.value) {
+      await fetchStates();
+    }
   } catch (error) {
     console.error("Error fetching countries:", error);
   }
 };
 
-const handleCountryChange = () => {
+const handleCountryChange = async () => {
   if (selectedCountry.value) {
-    fetchStates();
+    await fetchStates();
+    // Reset selectedState and selectedCity when country changes
+    selectedState.value = null;
+    selectedCity.value = null;
   }
 };
 
@@ -215,37 +232,77 @@ const fetchStates = async () => {
       `http://localhost:8080/api/auth/state/${selectedCountry.value}`
     );
     states.value = data;
+
+    // If there is a previously selected state, set it
+    if (props.zoo.address.city.state) {
+      selectedState.value = props.zoo.address.city.state.stateId;
+      // Fetch cities after setting the selected state
+      await fetchCities();
+    }
   } catch (error) {
     console.error("Error fetching States:", error);
   }
 };
 
-const handleStateChange = () => {
+const handleStateChange = async () => {
   if (selectedState.value) {
-    fetchCities();
+    await fetchCities();
   }
 };
 
 const fetchCities = async () => {
+  if (!selectedState.value) return;
   try {
     const data = await $fetch(
       `http://localhost:8080/api/auth/cities/${selectedState.value}`
     );
     cities.value = data;
+
+    // If there is a previously selected city, set it
+    if (props.zoo.address.city) {
+      selectedCity.value = props.zoo.address.city.cityId;
+    }
   } catch (error) {
     console.error("Error fetching Cities:", error);
   }
 };
 
-const addZoo = async () => {
-  const response = await $fetch(`http://localhost:8080/api/zoo/create-zoo`, {
-    headers: {
-      Authorization: `Bearer ${token.value}`,
+const updateZoo = async () => {
+  const body = {
+    zooName: props.zoo.zooName,
+    address: {
+      street: props.zoo.address.street,
+      zipCode: props.zoo.address.zipCode,
+      city: {
+        cityId: selectedCity.value,
+      },
     },
-    method: "POST",
-    body: form,
-  });
-  emit("close");
+  };
+  try {
+    const response = await $fetch(
+      `http://localhost:8080/api/zoo/update/${zooId}`,
+      {
+        method: "PATCH",
+        body: body,
+        headers: {
+          Authorization: `Bearer ${token.value}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("response", response);
+    emit("close");
+
+    // if (response.success) {
+    //   console.log("Zoo updated successfully:", response.data);
+    //
+    // } else {
+    //   console.error("Update failed:", response.message);
+    // }
+  } catch (error) {
+    console.error("Error updating zoo:", error);
+  }
 };
 
 onBeforeMount(() => {

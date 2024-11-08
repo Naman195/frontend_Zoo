@@ -14,7 +14,9 @@
         <li><NuxtLink to="/" class="hover:text-gray-300">Home</NuxtLink></li>
         <li><NuxtLink to="#" class="hover:text-gray-300">About</NuxtLink></li>
         <li>
-          <NuxtLink to="zoo/allzoo" class="hover:text-gray-300">Zoo's</NuxtLink>
+          <NuxtLink to="/zoo/allzoo" class="hover:text-gray-300"
+            >Zoo's</NuxtLink
+          >
         </li>
         <li>
           <NuxtLink to="/allusers" class="hover:text-gray-300"
