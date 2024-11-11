@@ -1,19 +1,19 @@
 <template>
   <div class="bg-gradient-to-b from-blue-200 to-blue-500 min-h-screen py-10">
-    <h1>All Zoos</h1>
-    <div class="flex justify-end mb-8 mr-3">
+    <div class="flex justify-between items-center w-full mb-6">
+      <h1 class="flex-grow text-center">All Zoo</h1>
       <button
-        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
+        type="button"
         @click="
           () => {
-            openModal = true;
+            openAddAnimalModal = true;
           }
         "
       >
-        Add Zoo
+        Add Animal
       </button>
     </div>
-
     <div v-if="deletedAlert" class="z-50 absolute top-1/2">
       <ShowAlert
         :alert-message="'Zoo Deleted Successfully'"
@@ -96,6 +96,18 @@
             >
               Update
             </button>
+            <button
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              <nuxt-link
+                :to="{
+                  path: '/animal/allanimals',
+                  query: { zooId: zoo.zooId },
+                }"
+              >
+                ViewZoo
+              </nuxt-link>
+            </button>
           </div>
         </div>
       </li>
@@ -162,7 +174,7 @@ watch(zooId, (newVal) => {
 
 const fetchZoo = async () => {
   const data = await $fetch(
-    `http://localhost:8080/api/zoo/all??page=0&size=6`,
+    `http://localhost:8080/api/zoo/all??page=0&size=3`,
     {
       headers: {
         Authorization: `Bearer ${token.value}`,
