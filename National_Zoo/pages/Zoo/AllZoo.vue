@@ -36,7 +36,11 @@
     </div>
 
     <div v-if="openModal" class="z-50 absolute top-1/2">
-      <AddZoo @close="openModal = false" @add-zoo="handleAddZooAlert" />
+      <AddZoo
+        :from-data="formData"
+        @close="openModal = false"
+        @add-zoo="handleAddZooAlert"
+      />
     </div>
 
     <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
@@ -126,6 +130,17 @@ const openUpdateModal = ref(false);
 const deletedAlert = ref(false);
 const updateAlert = ref(false);
 const addAlert = ref(false);
+
+const formData = ref({
+  zooName: "",
+  address: {
+    street: "",
+    zipCode: "",
+    city: {
+      cityId: null,
+    },
+  },
+});
 
 console.log("Zoos Object Is ", Zoos);
 // console.log("Zoos VAlue  Is ", Zoos.zooName);

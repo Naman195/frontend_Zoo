@@ -174,6 +174,12 @@
 
 <script setup>
 const emit = defineEmits(["close", "addZoo"]);
+const props = defineProps({
+  fromData: {
+    type: Object,
+    required: true,
+  },
+});
 
 const token = useCookie("auth");
 const countries = ref([]);
@@ -182,7 +188,7 @@ const cities = ref([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
 
-const form = reactive({
+const form = ref({
   zooName: "",
   address: {
     street: "",
