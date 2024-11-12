@@ -39,7 +39,7 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 max-h-[60vh] overflow-y-auto">
-          <form @submit.prevent="addAnimal" class="space-y-4">
+          <form @submit.prevent="emit('save')" class="space-y-4">
             <!-- First Name Field -->
 
             <div>
@@ -49,7 +49,7 @@
                 >Animal Name</label
               >
               <input
-                v-model="form.animalName"
+                v-model="props.fromData.animalName"
                 type="text"
                 id="animalName"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
@@ -65,7 +65,7 @@
                 >Animal Type</label
               >
               <input
-                v-model="form.animalType"
+                v-model="props.fromData.animalType"
                 type="text"
                 id="animaltype"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
@@ -77,7 +77,7 @@
               type="submit"
               class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-              Add Animal
+              {{ props.submitButtonLabel }}
             </button>
           </form>
         </div>
@@ -86,42 +86,15 @@
   </div>
 </template>
 
-<script setup>
-const emit = defineEmits(["close"]);
+<script setup lang="ts">
+const emit = defineEmits(["close", "save"]);
 const token = useCookie("auth");
-
-const props = defineProps({
-  selectedZooId: {
-    type: Number,
-    required: true,
-  },
-});
-
-const form = reactive({
-  animalName: "",
-  animalType: "",
-  zoo: {
-    zooId: props.selectedZooId,
-  },
-});
-
-const addAnimal = async () => {
-  console.log("Form data before submission:", form);
-
-  const res = await $fetch(`http://localhost:8080/api/animal/add`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-    },
-    body: form,
-  });
-
-  emit("close");
-
-  console.log("Form data Is", form);
-
-  console.log("AnimalAdded SuccessFully", res);
+type formDataType = {
+  animalName: string;
+  animalType: string;
 };
-
-console.log("Selected Zooid is ", props.selectedZooId);
+const props = defineProps<{
+  fromData: formDataType;
+  submitButtonLabel: string;
+}>();
 </script>

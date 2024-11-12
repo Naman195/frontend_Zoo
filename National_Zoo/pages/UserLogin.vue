@@ -65,10 +65,6 @@ const loginUser = async () => {
     token.value = data.token;
 
     logIn(data.userId);
-    // await fetchProfile();
-    // setTimeout(() => {
-    //   logOut();
-    // }, 3600 * 1000);
 
     router.push({ path: "/" });
   } catch (err) {

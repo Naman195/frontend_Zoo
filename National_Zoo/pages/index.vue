@@ -4,9 +4,6 @@
 </template>
 
 <script setup>
-import { useUserProfile } from "~/composables/useUserProfile";
-import { useAuth } from "~/composables/useAuth";
-
 const { isLoggedIn } = useAuth();
 const userId = useCookie("userId");
 const token = useCookie("auth");
@@ -30,7 +27,7 @@ const fetchProfile = async () => {
   }
 };
 
-onBeforeMount(() => {
+onMounted(() => {
   //   console.log("LoggedIn Value", isLoggedIn);
   if (isLoggedIn) {
     fetchProfile();

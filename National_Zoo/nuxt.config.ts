@@ -6,7 +6,11 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss'
   ],
-
+  runtimeConfig:{
+    public:{
+      baseUrl:"http://localhost:8080/api"
+    }
+  }
   // css: [
   //   '@fortawesome/fontawesome-free/css/all.css'
   // ],

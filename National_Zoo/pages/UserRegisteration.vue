@@ -218,7 +218,7 @@ const registerUser = async () => {
       method: "POST",
       body: form,
     });
-    if (data === "User SuccessFully Created") {
+    if (data === "User successfully created") {
       form.firstName = "";
       form.lastName = "";
       form.userName = "";

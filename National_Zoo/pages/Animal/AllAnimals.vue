@@ -1,5 +1,6 @@
 <template>
   <div class="flex flex-col items-center">
+    {{ formData }}
     <div class="flex justify-between items-center w-full mb-6">
       <h1 class="flex-grow text-center">
         All Animals in Zoo - {{ selectedZoo?.zooName }}
@@ -7,21 +8,30 @@
       <button
         class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
         type="button"
-        @click="
-          () => {
-            openAddAnimalModal = true;
-          }
-        "
+        @click="openAddAnimalModal = true"
       >
         Add Animal
       </button>
     </div>
     <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
-      <AddAnimal @close="openAddAnimalModal = false" :selectedZooId="zooId" />
+      <AddAnimal
+        :from-data="formData"
+        :submit-button-label="'Add Animal'"
+        @close="
+          openAddAnimalModal = false;
+          intiliazeFormData();
+        "
+        @save="addAnimal()"
+      />
     </div>
 
     <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
-      <UpdateAnimal :animal="selectedAnimal" @close="openUpdateModal = false" />
+      <AddAnimal
+        :from-data="formData"
+        :submit-button-label="'Update Animal'"
+        @close="(openUpdateModal = false), intiliazeFormData()"
+        @save="updateAnimal()"
+      />
     </div>
 
     <!-- <div v-if="deletedAlert" class="z-50 absolute top-1/2">
@@ -101,7 +111,15 @@
 
 <script setup>
 import AddAnimal from "~/components/animal/AddAnimal.vue";
-import UpdateAnimal from "~/components/animal/UpdateAnimal.vue";
+
+const formData = ref({
+  animalName: "",
+  animalType: "",
+});
+
+function intiliazeFormData() {
+  (formData.value.animalName = ""), (formData.value.animalType = "");
+}
 
 const route = useRoute();
 const zooId = route.query.zooId;
@@ -113,7 +131,6 @@ const deletedAlert = ref(false);
 const opendeleteModal = ref(false);
 const animalId = ref("");
 const openUpdateModal = ref(false);
-const selectedAnimal = ref(false);
 
 const deletedAertClose = () => {
   deletedAlert.value = false;
@@ -126,7 +143,9 @@ const deleteAnimalHandler = (animal) => {
 
 function onClick(animal) {
   openUpdateModal.value = true;
-  selectedAnimal.value = animal;
+  animalId.value = animal.animalId;
+  formData.value.animalName = animal.animalName;
+  formData.value.animalType = animal.animalType;
 }
 
 console.log("Deleted ANimal Id is", animalId.value);
@@ -168,6 +187,48 @@ const deleteAnimal = async () => {
     (animal) => animal.animalId !== animalId.value
   );
   opendeleteModal.value = false;
+};
+
+const addAnimal = async () => {
+  const res = await $fetch(`http://localhost:8080/api/animal/add`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token.value}`,
+    },
+    body: {
+      ...formData.value,
+      zoo: {
+        zooId: zooId,
+      },
+    },
+  });
+
+  openAddAnimalModal.value = false;
+  console.log("AnimalAdded SuccessFully", res);
+};
+
+const updateAnimal = async () => {
+  try {
+    const res = await $fetch(
+      `http://localhost:8080/api/animal/update/${animalId.value}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token.value}`,
+          "Content-Type": "application/json",
+        },
+        method: "PATCH",
+        body: {
+          ...formData.value,
+          zoo: {
+            zooId: zooId,
+          },
+        },
+      }
+    );
+    openUpdateModal.value = false;
+  } catch (error) {
+    console.error("Error updating Animal:", error);
+  }
 };
 
 onMounted(() => {

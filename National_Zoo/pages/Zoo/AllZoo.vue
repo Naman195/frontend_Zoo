@@ -7,11 +7,11 @@
         type="button"
         @click="
           () => {
-            openAddAnimalModal = true;
+            openModal = true;
           }
         "
       >
-        Add Animal
+        Add Zoo
       </button>
     </div>
     <div v-if="deletedAlert" class="z-50 absolute top-1/2">
