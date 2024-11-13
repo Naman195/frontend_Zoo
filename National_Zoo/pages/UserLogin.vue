@@ -1,4 +1,10 @@
 <template>
+  <div v-if="logInAlert" class="z-50 absolute top-1/2">
+    <ShowAlert
+      :alert-message="loginAlertRes()"
+      @close-modal="logInAlertClose"
+    />
+  </div>
   <div class="login-container">
     <h1>User Login Page</h1>
 
@@ -40,6 +46,21 @@ import { useAuth } from "@/composables/useAuth";
 
 const { logIn, logOut } = useAuth();
 const { userProfile, setUser, getUser } = useUserProfile();
+const afterLoginMessageRes = ref("");
+
+const logInAlert = ref(false);
+
+const loginAlertRes = () => {
+  return afterLoginMessageRes;
+};
+
+const loginAlertopen = () => {
+  logInAlert.value = true;
+};
+
+const logInAlertClose = () => {
+  logInAlert.value = false;
+};
 
 const router = useRouter();
 const passwordVisible = ref(false);
@@ -57,7 +78,7 @@ const token = useCookie("auth", { maxAge: 3600 });
 
 const loginUser = async () => {
   try {
-    const data = await $fetch("http://localhost:8080/api/auth/user/login", {
+    const data = await useCustomFetch("/auth/user/login", {
       method: "POST",
       body: form,
     });
@@ -65,10 +86,17 @@ const loginUser = async () => {
     token.value = data.token;
 
     logIn(data.userId);
-
+    console.log("User Login Message ", data.message);
+    afterLoginMessageRes.value = data.message;
+    loginAlertopen();
     router.push({ path: "/" });
   } catch (err) {
-    console.error("An error occurred during login:", err);
+    afterLoginMessageRes.value = err.response._data.message;
+    loginAlertopen();
+    console.error(
+      "An error occurred during login:",
+      err.response._data.message
+    );
   }
 };
 

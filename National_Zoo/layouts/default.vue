@@ -336,39 +336,7 @@ const fillupdateFormData = () => {
 const user = ref(null);
 const userId = useCookie("userId");
 
-// const fetchProfile = async () => {
-//   if (userProfile.value) {
-//     return;
-//   }
-
-//   try {
-//     const fetchedUser = await $fetch(
-//       `http://localhost:8080/api/auth/user/${userId.value}`,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token.value}`,
-//         },
-//       }
-//     );
-
-//     setUser(fetchedUser);
-//     console.log("userProfile objet", userProfile);
-//     // user.value = fetchedUser;
-//     form.firstName = fetchedUser.firstName;
-//     form.lastName = fetchedUser.lastName;
-//     form.address.street = fetchedUser.address.street;
-//     form.address.zipCode = fetchedUser.address.zipCode;
-//     selectedCountry.value = fetchedUser.address.city.state.country.countryId;
-//     selectedState.value = fetchedUser.address.city.state.stateId;
-//     form.address.city.cityId = fetchedUser.address.city.cityId;
-//     fetchStates();
-//     fetchCities();
-//   } catch (error) {
-//     console.error("Error fetching User:", error);
-//   }
-// };
-
-onBeforeMount(() => {
+onMounted(() => {
   if (userToken.value == true) {
     getUser();
     // fetchProfile();
@@ -397,7 +365,7 @@ const selectedState = ref(null);
 
 const fetchCountries = async () => {
   try {
-    const data = await $fetch(`http://localhost:8080/api/auth/countries`);
+    const data = await useCustomFetch(`/auth/countries`);
     countries.value = data;
   } catch (error) {
     console.error("Error fetching countries:", error);
@@ -413,9 +381,7 @@ const handleCountryChange = () => {
 const fetchStates = async () => {
   if (!selectedCountry.value) return;
   try {
-    const data = await $fetch(
-      `http://localhost:8080/api/auth/state/${selectedCountry.value}`
-    );
+    const data = await useCustomFetch(`/auth/state/${selectedCountry.value}`);
     states.value = data;
   } catch (error) {
     console.error("Error fetching States:", error);
@@ -430,9 +396,7 @@ const handleStateChange = () => {
 
 const fetchCities = async () => {
   try {
-    const data = await $fetch(
-      `http://localhost:8080/api/auth/cities/${selectedState.value}`
-    );
+    const data = await useCustomFetch(`/auth/cities/${selectedState.value}`);
     cities.value = data;
   } catch (error) {
     console.error("Error fetching Cities:", error);
@@ -441,11 +405,8 @@ const fetchCities = async () => {
 
 const updateUser = async () => {
   try {
-    await $fetch(`http://localhost:8080/api/auth/userupdate/${userId.value}`, {
+    await useCustomFetch(`/auth/userupdate/${userId.value}`, {
       method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-      },
       body: form,
     });
     setUser(form);

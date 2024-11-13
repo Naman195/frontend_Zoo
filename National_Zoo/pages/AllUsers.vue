@@ -14,7 +14,11 @@
 
   <div class="card-grid">
     <div v-if="openModal" class="z-50 absolute top-1/2">
-      <Modal @delete-user="deleteUserApi" @close-modal="openModal = false" />
+      <Modal
+        :message="'User'"
+        @delete-user="deleteUserApi"
+        @close-modal="openModal = false"
+      />
     </div>
     <div class="card" v-for="user in filteredUsers" :key="user.userId">
       <div class="card-body">
@@ -29,7 +33,7 @@
                 getUserId(user);
                 fetchProfile().then(() => {
                   toggleUpdateModal();
-                  fetchCountries(); // Fetch countries only after the profile is set
+                  fetchCountries();
                 });
               }
             "
@@ -293,14 +297,7 @@ const toggleUpdateModal = () => {
 
 const fetchProfile = async () => {
   try {
-    const fetchedUser = await $fetch(
-      `http://localhost:8080/api/auth/user/${userId.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-        },
-      }
-    );
+    const fetchedUser = await useCustomFetch(`/auth/user/${userId.value}`);
     user.value = fetchedUser;
     form.firstName = fetchedUser.firstName;
     form.lastName = fetchedUser.lastName;
@@ -318,7 +315,7 @@ const fetchProfile = async () => {
 
 const fetchCountries = async () => {
   try {
-    const data = await $fetch(`http://localhost:8080/api/auth/countries`);
+    const data = await useCustomFetch(`/auth/countries`);
     countries.value = data;
   } catch (error) {
     console.error("Error fetching countries:", error);
@@ -334,9 +331,7 @@ const handleCountryChange = () => {
 const fetchStates = async () => {
   if (!selectedCountry.value) return;
   try {
-    const data = await $fetch(
-      `http://localhost:8080/api/auth/state/${selectedCountry.value}`
-    );
+    const data = await useCustomFetch(`/auth/state/${selectedCountry.value}`);
     states.value = data;
   } catch (error) {
     console.error("Error fetching States:", error);
@@ -351,9 +346,7 @@ const handleStateChange = () => {
 
 const fetchCities = async () => {
   try {
-    const data = await $fetch(
-      `http://localhost:8080/api/auth/cities/${selectedState.value}`
-    );
+    const data = await useCustomFetch(`/auth/cities/${selectedState.value}`);
     cities.value = data;
   } catch (error) {
     console.error("Error fetching Cities:", error);
@@ -362,11 +355,8 @@ const fetchCities = async () => {
 
 const updateUser = async () => {
   try {
-    await $fetch(`http://localhost:8080/api/auth/userupdate/${userId.value}`, {
+    await useCustomFetch(`/auth/userupdate/${userId.value}`, {
       method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-      },
       body: form,
     });
     // alert("User profile updated successfully!");
@@ -385,11 +375,7 @@ const filteredUsers = ref([]);
 
 const fetchUsers = async () => {
   try {
-    const data = await $fetch("http://localhost:8080/api/auth/allusers", {
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-      },
-    });
+    const data = await useCustomFetch("/auth/allusers");
     users.value = data;
 
     filteredUsers.value = users.value.filter(
@@ -412,13 +398,10 @@ const deletedAertClose = () => {
 
 const deleteUser = async () => {
   try {
-    const deleteUser = await $fetch(
-      `http://localhost:8080/api/auth/user/delete/${userId.value}`,
+    const deleteUser = await useCustomFetch(
+      `/auth/user/delete/${userId.value}`,
       {
         method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-        },
       }
     );
     fetchUsers();

@@ -46,7 +46,7 @@
             />
           </svg>
           <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-            Are you sure you want to delete this User?
+            Are you sure you want to delete this {{ message }}?
           </h3>
           <button
             data-modal-hide="popup-modal"
@@ -62,5 +62,13 @@
   </div>
 </template>
 <script setup>
+import { string } from "yup";
+
 const emit = defineEmits(["deleteUser", "closeModal"]);
+
+defineProps({
+  message: {
+    type: string,
+  },
+});
 </script>

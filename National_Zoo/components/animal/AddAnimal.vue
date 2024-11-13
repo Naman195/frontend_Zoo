@@ -88,7 +88,6 @@
 
 <script setup lang="ts">
 const emit = defineEmits(["close", "save"]);
-const token = useCookie("auth");
 type formDataType = {
   animalName: string;
   animalType: string;
@@ -96,5 +95,6 @@ type formDataType = {
 const props = defineProps<{
   fromData: formDataType;
   submitButtonLabel: string;
+  // modalTitle: string
 }>();
 </script>

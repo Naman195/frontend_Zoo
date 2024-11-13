@@ -1,5 +1,4 @@
 <template>
-  {{ formData }}
   <div class="bg-gradient-to-b from-blue-200 to-blue-500 min-h-screen py-10">
     <div class="flex justify-between items-center w-full mb-6">
       <h1 class="flex-grow text-center">All Zoo</h1>
@@ -17,14 +16,14 @@
     </div>
     <div v-if="deletedAlert" class="z-50 absolute top-1/2">
       <ShowAlert
-        :alert-message="'Zoo Deleted Successfully'"
+        :alert-message="deleteAlertMessageSet()"
         @close-modal="deletedAertClose"
       />
     </div>
 
     <div v-if="updateAlert">
       <ShowAlert
-        :alert-message="'Zoo Updated  Successfully'"
+        :alert-message="updateAlertMessageSet()"
         @close-modal="closeUpdateAlert"
       />
     </div>
@@ -39,24 +38,31 @@
     <div v-if="openModal" class="z-50 absolute top-1/2">
       <AddZoo
         :from-data="formData"
-        @save = "addZoo"
-        @close="openModal = false;
-         intiliazeFormData()"
-       
+        @save="addZoo"
+        @close="
+          openModal = false;
+          intiliazeFormData();
+        "
       />
     </div>
 
     <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
       <AddZoo
-      :from-data="formData"
-        @save = "updateZoo"
-        @close="openUpdateModal = false; intiliazeFormData()"
-        
+        :from-data="formData"
+        @save="updateZoo"
+        @close="
+          openUpdateModal = false;
+          intiliazeFormData();
+        "
       />
     </div>
 
     <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
-      <Modal @delete-user="deleteZoo" @close-modal="opendeleteModal = false" />
+      <Modal
+        :message="'Zoo'"
+        @delete-user="deleteZoo"
+        @close-modal="opendeleteModal = false"
+      />
     </div>
 
     <ul class="gap-y-4 space-y-4">
@@ -134,8 +140,16 @@ const openUpdateModal = ref(false);
 const deletedAlert = ref(false);
 const updateAlert = ref(false);
 const addAlert = ref(false);
+const deleteAlertMessage = ref("");
+const updateAlertMessage = ref("");
 
+const deleteAlertMessageSet = () => {
+  return deleteAlertMessage;
+};
 
+const updateAlertMessageSet = () => {
+  return updateAlertMessage;
+};
 
 const formData = ref({
   zooName: "",
@@ -149,10 +163,10 @@ const formData = ref({
 });
 
 function intiliazeFormData() {
-  (formData.value.zooName = ""), 
-  (formData.value.address.street = ""),
-  (formData.value.address.zipCode = ""),
-  (formData.value.address.city.cityId = "")
+  (formData.value.zooName = ""),
+    (formData.value.address.street = ""),
+    (formData.value.address.zipCode = ""),
+    (formData.value.address.city.cityId = "");
 }
 
 console.log("Zoos Object Is ", Zoos);
@@ -187,10 +201,9 @@ function onClick(zoo) {
   openUpdateModal.value = true;
   zooId.value = zoo.zooId;
   formData.value.zooName = zoo.zooName;
-  formData.value.address.zipCode = zoo.address.zipCode
-  formData.value.address.street = zoo.address.street
-  formData.value.address.city.cityId = zoo.address.city.cityId
-  
+  formData.value.address.zipCode = zoo.address.zipCode;
+  formData.value.address.street = zoo.address.street;
+  formData.value.address.city.cityId = zoo.address.city.cityId;
 }
 
 const deleteZooHandler = (zoo) => {
@@ -206,33 +219,20 @@ watch(zooId, (newVal) => {
 });
 
 const fetchZoo = async () => {
-  const data = await $fetch(
-    `http://localhost:8080/api/zoo/all??page=0&size=3`,
-    {
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-      },
-    }
-  );
+  const data = await useCustomFetch(`/zoo/all??page=0&size=10`);
 
   Zoos.value = data.content;
-
-  // console.log("Feteched Data is ", data.content[0].zooName);
 };
 
-console.log("Zoo Id Value Is", zooId);
 const deleteZoo = async () => {
   if (zooId.value) {
     try {
-      await $fetch(`http://localhost:8080/api/zoo/del/${zooId.value}`, {
+      const data = await useCustomFetch(`/zoo/del/${zooId.value}`, {
         method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-        },
       });
-      // Remove the deleted zoo from the list after deletion
       Zoos.value = Zoos.value.filter((zoo) => zoo.zooId !== zooId.value);
-      opendeleteModal.value = false; // Close the delete modal
+      opendeleteModal.value = false;
+      deleteAlertMessage.value = data;
       afterDelete();
     } catch (error) {
       console.error("Error deleting zoo:", error);
@@ -241,50 +241,36 @@ const deleteZoo = async () => {
 };
 
 const addZoo = async () => {
-  const response = await $fetch(`http://localhost:8080/api/zoo/create-zoo`, {
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-    },
+  const response = await useCustomFetch(`/zoo/create-zoo`, {
     method: "POST",
     body: {
-      ...formData.value
+      ...formData.value,
     },
   });
   openModal.value = false;
 };
 
 const updateZoo = async () => {
-
   try {
-    const response = await $fetch(
-      `http://localhost:8080/api/zoo/update/${zooId.value}`,
-      {
-        method: "PATCH",
-        body: {
-          ...formData.value
-        },
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await useCustomFetch(`/zoo/update/${zooId.value}`, {
+      method: "PATCH",
+      body: {
+        ...formData.value,
+      },
+    });
 
     console.log("response", response);
     openUpdateModal.value = false;
-
-    // if (response.success) {
-    //   console.log("Zoo updated successfully:", response.data);
-    //
-    // } else {
-    //   console.error("Update failed:", response.message);
-    // }
+    updateAlertMessage.value = "Zoo Update SuccessFully";
+    handleUpdateAlert();
   } catch (error) {
+    updateAlertMessage.value = error;
     console.error("Error updating zoo:", error);
+    handleUpdateAlert();
   }
 };
 
-onBeforeMount(() => {
+onMounted(() => {
   fetchZoo();
 });
 </script>

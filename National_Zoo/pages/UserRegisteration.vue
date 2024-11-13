@@ -1,7 +1,7 @@
 <template>
   <div v-if="registeredAlert" class="z-50 absolute top-1/2">
     <ShowAlert
-      :alert-message="'User Registered Successfully'"
+      :alert-message="registerAlertRes()"
       @close-modal="registerAlertClose"
     />
   </div>
@@ -140,6 +140,7 @@ const cities = ref([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
 const registeredAlert = ref(false);
+const afterRegisterationMessage = ref("");
 
 const form = reactive({
   firstName: "",
@@ -162,6 +163,10 @@ const registerAlert = () => {
 
 const registerAlertClose = () => {
   registeredAlert.value = false;
+};
+
+const registerAlertRes = () => {
+  return afterRegisterationMessage;
 };
 
 const togglePasswordVisibility = () => {
@@ -214,10 +219,11 @@ const fetchCities = async () => {
 
 const registerUser = async () => {
   try {
-    const data = await $fetch("http://localhost:8080/api/auth/user/create", {
+    const data = await useCustomFetch("/auth/user/create", {
       method: "POST",
       body: form,
     });
+    console.log("Registered User", data);
     if (data === "User successfully created") {
       form.firstName = "";
       form.lastName = "";
@@ -234,17 +240,23 @@ const registerUser = async () => {
       states.value = [];
 
       // alert("User registered successfully!");
+      afterRegisterationMessage.value = data;
       registerAlert();
-      router.push("/userlogin");
+      setTimeout(() => {
+        router.push("/userlogin");
+      }, 3000);
     } else {
-      alert("Error: " + data);
+      afterRegisterationMessage.value = data;
+      alert("Error: " + data.response);
     }
   } catch (err) {
-    console.error("An error occurred during registration:", err);
+    afterRegisterationMessage.value = err.response._data;
+    console.error("An error occurred during registration:", err.response);
+    registerAlert();
   }
 };
 
-onBeforeMount(() => {
+onMounted(() => {
   fetchCountries();
 });
 </script>

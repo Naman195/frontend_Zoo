@@ -2,6 +2,8 @@
 
 export default defineNuxtRouteMiddleware((to, from) => {
 
+  const router = useRouter();
+
   const token = useCookie("auth")
 const userId =   useCookie("userId")
 const userLoggedIn = useCookie<string | null | boolean>('isLoggedIn');
@@ -37,6 +39,7 @@ if(token.value){
     }else{
         userLoggedIn.value = false;
         userId.value = null;
+        return navigateTo("/userlogin");
     }
     
 

@@ -12,14 +12,7 @@ const { userProfile, setUser, getUser } = useUserProfile();
 // console.log("UserProfle is", userProfile);
 const fetchProfile = async () => {
   try {
-    const fetchedUser = await $fetch(
-      `http://localhost:8080/api/auth/user/${userId.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-        },
-      }
-    );
+    const fetchedUser = await useCustomFetch(`/auth/user/${userId.value}`);
     userProfile.value = fetchedUser;
     setUser(fetchedUser);
   } catch (error) {

@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col items-center">
-    {{ formData }}
     <div class="flex justify-between items-center w-full mb-6">
       <h1 class="flex-grow text-center">
         All Animals in Zoo - {{ selectedZoo?.zooName }}
@@ -43,6 +42,7 @@
 
     <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
       <Modal
+        :message="'Animal'"
         @delete-user="deleteAnimal"
         @close-modal="opendeleteModal = false"
       />
@@ -82,7 +82,13 @@
               class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mr-2"
               type="button"
             >
-              View Animal
+              <nuxt-link
+                :to="{
+                  path: '/animalprofile',
+                }"
+              >
+                View Animal
+              </nuxt-link>
             </button>
             <button
               class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2"
@@ -117,6 +123,19 @@ const formData = ref({
   animalType: "",
 });
 
+const compareFormdata = ref({
+  animalName: "",
+  animalType: "",
+});
+
+// compareFormdata.value = { ...formData.value };
+
+const formDataChanged = () => {
+  return (
+    JSON.stringify(formData.value) !== JSON.stringify(compareFormdata.value)
+  );
+};
+
 function intiliazeFormData() {
   (formData.value.animalName = ""), (formData.value.animalType = "");
 }
@@ -146,42 +165,27 @@ function onClick(animal) {
   animalId.value = animal.animalId;
   formData.value.animalName = animal.animalName;
   formData.value.animalType = animal.animalType;
+  compareFormdata.value.animalType = animal.animalType;
+  compareFormdata.value.animalName = animal.animalName;
 }
 
 console.log("Deleted ANimal Id is", animalId.value);
 
 const fetchZooById = async () => {
-  const response = await $fetch(`http://localhost:8080/api/zoo/id/${zooId}`, {
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-    },
-  });
+  const response = await useCustomFetch(`/zoo/id/${zooId}`);
   selectedZoo.value = response;
 };
 
 const fetchAnimals = async () => {
-  const data = await $fetch(
-    `http://localhost:8080/api/animal/zoo-ani/${zooId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-      },
-    }
-  );
+  const data = await useCustomFetch(`/animal/zoo-ani/${zooId}?page=0&size=10`);
   animals.value = data.content;
-  console.log(animals);
+  console.log("Total Animals in Zoo is", animals);
 };
 
 const deleteAnimal = async () => {
-  const data = await $fetch(
-    `http://localhost:8080/api/animal/del/${animalId.value}`,
-    {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-      },
-    }
-  );
+  const data = await useCustomFetch(`/animal/del/${animalId.value}`, {
+    method: "PATCH",
+  });
 
   animals.value = animals.value.filter(
     (animal) => animal.animalId !== animalId.value
@@ -190,11 +194,8 @@ const deleteAnimal = async () => {
 };
 
 const addAnimal = async () => {
-  const res = await $fetch(`http://localhost:8080/api/animal/add`, {
+  const res = await useCustomFetch(`/animal/add`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-    },
     body: {
       ...formData.value,
       zoo: {
@@ -208,23 +209,23 @@ const addAnimal = async () => {
 };
 
 const updateAnimal = async () => {
+  if (!formDataChanged()) {
+    return;
+  }
   try {
-    const res = await $fetch(
-      `http://localhost:8080/api/animal/update/${animalId.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-          "Content-Type": "application/json",
+    const res = await useCustomFetch(`/animal/update/${animalId.value}`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      body: {
+        ...formData.value,
+        zoo: {
+          zooId: zooId,
         },
-        method: "PATCH",
-        body: {
-          ...formData.value,
-          zoo: {
-            zooId: zooId,
-          },
-        },
-      }
-    );
+      },
+    });
     openUpdateModal.value = false;
   } catch (error) {
     console.error("Error updating Animal:", error);
