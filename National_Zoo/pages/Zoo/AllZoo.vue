@@ -126,7 +126,43 @@
         </div>
       </li>
     </ul>
+    <div class="flex justify-center items-center mt-6 space-x-2">
+  <button
+    class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
+    :disabled="currentPage === 0"
+    @click="changePage(currentPage - 1)"
+  >
+    Previous
+  </button>
+
+  <!-- Page Numbers -->
+  <div class="flex space-x-1">
+    <button
+      v-for="page in totalPages"
+      :key="page"
+      class="px-3 py-2 rounded-md border border-gray-300 text-sm transition-colors duration-200"
+      :class="{
+        'bg-blue-500 text-white': page - 1 === currentPage,
+        'bg-white text-gray-700 hover:bg-gray-200':
+          page - 1 !== currentPage,
+      }"
+      @click="changePage(page - 1)"
+    >
+      {{ page }}
+    </button>
   </div>
+
+  <button
+    class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
+    :disabled="currentPage + 1 >= totalPages"
+    @click="changePage(currentPage + 1)"
+  >
+    Next
+  </button>
+</div>
+
+  </div>
+  
 </template>
 
 <script setup>
@@ -142,6 +178,17 @@ const updateAlert = ref(false);
 const addAlert = ref(false);
 const deleteAlertMessage = ref("");
 const updateAlertMessage = ref("");
+
+const currentPage = ref(0);
+const totalPages = ref(0);
+const pageSize = ref(3); // Change as needed
+
+const changePage = (page) => {
+  if (page >= 0 && page < totalPages.value) {
+    currentPage.value = page;
+    fetchZoo(currentPage.value, pageSize.value);
+  }
+};
 
 const deleteAlertMessageSet = () => {
   return deleteAlertMessage;
@@ -218,10 +265,20 @@ watch(zooId, (newVal) => {
   console.log("Updated Zoo ID:", newVal);
 });
 
-const fetchZoo = async () => {
-  const data = await useCustomFetch(`/zoo/all??page=0&size=10`);
+// const fetchZoo = async () => {
+//   const data = await useCustomFetch(`/zoo/all??page=0&size=10`);
 
-  Zoos.value = data.content;
+//   Zoos.value = data.content;
+// };
+
+const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
+  try {
+    const data = await useCustomFetch(`/zoo/all?page=${page}&size=${size}`);
+    Zoos.value = data.content;
+    totalPages.value = data.totalPages;
+  } catch (error) {
+    console.error("Error fetching zoos:", error);
+  }
 };
 
 const deleteZoo = async () => {
@@ -271,6 +328,7 @@ const updateZoo = async () => {
 };
 
 onMounted(() => {
-  fetchZoo();
+  // fetchZoo();
+  fetchZoo(currentPage.value, pageSize.value);
 });
 </script>

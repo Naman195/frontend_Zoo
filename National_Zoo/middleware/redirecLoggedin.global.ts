@@ -39,7 +39,7 @@ if(token.value){
     }else{
         userLoggedIn.value = false;
         userId.value = null;
-        return navigateTo("/userlogin");
+        // return navigateTo("/userlogin");
     }
     
 

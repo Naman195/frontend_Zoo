@@ -112,6 +112,40 @@
         </div>
       </li>
     </div>
+    <div class="flex justify-center items-center mt-6 space-x-2">
+  <button
+    class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
+    :disabled="currentPage === 0"
+    @click="changePage(currentPage - 1)"
+  >
+    Previous
+  </button>
+
+  <!-- Page Numbers -->
+  <div class="flex space-x-1">
+    <button
+      v-for="page in totalPages"
+      :key="page"
+      class="px-3 py-2 rounded-md border border-gray-300 text-sm transition-colors duration-200"
+      :class="{
+        'bg-blue-500 text-white': page - 1 === currentPage,
+        'bg-white text-gray-700 hover:bg-gray-200':
+          page - 1 !== currentPage,
+      }"
+      @click="changePage(page - 1)"
+    >
+      {{ page }}
+    </button>
+  </div>
+
+  <button
+    class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
+    :disabled="currentPage + 1 >= totalPages"
+    @click="changePage(currentPage + 1)"
+  >
+    Next
+  </button>
+</div>
   </div>
 </template>
 
@@ -128,7 +162,7 @@ const compareFormdata = ref({
   animalType: "",
 });
 
-// compareFormdata.value = { ...formData.value };
+
 
 const formDataChanged = () => {
   return (
@@ -139,6 +173,18 @@ const formDataChanged = () => {
 function intiliazeFormData() {
   (formData.value.animalName = ""), (formData.value.animalType = "");
 }
+
+const currentPage = ref(0);
+const totalPages = ref(0)
+const pageSize = ref(3);
+
+const changePage = (page) => {
+  if(page>= 0 && page < totalPages.value) {
+    currentPage.value = page;
+    fetchAnimals(currentPage.value, pageSize.value)
+  }
+}
+
 
 const route = useRoute();
 const zooId = route.query.zooId;
@@ -176,9 +222,10 @@ const fetchZooById = async () => {
   selectedZoo.value = response;
 };
 
-const fetchAnimals = async () => {
-  const data = await useCustomFetch(`/animal/zoo-ani/${zooId}?page=0&size=10`);
+const fetchAnimals = async (page = currentPage.value, size = pageSize.value) => {
+  const data = await useCustomFetch(`/animal/zoo-ani/${zooId}?page=${page}&size=${size}`);
   animals.value = data.content;
+  totalPages.value = data.totalPages;
   console.log("Total Animals in Zoo is", animals);
 };
 
@@ -234,6 +281,6 @@ const updateAnimal = async () => {
 
 onMounted(() => {
   fetchZooById();
-  fetchAnimals();
+  fetchAnimals(currentPage.value, pageSize.value);
 });
 </script>
