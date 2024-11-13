@@ -1,4 +1,5 @@
 <template>
+  
   <div
     tabindex="-1"
     aria-hidden="true"
@@ -39,7 +40,7 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 max-h-[60vh] overflow-y-auto">
-          <form @submit.prevent="addZoo" class="space-y-4">
+          <form @submit.prevent="emit('save')" class="space-y-4">
             <!-- First Name Field -->
 
             <div>
@@ -50,7 +51,7 @@
               >
               <input
                 type="text"
-                v-model="form.zooName"
+                v-model="props.fromData.zooName"
                 id="firstName"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                 required
@@ -113,7 +114,7 @@
                   >City</label
                 >
                 <select
-                  v-model="form.address.city.cityId"
+                  v-model="props.fromData.address.city.cityId"
                   id="city"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                   required
@@ -135,6 +136,7 @@
                   >Zip Code</label
                 >
                 <input
+                v-model="props.fromData.address.zipCode"
                   type="text"
                   id="zipCode"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
@@ -151,6 +153,7 @@
                 >Street</label
               >
               <input
+              v-model="props.fromData.address.street"
                 type="text"
                 id="street"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
@@ -159,7 +162,7 @@
             </div>
             <!-- Buttons -->
             <button
-              @click="emit('addZoo')"
+              
               type="submit"
               class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
@@ -173,13 +176,16 @@
 </template>
 
 <script setup>
-const emit = defineEmits(["close", "addZoo"]);
+const emit = defineEmits(["close", "save"]);
 const props = defineProps({
   fromData: {
     type: Object,
     required: true,
   },
 });
+
+console.log("Zoo Ibject is", props.fromData);
+
 
 const token = useCookie("auth");
 const countries = ref([]);
@@ -188,16 +194,16 @@ const cities = ref([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
 
-const form = ref({
-  zooName: "",
-  address: {
-    street: "",
-    zipCode: "",
-    city: {
-      cityId: null,
-    },
-  },
-});
+// const form = ref({
+//   zooName: "",
+//   address: {
+//     street: "",
+//     zipCode: "",
+//     city: {
+//       cityId: null,
+//     },
+//   },
+// });
 
 const fetchCountries = async () => {
   try {
@@ -243,16 +249,16 @@ const fetchCities = async () => {
   }
 };
 
-const addZoo = async () => {
-  const response = await $fetch(`http://localhost:8080/api/zoo/create-zoo`, {
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-    },
-    method: "POST",
-    body: form,
-  });
-  emit("close");
-};
+// const addZoo = async () => {
+//   const response = await $fetch(`http://localhost:8080/api/zoo/create-zoo`, {
+//     headers: {
+//       Authorization: `Bearer ${token.value}`,
+//     },
+//     method: "POST",
+//     body: form,
+//   });
+  
+// };
 
 onBeforeMount(() => {
   fetchCountries();

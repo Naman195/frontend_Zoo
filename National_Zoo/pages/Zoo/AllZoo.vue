@@ -1,4 +1,5 @@
 <template>
+  {{ formData }}
   <div class="bg-gradient-to-b from-blue-200 to-blue-500 min-h-screen py-10">
     <div class="flex justify-between items-center w-full mb-6">
       <h1 class="flex-grow text-center">All Zoo</h1>
@@ -38,16 +39,19 @@
     <div v-if="openModal" class="z-50 absolute top-1/2">
       <AddZoo
         :from-data="formData"
-        @close="openModal = false"
-        @add-zoo="handleAddZooAlert"
+        @save = "addZoo"
+        @close="openModal = false;
+         intiliazeFormData()"
+       
       />
     </div>
 
     <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
-      <UpdateZoo
-        :zoo="selectedZoo"
-        @close="openUpdateModal = false"
-        @update-zoo="handleUpdateAlert"
+      <AddZoo
+      :from-data="formData"
+        @save = "updateZoo"
+        @close="openUpdateModal = false; intiliazeFormData()"
+        
       />
     </div>
 
@@ -131,6 +135,8 @@ const deletedAlert = ref(false);
 const updateAlert = ref(false);
 const addAlert = ref(false);
 
+
+
 const formData = ref({
   zooName: "",
   address: {
@@ -141,6 +147,13 @@ const formData = ref({
     },
   },
 });
+
+function intiliazeFormData() {
+  (formData.value.zooName = ""), 
+  (formData.value.address.street = ""),
+  (formData.value.address.zipCode = ""),
+  (formData.value.address.city.cityId = "")
+}
 
 console.log("Zoos Object Is ", Zoos);
 // console.log("Zoos VAlue  Is ", Zoos.zooName);
@@ -172,7 +185,12 @@ console.log("ZooId Is ", zooId);
 
 function onClick(zoo) {
   openUpdateModal.value = true;
-  selectedZoo.value = zoo;
+  zooId.value = zoo.zooId;
+  formData.value.zooName = zoo.zooName;
+  formData.value.address.zipCode = zoo.address.zipCode
+  formData.value.address.street = zoo.address.street
+  formData.value.address.city.cityId = zoo.address.city.cityId
+  
 }
 
 const deleteZooHandler = (zoo) => {
@@ -219,6 +237,50 @@ const deleteZoo = async () => {
     } catch (error) {
       console.error("Error deleting zoo:", error);
     }
+  }
+};
+
+const addZoo = async () => {
+  const response = await $fetch(`http://localhost:8080/api/zoo/create-zoo`, {
+    headers: {
+      Authorization: `Bearer ${token.value}`,
+    },
+    method: "POST",
+    body: {
+      ...formData.value
+    },
+  });
+  openModal.value = false;
+};
+
+const updateZoo = async () => {
+
+  try {
+    const response = await $fetch(
+      `http://localhost:8080/api/zoo/update/${zooId.value}`,
+      {
+        method: "PATCH",
+        body: {
+          ...formData.value
+        },
+        headers: {
+          Authorization: `Bearer ${token.value}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("response", response);
+    openUpdateModal.value = false;
+
+    // if (response.success) {
+    //   console.log("Zoo updated successfully:", response.data);
+    //
+    // } else {
+    //   console.error("Update failed:", response.message);
+    // }
+  } catch (error) {
+    console.error("Error updating zoo:", error);
   }
 };
 
