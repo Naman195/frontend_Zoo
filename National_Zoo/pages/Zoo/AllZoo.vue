@@ -1,5 +1,6 @@
 <template>
   <div class="bg-gradient-to-b from-blue-200 to-blue-500 min-h-screen py-10">
+    {{ updatedformData }}
     <div class="flex justify-between items-center w-full mb-6">
       <h1 class="flex-grow text-center">All Zoo</h1>
       <button
@@ -39,7 +40,7 @@
       <AddZoo
         :modal-title="'Add'"
         :submit-button-label="'Add Zoo'"
-        :from-data="formData"
+        :from-data="updatedformData"
         @save="addZoo"
         @close="
           openModal = false;
@@ -52,7 +53,7 @@
       <AddZoo
         :modal-title="'Update'"
         :submit-button-label="'Update Zoo'"
-        :from-data="formData"
+        :from-data="updatedformData"
         @save="updateZoo"
         @close="
           openUpdateModal = false;
@@ -211,6 +212,23 @@ const formData = ref({
   },
 });
 
+const updatedformData = ref({
+  zooName: "",
+  address: {
+    street: "",
+    zipCode: "",
+    city: {
+      cityId: null,
+      state: {
+        stateId: null,
+        country: {
+          countryId: null
+        }
+      }
+    },
+  },
+}); 
+
 function intiliazeFormData() {
   (formData.value.zooName = ""),
     (formData.value.address.street = ""),
@@ -247,12 +265,17 @@ const getZooId = (zoo) => {
 console.log("ZooId Is ", zooId);
 
 function onClick(zoo) {
+  console.log("Update Zoo Object is", zoo);
+  
   openUpdateModal.value = true;
   zooId.value = zoo.zooId;
-  formData.value.zooName = zoo.zooName;
-  formData.value.address.zipCode = zoo.address.zipCode;
-  formData.value.address.street = zoo.address.street;
-  formData.value.address.city.cityId = zoo.address.city.cityId;
+  updatedformData.value.zooName = zoo.zooName;
+  updatedformData.value.address.zipCode = zoo.address.zipCode;
+  updatedformData.value.address.street = zoo.address.street;
+  updatedformData.value.address.city.cityId = zoo.address.city.cityId;
+  updatedformData.value.address.city.state.stateId = zoo.address.city.state.stateId
+  updatedformData.value.address.city.state.country.countryId = zoo.address.city.state.country.countryId
+
 }
 
 const deleteZooHandler = (zoo) => {

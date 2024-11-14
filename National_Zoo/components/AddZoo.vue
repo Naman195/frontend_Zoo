@@ -223,52 +223,92 @@ const states = ref([]);
 const cities = ref([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
-
-const fetchCountries = async () => {
-  try {
-    const data = await $fetch(`http://localhost:8080/api/auth/countries`);
-    countries.value = data;
-  } catch (error) {
-    console.error("Error fetching countries:", error);
-  }
-};
-
-const handleCountryChange = () => {
-  if (selectedCountry.value) {
-    fetchStates();
-  }
-};
-
-const fetchStates = async () => {
-  if (!selectedCountry.value) return;
-  try {
-    const data = await $fetch(
-      `http://localhost:8080/api/auth/state/${selectedCountry.value}`
-    );
-    states.value = data;
-  } catch (error) {
-    console.error("Error fetching States:", error);
-  }
-};
-
-const handleStateChange = () => {
-  if (selectedState.value) {
-    fetchCities();
-  }
-};
-
-const fetchCities = async () => {
-  try {
-    const data = await $fetch(
-      `http://localhost:8080/api/auth/cities/${selectedState.value}`
-    );
-    cities.value = data;
-  } catch (error) {
-    console.error("Error fetching Cities:", error);
-  }
-};
+const formData = ref({ ...props.fromData });
 
 onMounted(() => {
   fetchCountries();
+  initializeSelections();
 });
+
+const fetchCountries = async () => {
+  const data = await $fetch(`http://localhost:8080/api/auth/countries`);
+  countries.value = data;
+};
+
+const initializeSelections = async () => {
+  selectedCountry.value = formData.value.address.city.state.country.countryId;
+  await fetchStates();
+  selectedState.value = formData.value.address.city.state.stateId;
+  await fetchCities();
+};
+
+const handleCountryChange = () => selectedCountry.value && fetchStates();
+const fetchStates = async () => {
+  if (selectedCountry.value) {
+    const data = await $fetch(`http://localhost:8080/api/auth/state/${selectedCountry.value}`);
+    states.value = data;
+  }
+};
+
+const handleStateChange = () => selectedState.value && fetchCities();
+const fetchCities = async () => {
+  if (selectedState.value) {
+    const data = await $fetch(`http://localhost:8080/api/auth/cities/${selectedState.value}`);
+    cities.value = data;
+  }
+};
 </script>
+
+
+
+<!-- <script setup>
+import { ref, onMounted } from "vue";
+import { Form, Field, ErrorMessage } from "vee-validate";
+
+const emit = defineEmits(["close", "save"]);
+const props = defineProps({
+  fromData: Object,
+  modalTitle: String,
+  submitButtonLabel: String,
+});
+
+const countries = ref([]);
+const states = ref([]);
+const cities = ref([]);
+const selectedCountry = ref(null);
+const selectedState = ref(null);
+const formData = ref({ ...props.fromData });
+
+onMounted(() => {
+  fetchCountries();
+  initializeSelections();
+});
+
+const fetchCountries = async () => {
+  const data = await $fetch(`http://localhost:8080/api/auth/countries`);
+  countries.value = data;
+};
+
+const initializeSelections = async () => {
+  selectedCountry.value = formData.value.address.city.state.country.countryId;
+  await fetchStates();
+  selectedState.value = formData.value.address.city.state.stateId;
+  await fetchCities();
+};
+
+const handleCountryChange = () => selectedCountry.value && fetchStates();
+const fetchStates = async () => {
+  if (selectedCountry.value) {
+    const data = await $fetch(`http://localhost:8080/api/auth/state/${selectedCountry.value}`);
+    states.value = data;
+  }
+};
+
+const handleStateChange = () => selectedState.value && fetchCities();
+const fetchCities = async () => {
+  if (selectedState.value) {
+    const data = await $fetch(`http://localhost:8080/api/auth/cities/${selectedState.value}`);
+    cities.value = data;
+  }
+};
+</script> -->
