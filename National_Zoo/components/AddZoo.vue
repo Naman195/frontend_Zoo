@@ -1,5 +1,4 @@
 <template>
-  
   <div
     tabindex="-1"
     aria-hidden="true"
@@ -13,7 +12,7 @@
           class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600"
         >
           <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-            Add Zoo
+            {{ modalTitle }} Zoo
           </h3>
           <button
             @click="emit('close')"
@@ -40,7 +39,7 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 max-h-[60vh] overflow-y-auto">
-          <form @submit.prevent="emit('save')" class="space-y-4">
+          <Form @submit="emit('save')" class="space-y-4">
             <!-- First Name Field -->
 
             <div>
@@ -49,13 +48,15 @@
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Zoo Name</label
               >
-              <input
+              <Field
+                name="zooName"
+                rules="required|alpha_spaces"
                 type="text"
                 v-model="props.fromData.zooName"
                 id="firstName"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                required
               />
+              <ErrorMessage name="zooName" class="text-red-600 text-sm mt-1" />
             </div>
             <!-- Country Select -->
             <div class="register-pair">
@@ -65,13 +66,15 @@
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >Country</label
                 >
-                <select
+                <Field
+                  name="country"
+                  as="select"
+                  rules="required"
                   v-model="selectedCountry"
                   @change="handleCountryChange"
                   id="country"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                  required
-                >
+                  ><option value="" disabled>Select Country</option>
                   <option
                     v-for="country in countries"
                     :key="country.countryId"
@@ -79,7 +82,11 @@
                   >
                     {{ country.countryName }}
                   </option>
-                </select>
+                </Field>
+                <ErrorMessage
+                  name="country"
+                  class="text-red-600 text-sm mt-1"
+                />
               </div>
               <!-- State Select -->
               <div>
@@ -88,13 +95,16 @@
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >State</label
                 >
-                <select
+                <Field
+                  name="state"
+                  as="select"
+                  rules="required"
                   v-model="selectedState"
                   @change="handleStateChange"
                   id="state"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                  required
                 >
+                  <option value="" disabled>Select State</option>
                   <option
                     v-for="state in states"
                     :key="state.stateId"
@@ -102,7 +112,8 @@
                   >
                     {{ state.stateName }}
                   </option>
-                </select>
+                </Field>
+                <ErrorMessage name="state" class="text-red-600 text-sm mt-1" />
               </div>
             </div>
             <!-- City Select -->
@@ -113,12 +124,15 @@
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >City</label
                 >
-                <select
+                <Field
+                  name="city"
+                  as="select"
+                  rules="required"
                   v-model="props.fromData.address.city.cityId"
                   id="city"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                  required
                 >
+                  <option value="" disabled>Select City</option>
                   <option
                     v-for="city in cities"
                     :key="city.cityId"
@@ -126,7 +140,8 @@
                   >
                     {{ city.cityName }}
                   </option>
-                </select>
+                </Field>
+                <ErrorMessage name="city" class="text-red-600 text-sm mt-1" />
               </div>
               <!-- Street Input -->
               <div>
@@ -135,12 +150,18 @@
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >Zip Code</label
                 >
-                <input
-                v-model="props.fromData.address.zipCode"
+                <Field
+                  name="zipCode"
+                  rules="required|digits:6"
+                  v-model="props.fromData.address.zipCode"
                   type="text"
                   id="zipCode"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                   required
+                />
+                <ErrorMessage
+                  name="zipCode"
+                  class="text-red-600 text-sm mt-1"
                 />
               </div>
             </div>
@@ -152,23 +173,24 @@
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Street</label
               >
-              <input
-              v-model="props.fromData.address.street"
+              <Field
+                name="street"
+                rules="required|alpha_num"
+                v-model="props.fromData.address.street"
                 type="text"
                 id="street"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                required
               />
+              <ErrorMessage name="street" class="text-red-600 text-sm mt-1" />
             </div>
             <!-- Buttons -->
             <button
-              
               type="submit"
               class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-              Add Zoo
+              {{ submitButtonLabel }}
             </button>
-          </form>
+          </Form>
         </div>
       </div>
     </div>
@@ -176,34 +198,31 @@
 </template>
 
 <script setup>
+import { ErrorMessage, Field, Form } from "vee-validate";
+
 const emit = defineEmits(["close", "save"]);
 const props = defineProps({
   fromData: {
     type: Object,
     required: true,
   },
+  submitButtonLabel: {
+    type: String,
+    required: true,
+  },
+  modalTitle: {
+    type: String,
+    required: true,
+  },
 });
 
 console.log("Zoo Ibject is", props.fromData);
 
-
-const token = useCookie("auth");
 const countries = ref([]);
 const states = ref([]);
 const cities = ref([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
-
-// const form = ref({
-//   zooName: "",
-//   address: {
-//     street: "",
-//     zipCode: "",
-//     city: {
-//       cityId: null,
-//     },
-//   },
-// });
 
 const fetchCountries = async () => {
   try {
@@ -249,18 +268,7 @@ const fetchCities = async () => {
   }
 };
 
-// const addZoo = async () => {
-//   const response = await $fetch(`http://localhost:8080/api/zoo/create-zoo`, {
-//     headers: {
-//       Authorization: `Bearer ${token.value}`,
-//     },
-//     method: "POST",
-//     body: form,
-//   });
-  
-// };
-
-onBeforeMount(() => {
+onMounted(() => {
   fetchCountries();
 });
 </script>

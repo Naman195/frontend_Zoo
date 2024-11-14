@@ -1,7 +1,7 @@
 <template>
   <div
     id="toast-success"
-    class="fixed flex items-center w-full max-w-xs p-4 text-black-600 bg-blue-200 rounded-lg top-20 right-10 shadow dark:text-white-400 dark:bg-gray-800"
+    class="fixed flex items-center w-full max-w-xs p-4 text-white-600 bg-red-600 rounded-lg top-20 right-10 shadow dark:text-black-400 dark:bg-gray-800"
     role="alert"
   >
     <div class="ms-3 text-sm font-normal">{{ alertMessage }}</div>

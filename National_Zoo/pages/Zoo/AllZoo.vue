@@ -37,6 +37,8 @@
 
     <div v-if="openModal" class="z-50 absolute top-1/2">
       <AddZoo
+        :modal-title="'Add'"
+        :submit-button-label="'Add Zoo'"
         :from-data="formData"
         @save="addZoo"
         @close="
@@ -48,6 +50,8 @@
 
     <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
       <AddZoo
+        :modal-title="'Update'"
+        :submit-button-label="'Update Zoo'"
         :from-data="formData"
         @save="updateZoo"
         @close="
@@ -127,42 +131,40 @@
       </li>
     </ul>
     <div class="flex justify-center items-center mt-6 space-x-2">
-  <button
-    class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
-    :disabled="currentPage === 0"
-    @click="changePage(currentPage - 1)"
-  >
-    Previous
-  </button>
+      <button
+        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2"
+        :disabled="currentPage === 0"
+        @click="changePage(currentPage - 1)"
+      >
+        Previous
+      </button>
 
-  <!-- Page Numbers -->
-  <div class="flex space-x-1">
-    <button
-      v-for="page in totalPages"
-      :key="page"
-      class="px-3 py-2 rounded-md border border-gray-300 text-sm transition-colors duration-200"
-      :class="{
-        'bg-blue-500 text-white': page - 1 === currentPage,
-        'bg-white text-gray-700 hover:bg-gray-200':
-          page - 1 !== currentPage,
-      }"
-      @click="changePage(page - 1)"
-    >
-      {{ page }}
-    </button>
+      <!-- Page Numbers -->
+      <div class="flex space-x-1">
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          class="px-3 py-2 rounded-md border border-gray-300 text-sm transition-colors duration-200"
+          :class="{
+            'bg-blue-500 text-white': page - 1 === currentPage,
+            'bg-white text-gray-700 hover:bg-gray-200':
+              page - 1 !== currentPage,
+          }"
+          @click="changePage(page - 1)"
+        >
+          {{ page }}
+        </button>
+      </div>
+
+      <button
+        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2"
+        :disabled="currentPage + 1 >= totalPages"
+        @click="changePage(currentPage + 1)"
+      >
+        Next
+      </button>
+    </div>
   </div>
-
-  <button
-    class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
-    :disabled="currentPage + 1 >= totalPages"
-    @click="changePage(currentPage + 1)"
-  >
-    Next
-  </button>
-</div>
-
-  </div>
-  
 </template>
 
 <script setup>
@@ -181,7 +183,7 @@ const updateAlertMessage = ref("");
 
 const currentPage = ref(0);
 const totalPages = ref(0);
-const pageSize = ref(3); // Change as needed
+const pageSize = ref(3);
 
 const changePage = (page) => {
   if (page >= 0 && page < totalPages.value) {
@@ -320,6 +322,7 @@ const updateZoo = async () => {
     openUpdateModal.value = false;
     updateAlertMessage.value = "Zoo Update SuccessFully";
     handleUpdateAlert();
+    fetchZoo();
   } catch (error) {
     updateAlertMessage.value = error;
     console.error("Error updating zoo:", error);

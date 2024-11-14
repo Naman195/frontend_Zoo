@@ -15,6 +15,7 @@
     <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
       <AddAnimal
         :from-data="formData"
+        :modal-title="'Add'"
         :submit-button-label="'Add Animal'"
         @close="
           openAddAnimalModal = false;
@@ -27,18 +28,25 @@
     <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
       <AddAnimal
         :from-data="formData"
+        :modal-title="'Update'"
         :submit-button-label="'Update Animal'"
         @close="(openUpdateModal = false), intiliazeFormData()"
         @save="updateAnimal()"
       />
     </div>
 
-    <!-- <div v-if="deletedAlert" class="z-50 absolute top-1/2">
+    <div v-if="deletedAlert" class="z-50 absolute top-1/2">
       <ShowAlert
         :alert-message="'Animal Deleted Successfully'"
         @close-modal="deletedAertClose"
       />
-    </div> -->
+    </div>
+    <div v-if="addAnimalAlert" class="z-50 absolute top-1/2">
+      <ShowAlert
+        :alert-message="'Animal Added Successfully'"
+        @close-modal="addAertClose"
+      />
+    </div>
 
     <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
       <Modal
@@ -113,39 +121,39 @@
       </li>
     </div>
     <div class="flex justify-center items-center mt-6 space-x-2">
-  <button
-    class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
-    :disabled="currentPage === 0"
-    @click="changePage(currentPage - 1)"
-  >
-    Previous
-  </button>
+      <button
+        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2"
+        :disabled="currentPage === 0"
+        @click="changePage(currentPage - 1)"
+      >
+        Previous
+      </button>
 
-  <!-- Page Numbers -->
-  <div class="flex space-x-1">
-    <button
-      v-for="page in totalPages"
-      :key="page"
-      class="px-3 py-2 rounded-md border border-gray-300 text-sm transition-colors duration-200"
-      :class="{
-        'bg-blue-500 text-white': page - 1 === currentPage,
-        'bg-white text-gray-700 hover:bg-gray-200':
-          page - 1 !== currentPage,
-      }"
-      @click="changePage(page - 1)"
-    >
-      {{ page }}
-    </button>
-  </div>
+      <!-- Page Numbers -->
+      <div class="flex space-x-1">
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          class="px-3 py-2 rounded-md border border-gray-300 text-sm transition-colors duration-200"
+          :class="{
+            'bg-blue-500 text-white': page - 1 === currentPage,
+            'bg-white text-gray-700 hover:bg-gray-200':
+              page - 1 !== currentPage,
+          }"
+          @click="changePage(page - 1)"
+        >
+          {{ page }}
+        </button>
+      </div>
 
-  <button
-    class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
-    :disabled="currentPage + 1 >= totalPages"
-    @click="changePage(currentPage + 1)"
-  >
-    Next
-  </button>
-</div>
+      <button
+        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2"
+        :disabled="currentPage + 1 >= totalPages"
+        @click="changePage(currentPage + 1)"
+      >
+        Next
+      </button>
+    </div>
   </div>
 </template>
 
@@ -162,7 +170,9 @@ const compareFormdata = ref({
   animalType: "",
 });
 
-
+const addAertClose = () => {
+  addAnimalAlert.value = false;
+};
 
 const formDataChanged = () => {
   return (
@@ -175,16 +185,15 @@ function intiliazeFormData() {
 }
 
 const currentPage = ref(0);
-const totalPages = ref(0)
+const totalPages = ref(0);
 const pageSize = ref(3);
 
 const changePage = (page) => {
-  if(page>= 0 && page < totalPages.value) {
+  if (page >= 0 && page < totalPages.value) {
     currentPage.value = page;
-    fetchAnimals(currentPage.value, pageSize.value)
+    fetchAnimals(currentPage.value, pageSize.value);
   }
-}
-
+};
 
 const route = useRoute();
 const zooId = route.query.zooId;
@@ -196,6 +205,7 @@ const deletedAlert = ref(false);
 const opendeleteModal = ref(false);
 const animalId = ref("");
 const openUpdateModal = ref(false);
+const addAnimalAlert = ref(false);
 
 const deletedAertClose = () => {
   deletedAlert.value = false;
@@ -222,37 +232,50 @@ const fetchZooById = async () => {
   selectedZoo.value = response;
 };
 
-const fetchAnimals = async (page = currentPage.value, size = pageSize.value) => {
-  const data = await useCustomFetch(`/animal/zoo-ani/${zooId}?page=${page}&size=${size}`);
+const fetchAnimals = async (
+  page = currentPage.value,
+  size = pageSize.value
+) => {
+  const data = await useCustomFetch(
+    `/animal/zoo-ani/${zooId}?page=${page}&size=${size}`
+  );
   animals.value = data.content;
   totalPages.value = data.totalPages;
   console.log("Total Animals in Zoo is", animals);
 };
 
 const deleteAnimal = async () => {
-  const data = await useCustomFetch(`/animal/del/${animalId.value}`, {
-    method: "PATCH",
-  });
+  try {
+    const data = await useCustomFetch(`/animal/del/${animalId.value}`, {
+      method: "PATCH",
+    });
 
-  animals.value = animals.value.filter(
-    (animal) => animal.animalId !== animalId.value
-  );
-  opendeleteModal.value = false;
+    animals.value = animals.value.filter(
+      (animal) => animal.animalId !== animalId.value
+    );
+    opendeleteModal.value = false;
+    deletedAlert.value = true;
+  } catch (error) {}
 };
 
 const addAnimal = async () => {
-  const res = await useCustomFetch(`/animal/add`, {
-    method: "POST",
-    body: {
-      ...formData.value,
-      zoo: {
-        zooId: zooId,
+  try {
+    const res = await useCustomFetch(`/animal/add`, {
+      method: "POST",
+      body: {
+        ...formData.value,
+        zoo: {
+          zooId: zooId,
+        },
       },
-    },
-  });
+    });
 
-  openAddAnimalModal.value = false;
-  console.log("AnimalAdded SuccessFully", res);
+    openAddAnimalModal.value = false;
+    // console.log("AnimalAdded SuccessFully", res);
+    addAnimalAlert.value = true;
+  } catch (error) {
+    console.log("Error in Adding Animal", error);
+  }
 };
 
 const updateAnimal = async () => {
@@ -274,6 +297,7 @@ const updateAnimal = async () => {
       },
     });
     openUpdateModal.value = false;
+    fetchAnimals(currentPage.value, pageSize.value);
   } catch (error) {
     console.error("Error updating Animal:", error);
   }

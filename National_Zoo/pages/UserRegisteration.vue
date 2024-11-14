@@ -8,38 +8,57 @@
   <div class="register-container">
     <h1>User Registration Page</h1>
 
-    <form @submit.prevent="registerUser" class="register-form">
+    <Form @submit="registerUser" class="register-form">
       <div class="register-pair">
         <div class="form-group">
           <label for="firstName">First Name</label>
-          <input type="text" v-model="form.firstName" required />
+          <Field
+            name="firstName"
+            type="text"
+            v-model="form.firstName"
+            rules="required|alpha"
+          />
+          <ErrorMessage name="firstName" class="text-red-600 text-sm mt-1" />
         </div>
 
         <div class="form-group">
           <label for="lastName">Last Name</label>
-          <input type="text" v-model="form.lastName" required />
+          <Field
+            name="lastName"
+            type="text"
+            v-model="form.lastName"
+            rules="required|alpha"
+          />
+          <ErrorMessage name="lastName" class="text-red-600 text-sm mt-1" />
         </div>
       </div>
 
       <div class="register-pair">
         <div class="form-group">
           <label for="userName">Username</label>
-          <input type="text" v-model="form.userName" required />
+          <Field
+            name="userName"
+            type="text"
+            v-model="form.userName"
+            rules="required|alpha"
+          />
+          <ErrorMessage name="userName" class="text-red-600 text-sm mt-1" />
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
           <div class="password-container">
-            <input
+            <Field
+              name="password"
               :type="passwordVisible ? 'text' : 'password'"
               v-model="form.password"
-              minlength="8"
-              required
+              rules="required|min:6"
             />
             <span class="eye-icon" @click="togglePasswordVisibility">
               <i :class="passwordVisible ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
             </span>
           </div>
+          <ErrorMessage name="password" class="text-red-600 text-sm mt-1" />
           <!-- <input type="password" v-model="form.password" minlength="8" required /> -->
         </div>
       </div>
@@ -47,12 +66,15 @@
       <div class="register-pair">
         <div class="form-group">
           <label for="country">Country</label>
-          <select
+          <Field
+            name="country"
+            as="select"
             v-model="selectedCountry"
             @change="handleCountryChange"
-            required
+            rules="required"
           >
             <!-- <option value="null">Select Country</option> -->
+            <option value="" disabled>Select Country</option>
             <option
               v-for="country in countries"
               :key="country.countryId"
@@ -60,18 +82,21 @@
             >
               {{ country.countryName }}
             </option>
-          </select>
+          </Field>
+          <ErrorMessage name="country" class="text-red-600 text-sm mt-1" />
         </div>
 
         <div class="form-group">
           <label for="state">State</label>
-          <select
+          <Field
+            name="state"
+            as="select"
+            rules="required"
             v-model="selectedState"
             :disabled="!selectedCountry"
             @change="handleStateChange"
-            required
           >
-            <!-- <option value="null">Select State</option> -->
+            <option value="">Select State</option>
             <option
               v-for="state in states"
               :key="state.stateId"
@@ -79,19 +104,22 @@
             >
               {{ state.stateName }}
             </option>
-          </select>
+          </Field>
+          <ErrorMessage name="state" class="text-red-600 text-sm mt-1" />
         </div>
       </div>
 
       <div class="register-pair">
         <div class="form-group">
           <label for="city">City</label>
-          <select
+          <Field
+            name="city"
+            as="select"
+            rules="required"
             v-model="form.address.city.cityId"
             :disabled="!selectedState"
-            required
           >
-            <!-- <option value="null">Select City</option> -->
+            <option value="">Select City</option>
             <option
               v-for="city in cities"
               :key="city.cityId"
@@ -99,35 +127,51 @@
             >
               {{ city.cityName }}
             </option>
-          </select>
+          </Field>
+          <ErrorMessage name="city" class="text-red-600 text-sm mt-1" />
         </div>
         <div class="form-group">
           <label for="role">Role</label>
-          <select v-model="form.role" required>
+          <Field name="role" as="select" v-model="form.role">
+            <option value="" disabled>Select Role</option>
             <option value="user">User</option>
             <option value="admin">Admin</option>
-          </select>
+          </Field>
+          <ErrorMessage name="role" class="text-red-600 text-sm mt-1" />
         </div>
       </div>
 
       <div class="register-pair">
         <div class="form-group">
           <label for="street">Street</label>
-          <input type="text" v-model="form.address.street" required />
+          <Field
+            name="street"
+            type="text"
+            v-model="form.address.street"
+            required
+          />
         </div>
+        <ErrorMessage name="street" class="text-red-600 text-sm mt-1" />
 
         <div class="form-group">
           <label for="zipCode">Zip Code</label>
-          <input type="text" v-model="form.address.zipCode" required />
+          <Field
+            name="zipCode"
+            type="text"
+            v-model="form.address.zipCode"
+            required
+          />
         </div>
+        <ErrorMessage name="zipCode" class="text-red-600 text-sm mt-1" />
       </div>
 
       <button type="submit" class="submit-btn">Register</button>
-    </form>
+    </Form>
   </div>
 </template>
 
 <script setup>
+import { Field, Form, ErrorMessage } from "vee-validate";
 import "../assests/css/style.css";
 // import CustomInput from '~/components/CustomInput.vue';
 

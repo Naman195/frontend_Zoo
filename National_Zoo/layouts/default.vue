@@ -291,8 +291,6 @@ const token = useCookie("auth");
 
 const updateAlert = ref(false);
 
-console.log("UserProfile Values", userProfile);
-
 const afterUpdate = () => {
   updateAlert.value = true;
 };

@@ -12,7 +12,7 @@
           class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600"
         >
           <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-            Add Animal
+            {{ modalTitle }} Animal
           </h3>
           <button
             @click="emit('close')"
@@ -39,7 +39,7 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 max-h-[60vh] overflow-y-auto">
-          <form @submit.prevent="emit('save')" class="space-y-4">
+          <Form @submit="emit('save')" class="space-y-4">
             <!-- First Name Field -->
 
             <div>
@@ -48,28 +48,38 @@
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Animal Name</label
               >
-              <input
+              <Field
+                name="animalName"
+                rules="alpha|required"
                 v-model="props.fromData.animalName"
                 type="text"
                 id="animalName"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                 required
               />
+              <ErrorMessage
+                name="animalName"
+                class="text-red-600 text-sm mt-1"
+              />
             </div>
 
-            <!-- Zip Code Input -->
             <div>
               <label
                 for="animalType"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Animal Type</label
               >
-              <input
+              <Field
+                name="animalType"
+                rules="alpha|required"
                 v-model="props.fromData.animalType"
                 type="text"
                 id="animaltype"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                required
+              />
+              <ErrorMessage
+                name="animalType"
+                class="text-red-600 text-sm mt-1"
               />
             </div>
             <!-- Buttons -->
@@ -79,7 +89,7 @@
             >
               {{ props.submitButtonLabel }}
             </button>
-          </form>
+          </Form>
         </div>
       </div>
     </div>
@@ -87,6 +97,7 @@
 </template>
 
 <script setup lang="ts">
+import { Field, Form, ErrorMessage } from "vee-validate";
 const emit = defineEmits(["close", "save"]);
 type formDataType = {
   animalName: string;
@@ -95,6 +106,6 @@ type formDataType = {
 const props = defineProps<{
   fromData: formDataType;
   submitButtonLabel: string;
-  // modalTitle: string
+  modalTitle: string;
 }>();
 </script>
