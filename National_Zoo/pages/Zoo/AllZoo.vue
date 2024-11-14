@@ -267,12 +267,6 @@ watch(zooId, (newVal) => {
   console.log("Updated Zoo ID:", newVal);
 });
 
-// const fetchZoo = async () => {
-//   const data = await useCustomFetch(`/zoo/all??page=0&size=10`);
-
-//   Zoos.value = data.content;
-// };
-
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
   try {
     const data = await useCustomFetch(`/zoo/all?page=${page}&size=${size}`);
