@@ -90,7 +90,7 @@ const loginUser = async () => {
     loginAlertopen();
     setTimeout(() => {
       router.push("/");
-    }, 2000);
+    }, 1000);
   } catch (err) {
     afterLoginMessageRes.value = err.response._data.message;
     loginAlertopen();

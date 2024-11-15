@@ -297,6 +297,8 @@ const updateAnimal = async () => {
       },
     });
     openUpdateModal.value = false;
+    intiliazeFormData();
+
     fetchAnimals(currentPage.value, pageSize.value);
   } catch (error) {
     console.error("Error updating Animal:", error);

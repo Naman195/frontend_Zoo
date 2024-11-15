@@ -132,11 +132,12 @@
         </div>
         <div class="form-group">
           <label for="role">Role</label>
-          <Field name="role" as="select" v-model="form.role">
-            <option value="" disabled>Select Role</option>
+          <Field name="role" as="select" v-model="form.role" rules="required">
+            <option value="" selected disabled>Select Role</option>
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </Field>
+
           <ErrorMessage name="role" class="text-red-600 text-sm mt-1" />
         </div>
       </div>
@@ -146,23 +147,25 @@
           <label for="street">Street</label>
           <Field
             name="street"
+            rules="required|alpha_spaces"
             type="text"
             v-model="form.address.street"
             required
           />
+          <ErrorMessage name="street" class="text-red-600 text-sm mt-1" />
         </div>
-        <ErrorMessage name="street" class="text-red-600 text-sm mt-1" />
 
         <div class="form-group">
           <label for="zipCode">Zip Code</label>
           <Field
             name="zipCode"
+            rules="required|digits:6"
             type="text"
             v-model="form.address.zipCode"
             required
           />
+          <ErrorMessage name="zipCode" class="text-red-600 text-sm mt-1" />
         </div>
-        <ErrorMessage name="zipCode" class="text-red-600 text-sm mt-1" />
       </div>
 
       <button type="submit" class="submit-btn">Register</button>

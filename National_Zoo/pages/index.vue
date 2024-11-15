@@ -21,9 +21,8 @@ const fetchProfile = async () => {
 };
 
 onMounted(() => {
-  //   console.log("LoggedIn Value", isLoggedIn);
   if (isLoggedIn) {
-    fetchProfile();
+    // fetchProfile();
   }
 });
 </script>

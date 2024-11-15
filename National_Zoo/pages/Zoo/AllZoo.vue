@@ -1,6 +1,5 @@
 <template>
   <div class="bg-gradient-to-b from-blue-200 to-blue-500 min-h-screen py-10">
-    {{ updatedformData }}
     <div class="flex justify-between items-center w-full mb-6">
       <h1 class="flex-grow text-center">All Zoo</h1>
       <button
@@ -201,17 +200,6 @@ const updateAlertMessageSet = () => {
   return updateAlertMessage;
 };
 
-const formData = ref({
-  zooName: "",
-  address: {
-    street: "",
-    zipCode: "",
-    city: {
-      cityId: null,
-    },
-  },
-});
-
 const updatedformData = ref({
   zooName: "",
   address: {
@@ -222,18 +210,37 @@ const updatedformData = ref({
       state: {
         stateId: null,
         country: {
-          countryId: null
-        }
-      }
+          countryId: null,
+        },
+      },
     },
   },
-}); 
+});
+
+const compareUpdatedformData = ref({
+  zooName: "",
+  address: {
+    street: "",
+    zipCode: "",
+    city: {
+      cityId: null,
+      state: {
+        stateId: null,
+        country: {
+          countryId: null,
+        },
+      },
+    },
+  },
+});
 
 function intiliazeFormData() {
-  (formData.value.zooName = ""),
-    (formData.value.address.street = ""),
-    (formData.value.address.zipCode = ""),
-    (formData.value.address.city.cityId = "");
+  (updatedformData.value.zooName = ""),
+    (updatedformData.value.address.street = ""),
+    (updatedformData.value.address.zipCode = ""),
+    (updatedformData.value.address.city.cityId = ""),
+    (updatedformData.value.address.city.state.stateId = ""),
+    (updatedformData.value.address.city.state.country.countryId = "");
 }
 
 console.log("Zoos Object Is ", Zoos);
@@ -266,17 +273,33 @@ console.log("ZooId Is ", zooId);
 
 function onClick(zoo) {
   console.log("Update Zoo Object is", zoo);
-  
+
   openUpdateModal.value = true;
   zooId.value = zoo.zooId;
   updatedformData.value.zooName = zoo.zooName;
   updatedformData.value.address.zipCode = zoo.address.zipCode;
   updatedformData.value.address.street = zoo.address.street;
   updatedformData.value.address.city.cityId = zoo.address.city.cityId;
-  updatedformData.value.address.city.state.stateId = zoo.address.city.state.stateId
-  updatedformData.value.address.city.state.country.countryId = zoo.address.city.state.country.countryId
-
+  updatedformData.value.address.city.state.stateId =
+    zoo.address.city.state.stateId;
+  updatedformData.value.address.city.state.country.countryId =
+    zoo.address.city.state.country.countryId;
+  compareUpdatedformData.value.zooName = zoo.zooName;
+  compareUpdatedformData.value.address.zipCode = zoo.address.zipCode;
+  compareUpdatedformData.value.address.street = zoo.address.street;
+  compareUpdatedformData.value.address.city.cityId = zoo.address.city.cityId;
+  compareUpdatedformData.value.address.city.state.stateId =
+    zoo.address.city.state.stateId;
+  compareUpdatedformData.value.address.city.state.country.countryId =
+    zoo.address.city.state.country.countryId;
 }
+
+const formDataChanged = () => {
+  return (
+    JSON.stringify(updatedformData.value) !==
+    JSON.stringify(compareUpdatedformData.value)
+  );
+};
 
 const deleteZooHandler = (zoo) => {
   getZooId(zoo);
@@ -317,26 +340,51 @@ const deleteZoo = async () => {
 };
 
 const addZoo = async () => {
-  const response = await useCustomFetch(`/zoo/create-zoo`, {
-    method: "POST",
-    body: {
-      ...formData.value,
+  const resbody = {
+    zooName: updatedformData.value.zooName,
+    address: {
+      street: updatedformData.value.address.street,
+      zipCode: updatedformData.value.address.zipCode,
+      city: {
+        cityId: updatedformData.value.address.city.cityId,
+      },
     },
-  });
-  openModal.value = false;
+  };
+
+  try {
+    const response = await useCustomFetch(`/zoo/create-zoo`, {
+      method: "POST",
+      body: resbody,
+    });
+    openModal.value = false;
+  } catch (error) {
+    console.log("Error in Adding Zoo", error);
+  }
 };
 
 const updateZoo = async () => {
+  if (!formDataChanged()) {
+    return;
+  }
+  const resBody = {
+    zooName: updatedformData.value.zooName,
+    address: {
+      street: updatedformData.value.address.street,
+      zipCode: updatedformData.value.address.zipCode,
+      city: {
+        cityId: updatedformData.value.address.city.cityId,
+      },
+    },
+  };
   try {
     const response = await useCustomFetch(`/zoo/update/${zooId.value}`, {
       method: "PATCH",
-      body: {
-        ...formData.value,
-      },
+      body: resBody,
     });
 
     console.log("response", response);
     openUpdateModal.value = false;
+    intiliazeFormData();
     updateAlertMessage.value = "Zoo Update SuccessFully";
     handleUpdateAlert();
     fetchZoo();

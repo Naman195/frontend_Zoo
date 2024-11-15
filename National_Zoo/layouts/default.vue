@@ -12,17 +12,7 @@
       </div>
       <ul class="flex items-center space-x-6 text-white">
         <li><NuxtLink to="/" class="hover:text-gray-300">Home</NuxtLink></li>
-        <li><NuxtLink to="#" class="hover:text-gray-300">About</NuxtLink></li>
-        <li>
-          <NuxtLink to="/zoo/allzoo" class="hover:text-gray-300"
-            >Zoo's</NuxtLink
-          >
-        </li>
-        <li>
-          <NuxtLink to="/allusers" class="hover:text-gray-300"
-            >All users</NuxtLink
-          >
-        </li>
+
         <template v-if="!userToken">
           <li>
             <NuxtLink
@@ -40,6 +30,16 @@
           </li>
         </template>
         <template v-else>
+          <li>
+            <NuxtLink to="/zoo/allzoo" class="hover:text-gray-300"
+              >Zoo's</NuxtLink
+            >
+          </li>
+          <li>
+            <NuxtLink to="/allusers" class="hover:text-gray-300"
+              >All users</NuxtLink
+            >
+          </li>
           <li class="cursor-pointer" @click="toggleProfile">
             <img
               src="../assests/images/user.png"
@@ -334,10 +334,10 @@ const fillupdateFormData = () => {
 const user = ref(null);
 const userId = useCookie("userId");
 
-onMounted(() => {
+onBeforeMount(() => {
   if (userToken.value == true) {
-    getUser();
-    // fetchProfile();
+    // getUser();
+    fetchProfile();
     fetchCountries();
   }
 });
@@ -354,6 +354,16 @@ const form = reactive({
     },
   },
 });
+
+const fetchProfile = async () => {
+  try {
+    const fetchedUser = await useCustomFetch(`/auth/user/${userId.value}`);
+    userProfile.value = fetchedUser;
+    setUser(fetchedUser);
+  } catch (error) {
+    console.error("Error fetching User:", error);
+  }
+};
 
 const countries = ref([]);
 const states = ref([]);

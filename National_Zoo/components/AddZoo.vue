@@ -100,6 +100,7 @@
                   as="select"
                   rules="required"
                   v-model="selectedState"
+                  :disabled="!selectedCountry"
                   @change="handleStateChange"
                   id="state"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
@@ -129,6 +130,7 @@
                   as="select"
                   rules="required"
                   v-model="props.fromData.address.city.cityId"
+                  :disabled="!selectedState"
                   id="city"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                 >
@@ -175,7 +177,7 @@
               >
               <Field
                 name="street"
-                rules="required|alpha_num"
+                rules="required|alpha_spaces"
                 v-model="props.fromData.address.street"
                 type="text"
                 id="street"
@@ -245,7 +247,9 @@ const initializeSelections = async () => {
 const handleCountryChange = () => selectedCountry.value && fetchStates();
 const fetchStates = async () => {
   if (selectedCountry.value) {
-    const data = await $fetch(`http://localhost:8080/api/auth/state/${selectedCountry.value}`);
+    const data = await $fetch(
+      `http://localhost:8080/api/auth/state/${selectedCountry.value}`
+    );
     states.value = data;
   }
 };
@@ -253,13 +257,13 @@ const fetchStates = async () => {
 const handleStateChange = () => selectedState.value && fetchCities();
 const fetchCities = async () => {
   if (selectedState.value) {
-    const data = await $fetch(`http://localhost:8080/api/auth/cities/${selectedState.value}`);
+    const data = await $fetch(
+      `http://localhost:8080/api/auth/cities/${selectedState.value}`
+    );
     cities.value = data;
   }
 };
 </script>
-
-
 
 <!-- <script setup>
 import { ref, onMounted } from "vue";
