@@ -50,8 +50,9 @@
                 >Animal Name</label
               >
               <Field
-                name="animalName"
+                name="animalname"
                 rules="alpha|required"
+                label = "Animalname"
                 v-model="props.fromData.animalName"
                 type="text"
                 id="animalName"
@@ -59,7 +60,7 @@
                 required
               />
               <ErrorMessage
-                name="animalName"
+                name="animalname"
                 class="text-red-600 text-sm mt-1"
               />
             </div>

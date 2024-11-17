@@ -306,8 +306,8 @@ const fetchProfile = async () => {
     selectedCountry.value = fetchedUser.address.city.state.country.countryId;
     selectedState.value = fetchedUser.address.city.state.stateId;
     form.address.city.cityId = fetchedUser.address.city.cityId;
-    fetchStates();
-    fetchCities();
+    await fetchStates();
+    await fetchCities();
   } catch (error) {
     console.error("Error fetching User:", error);
   }
