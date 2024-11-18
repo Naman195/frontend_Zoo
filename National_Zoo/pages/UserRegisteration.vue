@@ -14,6 +14,7 @@
           <label for="firstName">First Name</label>
           <Field
             name="firstName"
+            label="First Name"
             type="text"
             v-model="form.firstName"
             rules="required|alpha"
@@ -25,6 +26,7 @@
           <label for="lastName">Last Name</label>
           <Field
             name="lastName"
+            label="Last Name"
             type="text"
             v-model="form.lastName"
             rules="required|alpha"
@@ -37,18 +39,20 @@
         <div class="form-group">
           <label for="userName">Username</label>
           <Field
-            name="userName"
+            name="username"
+            label="User Name"
             type="text"
             v-model="form.userName"
             rules="required|alpha"
           />
-          <ErrorMessage name="userName" class="text-red-600 text-sm mt-1" />
+          <ErrorMessage name="username" class="text-red-600 text-sm mt-1" />
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
           <div class="password-container">
             <Field
+              label="Password"
               name="password"
               :type="passwordVisible ? 'text' : 'password'"
               v-model="form.password"
@@ -134,8 +138,9 @@
           <label for="role">Role</label>
           <Field name="role" as="select" v-model="form.role" rules="required">
             <option value="" selected disabled>Select Role</option>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
+            <option v-for="r in roles" :value="r.roleId">
+              {{ r.role }}
+            </option>
           </Field>
 
           <ErrorMessage name="role" class="text-red-600 text-sm mt-1" />
@@ -146,6 +151,7 @@
         <div class="form-group">
           <label for="street">Street</label>
           <Field
+            label="Street"
             name="street"
             rules="required|alpha_spaces"
             type="text"
@@ -158,6 +164,7 @@
         <div class="form-group">
           <label for="zipCode">Zip Code</label>
           <Field
+            label="zip Code"
             name="zipCode"
             rules="required|digits:6"
             type="text"
@@ -188,6 +195,7 @@ const selectedCountry = ref(null);
 const selectedState = ref(null);
 const registeredAlert = ref(false);
 const afterRegisterationMessage = ref("");
+const roles = ref([]);
 
 const form = reactive({
   firstName: "",
@@ -303,7 +311,22 @@ const registerUser = async () => {
   }
 };
 
+// Fetch Role Api
+
+const fetchRoles = async () => {
+  try {
+    const data = await useCustomFetch("/role/all");
+    roles.value = data;
+  } catch (error) {
+    console.log("Error In fetching Roles", error);
+  }
+
+  // console.log(data);
+  console.log(roles);
+};
+
 onMounted(() => {
   fetchCountries();
+  fetchRoles();
 });
 </script>

@@ -12,6 +12,7 @@
       <div class="form-group">
         <label for="username">Username</label>
         <Field
+          label="User Name"
           name="username"
           rules="alpha|required"
           type="text"
@@ -24,6 +25,7 @@
         <label for="password">Password</label>
         <div class="password-container">
           <Field
+            label="Password"
             name="password"
             rules="required|min:6"
             :type="passwordVisible ? 'text' : 'password'"

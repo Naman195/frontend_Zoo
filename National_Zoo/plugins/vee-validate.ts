@@ -1,5 +1,5 @@
 import { defineRule, configure } from 'vee-validate';
-import { all } from '@vee-validate/rules';
+import { all, digits } from '@vee-validate/rules';
 import { localize } from '@vee-validate/i18n';
 
 export default defineNuxtPlugin(() => {
@@ -10,7 +10,10 @@ export default defineNuxtPlugin(() => {
     configure( {
       generateMessage : localize("en", {
         messages: {
-          required: '{field} is required'
+          required: '{field} is required',
+          min: '{field} length  must be greater then 0:{min}!!',
+          digits: '{field} must be of 0:{digits} digits'
+
             
         }
       })

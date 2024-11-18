@@ -206,6 +206,7 @@ const opendeleteModal = ref(false);
 const animalId = ref("");
 const openUpdateModal = ref(false);
 const addAnimalAlert = ref(false);
+const fetchCategories = ref([]);
 
 const deletedAertClose = () => {
   deletedAlert.value = false;
@@ -305,8 +306,17 @@ const updateAnimal = async () => {
   }
 };
 
+const fetchCategoriesApi = async () => {
+  try {
+    const data = await useCustomFetch("/category/all");
+    fetchCategories.value = data;
+    console.log("FetchedCategory", fetchCategories);
+  } catch (error) {}
+};
+
 onMounted(() => {
   fetchZooById();
   fetchAnimals(currentPage.value, pageSize.value);
+  fetchCategoriesApi();
 });
 </script>
