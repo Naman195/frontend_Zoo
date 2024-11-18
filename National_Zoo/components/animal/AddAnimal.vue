@@ -70,21 +70,39 @@
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Animal Type</label
               >
-              <Field
+              <!-- <Field
                 name="animalType"
                 rules="alpha|required"
                 v-model="props.fromData.animalType"
                 type="text"
                 id="animaltype"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-              />
+              /> -->
 
               <!-- <Field name="role" as="select" v-model="form.role" rules="required">
             <option value="" selected disabled>Select Role</option>
-            <option v-for="r in roles" :value="r.roleId">
-              {{ r.role }}
+            <option v-for="r in props.fetchCategories" :value="r.categoryName">
+              {{ r.categoryName }}
             </option>
           </Field> -->
+          <Field
+  name="animalType"
+  as="select"
+  v-model="props.fromData.animalType"
+  rules="required"
+  id="animaltype"
+  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+>
+  <option value="" selected disabled>Select Animal Type</option>
+  <option
+    v-for="category in props.fetchCategories"
+    :key="category.id"
+    :value="category.categoryName"
+  >
+    {{ category.categoryName }}
+  </option>
+</Field>
+
 
               <ErrorMessage
                 name="animalType"
@@ -112,9 +130,12 @@ type formDataType = {
   animalName: string;
   animalType: string;
 };
+
 const props = defineProps<{
   fromData: formDataType;
   submitButtonLabel: string;
   modalTitle: string;
+  fetchCategories: Object;
 }>();
+console.log("Categories Are", props.fetchCategories);
 </script>

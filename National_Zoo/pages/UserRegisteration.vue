@@ -95,7 +95,7 @@
           <Field
             name="state"
             as="select"
-            rules="required"
+            rules="required_if:country"
             v-model="selectedState"
             :disabled="!selectedCountry"
             @change="handleStateChange"
@@ -119,7 +119,7 @@
           <Field
             name="city"
             as="select"
-            rules="required"
+            rules="required_if:state"
             v-model="form.address.city.cityId"
             :disabled="!selectedState"
           >

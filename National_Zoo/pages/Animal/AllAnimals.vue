@@ -7,7 +7,7 @@
       <button
         class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
         type="button"
-        @click="openAddAnimalModal = true"
+        @click="openAddAnimalHandler()"
       >
         Add Animal
       </button>
@@ -17,6 +17,7 @@
         :from-data="formData"
         :modal-title="'Add'"
         :submit-button-label="'Add Animal'"
+        :fetch-categories="fetchCategories"
         @close="
           openAddAnimalModal = false;
           intiliazeFormData();
@@ -30,6 +31,7 @@
         :from-data="formData"
         :modal-title="'Update'"
         :submit-button-label="'Update Animal'"
+        :fetch-categories="fetchCategories"
         @close="(openUpdateModal = false), intiliazeFormData()"
         @save="updateAnimal()"
       />
@@ -195,6 +197,11 @@ const changePage = (page) => {
   }
 };
 
+const openAddAnimalHandler = () => {
+  openAddAnimalModal.value = true;
+  fetchCategoriesApi(); // Fetch categories when opening the add modal
+};
+
 const route = useRoute();
 const zooId = route.query.zooId;
 const selectedZoo = ref(null);
@@ -224,6 +231,8 @@ function onClick(animal) {
   formData.value.animalType = animal.animalType;
   compareFormdata.value.animalType = animal.animalType;
   compareFormdata.value.animalName = animal.animalName;
+  fetchCategoriesApi();
+
 }
 
 console.log("Deleted ANimal Id is", animalId.value);
@@ -314,9 +323,11 @@ const fetchCategoriesApi = async () => {
   } catch (error) {}
 };
 
+
+
 onMounted(() => {
   fetchZooById();
   fetchAnimals(currentPage.value, pageSize.value);
-  fetchCategoriesApi();
+  
 });
 </script>
