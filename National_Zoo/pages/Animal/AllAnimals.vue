@@ -4,13 +4,16 @@
       <h1 class="flex-grow text-center">
         All Animals in Zoo - {{ selectedZoo?.zooName }}
       </h1>
-      <button
+      <div v-if="isAdmin">
+
+        <button
         class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
         type="button"
         @click="openAddAnimalHandler()"
-      >
+        >
         Add Animal
       </button>
+    </div>
     </div>
     <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
       <AddAnimal
@@ -100,6 +103,7 @@
                 View Animal
               </nuxt-link>
             </button>
+            <div v-if="isAdmin">
             <button
               class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2"
               type="button"
@@ -118,6 +122,7 @@
             >
               Update Animal
             </button>
+          </div>
           </div>
         </div>
       </li>
@@ -214,6 +219,30 @@ const animalId = ref("");
 const openUpdateModal = ref(false);
 const addAnimalAlert = ref(false);
 const fetchCategories = ref([]);
+const isAdmin = ref(false);
+
+// Function to decode JWT and extract the role
+const decodeJWT = (token) => {
+  if (!token) return null;
+
+  // Split token into header, payload, and signature
+  const payload = token.split('.')[1];
+
+  // Decode payload from base64 to JSON
+  const decodedPayload = JSON.parse(atob(payload));
+
+  return decodedPayload;
+};
+
+// Check if the token exists and extract the role
+const decodedToken = decodeJWT(token.value);
+if (decodedToken && decodedToken.role === "admin") {
+  isAdmin.value = true;
+}
+
+console.log("isAdmin Value", isAdmin.value);
+
+
 
 const deletedAertClose = () => {
   deletedAlert.value = false;
