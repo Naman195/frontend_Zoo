@@ -357,6 +357,7 @@ const addZoo = async () => {
       body: resbody,
     });
     openModal.value = false;
+    intiliazeFormData();
   } catch (error) {
     console.log("Error in Adding Zoo", error);
   }

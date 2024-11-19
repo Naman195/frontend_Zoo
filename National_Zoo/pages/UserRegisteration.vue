@@ -7,7 +7,7 @@
   </div>
   <div class="register-container">
     <h1>User Registration Page</h1>
-
+    <!-- :key="formkey" -->
     <Form @submit="registerUser" class="register-form">
       <div class="register-pair">
         <div class="form-group">
@@ -95,7 +95,7 @@
           <Field
             name="state"
             as="select"
-            rules="required_if:country"
+            rules="required"
             v-model="selectedState"
             :disabled="!selectedCountry"
             @change="handleStateChange"
@@ -119,7 +119,7 @@
           <Field
             name="city"
             as="select"
-            rules="required_if:state"
+            rules="required"
             v-model="form.address.city.cityId"
             :disabled="!selectedState"
           >
@@ -136,9 +136,9 @@
         </div>
         <div class="form-group">
           <label for="role">Role</label>
-          <Field name="role" as="select" v-model="form.role" rules="required">
+          <Field name="role" as="select" v-model="form.roleId" rules="required">
             <option value="" selected disabled>Select Role</option>
-            <option v-for="r in roles" :value="r.roleId">
+            <option v-for="r in roles" :value="r.id">
               {{ r.role }}
             </option>
           </Field>
@@ -197,12 +197,14 @@ const registeredAlert = ref(false);
 const afterRegisterationMessage = ref("");
 const roles = ref([]);
 
+// const formkey = Math.random();
+
 const form = reactive({
   firstName: "",
   lastName: "",
   userName: "",
   password: "",
-  role: "",
+  roleId: "",
   address: {
     street: "",
     zipCode: "",
@@ -300,6 +302,7 @@ const registerUser = async () => {
       setTimeout(() => {
         router.push("/userlogin");
       }, 3000);
+      // formkey.valueOf = Math.random();
     } else {
       afterRegisterationMessage.value = data;
       alert("Error: " + data.response);
