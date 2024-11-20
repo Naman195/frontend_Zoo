@@ -31,15 +31,15 @@
         </template>
         <template v-else>
           <li>
-            <NuxtLink to="/zoo/allzoo" class="hover:text-gray-300"
+            <NuxtLink to="/zoo/allzoos" class="hover:text-gray-300"
               >Zoo's</NuxtLink
             >
           </li>
-          <li>
+          <!-- <li>
             <NuxtLink to="/allusers" class="hover:text-gray-300"
               >All users</NuxtLink
             >
-          </li>
+          </li> -->
           <li class="cursor-pointer" @click="toggleProfile">
             <img
               src="../assests/images/user.png"

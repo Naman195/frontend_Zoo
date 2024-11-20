@@ -5,15 +5,14 @@
         All Animals in Zoo - {{ selectedZoo?.zooName }}
       </h1>
       <div v-if="isAdmin">
-
         <button
-        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
-        type="button"
-        @click="openAddAnimalHandler()"
+          class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
+          type="button"
+          @click="openAddAnimalHandler()"
         >
-        Add Animal
-      </button>
-    </div>
+          Add Animal
+        </button>
+      </div>
     </div>
     <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
       <AddAnimal
@@ -91,38 +90,40 @@
             </p> -->
           </div>
           <div class="px-4 pb-4 pt-0 mt-2">
-            <button
-              class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mr-2"
-              type="button"
-            >
-              <nuxt-link
-                :to="{
-                  path: '/animalprofile',
-                }"
+            <div>
+              <button
+                class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mr-2"
+                type="button"
               >
-                View Animal
-              </nuxt-link>
-            </button>
-            <div v-if="isAdmin">
-            <button
-              class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2"
-              type="button"
-              @click="
-                () => {
-                  deleteAnimalHandler(animal);
-                }
-              "
-            >
-              Delete Animal
-            </button>
-            <button
-              class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-              type="button"
-              @click="() => onClick(animal)"
-            >
-              Update Animal
-            </button>
-          </div>
+                <nuxt-link
+                  :to="{
+                    path: '/animalprofile',
+                  }"
+                >
+                  View Animal
+                </nuxt-link>
+              </button>
+            </div>
+            <div v-if="isAdmin" class="mt-2">
+              <button
+                class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-2"
+                type="button"
+                @click="
+                  () => {
+                    deleteAnimalHandler(animal);
+                  }
+                "
+              >
+                Delete Animal
+              </button>
+              <button
+                class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                type="button"
+                @click="() => onClick(animal)"
+              >
+                Update Animal
+              </button>
+            </div>
           </div>
         </div>
       </li>
@@ -221,28 +222,20 @@ const addAnimalAlert = ref(false);
 const fetchCategories = ref([]);
 const isAdmin = ref(false);
 
-// Function to decode JWT and extract the role
 const decodeJWT = (token) => {
   if (!token) return null;
-
-  // Split token into header, payload, and signature
-  const payload = token.split('.')[1];
-
-  // Decode payload from base64 to JSON
+  const payload = token.split(".")[1];
   const decodedPayload = JSON.parse(atob(payload));
 
   return decodedPayload;
 };
 
-// Check if the token exists and extract the role
 const decodedToken = decodeJWT(token.value);
 if (decodedToken && decodedToken.role === "admin") {
   isAdmin.value = true;
 }
 
 console.log("isAdmin Value", isAdmin.value);
-
-
 
 const deletedAertClose = () => {
   deletedAlert.value = false;
@@ -261,7 +254,6 @@ function onClick(animal) {
   compareFormdata.value.animalType = animal.animalType;
   compareFormdata.value.animalName = animal.animalName;
   fetchCategoriesApi();
-
 }
 
 console.log("Deleted ANimal Id is", animalId.value);
@@ -352,11 +344,8 @@ const fetchCategoriesApi = async () => {
   } catch (error) {}
 };
 
-
-
 onMounted(() => {
   fetchZooById();
   fetchAnimals(currentPage.value, pageSize.value);
-  
 });
 </script>
