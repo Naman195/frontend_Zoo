@@ -69,40 +69,15 @@
         />
       </li>
     </div>
-    <div class="flex justify-center items-center mt-6 space-x-2">
-      <button
-        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2"
-        :disabled="currentPage === 0"
-        @click="changePage(currentPage - 1)"
-      >
-        Previous
-      </button>
+    
+    <Pagination
+      :currentPage="currentPage"
+      :totalPages="totalPages"
+      :pageSize="pageSize"
+      @update:currentPage="changePage"
+      @fetch-data="fetchZoo"
+    />
 
-      <!-- Page Numbers -->
-      <div class="flex space-x-1">
-        <button
-          v-for="page in totalPages"
-          :key="page"
-          class="px-3 py-2 rounded-md border border-gray-300 text-sm transition-colors duration-200"
-          :class="{
-            'bg-blue-500 text-white': page - 1 === currentPage,
-            'bg-white text-gray-700 hover:bg-gray-200':
-              page - 1 !== currentPage,
-          }"
-          @click="changePage(page - 1)"
-        >
-          {{ page }}
-        </button>
-      </div>
-
-      <button
-        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2"
-        :disabled="currentPage + 1 >= totalPages"
-        @click="changePage(currentPage + 1)"
-      >
-        Next
-      </button>
-    </div>
   </div>
 </template>
 
