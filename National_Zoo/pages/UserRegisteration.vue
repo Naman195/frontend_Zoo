@@ -11,27 +11,27 @@
     <Form @submit="registerUser" class="register-form">
       <div class="register-pair">
         <div class="form-group">
-          <label for="firstName">First Name</label>
+          <label for="fullname">Full Name</label>
           <Field
-            name="firstName"
-            label="First Name"
+            name="fullname"
+            label="Full Name"
             type="text"
-            v-model="form.firstName"
+            v-model="form.fullName"
             rules="required|alpha"
           />
-          <ErrorMessage name="firstName" class="text-red-600 text-sm mt-1" />
+          <ErrorMessage name="fullname" class="text-red-600 text-sm mt-1" />
         </div>
 
         <div class="form-group">
-          <label for="lastName">Last Name</label>
+          <label for="email">Email</label>
           <Field
-            name="lastName"
-            label="Last Name"
-            type="text"
-            v-model="form.lastName"
-            rules="required|alpha"
+            name="email"
+            label="Email"
+            type="email"
+            v-model="form.email"
+            rules="required|email"
           />
-          <ErrorMessage name="lastName" class="text-red-600 text-sm mt-1" />
+          <ErrorMessage name="email" class="text-red-600 text-sm mt-1" />
         </div>
       </div>
 
@@ -100,7 +100,7 @@
             :disabled="!selectedCountry"
             @change="handleStateChange"
           >
-            <option value="">Select State</option>
+            <option value="" disabled>Select State</option>
             <option
               v-for="state in states"
               :key="state.stateId"
@@ -200,8 +200,8 @@ const roles = ref([]);
 // const formkey = Math.random();
 
 const form = reactive({
-  firstName: "",
-  lastName: "",
+  fullName: "",
+  email: "",
   userName: "",
   password: "",
   roleId: "",
@@ -282,8 +282,8 @@ const registerUser = async () => {
     });
     console.log("Registered User", data);
     if (data === "User successfully created") {
-      form.firstName = "";
-      form.lastName = "";
+      form.fullName = "";
+      form.email = "";
       form.userName = "";
       form.password = "";
       form.role = "";

@@ -10,19 +10,28 @@
       />
     </div>
     <div class="p-4">
-      <h2 class="mb-2 text-slate-800 text-xl font-bold">
+      <h2
+        v-if="props.entityData.zooId"
+        class="mb-2 text-slate-800 text-xl font-bold"
+      >
         {{ props.entityData.zooName }}
       </h2>
-      <p>
-        <!-- <h3>{{ props.entityData.zooName }}</h3>  -->
-        {{ props.entityData.address.street }}
+      <h2 v-else class="mb-2 text-slate-800 text-xl font-bold">
+        {{ props.entityData.animalName }}
+      </h2>
+
+      <p v-if="props.entityData.zooId">
+        {{ props.entityData.address.street }} ,
         {{ props.entityData.address.city.cityName }}
-        <!-- {{ zoo.address.street }}, {{ zoo.address.city.cityName }} -->
+      </p>
+      <p v-else>
+        {{ props.entityData.animalType }}
       </p>
     </div>
     <div class="px-4 pb-4 pt-0 mt-2">
       <div class="mb-2">
         <button
+          v-if="props.entityData.zooId"
           class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mr-2"
           type="button"
         >
@@ -32,39 +41,64 @@
               query: { zooId: entityData.zooId },
             }"
           >
-            View Zoo
+            {{ viewButtonLabel }}
+          </nuxt-link>
+        </button>
+        <button
+          v-else
+          class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mr-2"
+          type="button"
+        >
+          <nuxt-link
+            :to="{
+              path: `/animalprofile`,
+            }"
+          >
+            {{ viewButtonLabel }}
           </nuxt-link>
         </button>
       </div>
 
       <button
+        v-if="entityData.zooId"
         class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-2"
         type="button"
         @click="emit('delete', entityData.zooId)"
       >
-        Delete Zoo
+        {{ deleteButtonLabel }}
+      </button>
+      <button
+        v-else
+        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-2"
+        type="button"
+        @click="emit('delete')"
+      >
+        {{ deleteButtonLabel }}
       </button>
       <button
         class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
         type="button"
         @click="emit('update')"
       >
-        Update Zoo
+        {{ updateButtonLabel }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-const emit = defineEmits(["view", "update", "add", "delete"]);
+const emit = defineEmits(["update", "delete"]);
 
 const props = defineProps({
   entityData: {
     type: Object,
-    required: true,
   },
   cardName: String,
+  deleteButtonLabel: String,
+  updateButtonLabel: String,
+  viewButtonLabel: String,
 });
 
-console.log("Zoo Object from Data is", props.entityData);
+// console.log("Zoo Object from Data is", props.entityData);
+console.log("Animal Object is", props.entityData);
 </script>

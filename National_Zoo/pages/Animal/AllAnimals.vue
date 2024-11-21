@@ -67,65 +67,14 @@
         :key="animal.animalId"
         class="m-4 list-none"
       >
-        <div
-          class="cursor-pointer group relative flex flex-col bg-white shadow-sm border border-slate-200 rounded-lg w-80 hover:shadow-lg transition-shadow duration-300"
-        >
-          <div
-            class="relative h-56 m-2.5 overflow-hidden text-white rounded-md"
-          >
-            <img
-              class="transition-transform duration-500 ease-[cubic-bezier(0.25, 1, 0.5, 1)] transform group-hover:scale-110"
-              src="https://images.unsplash.com/photo-1496436818536-e239445d3327?q=80&w=1200"
-              alt="investment-seed-round"
-            />
-          </div>
-          <div class="p-4">
-            <h5 class="mb-2 text-slate-800 text-xl font-semibold">
-              {{ animal.animalName }}
-            </h5>
-            <h6>{{ animal.animalType }}</h6>
-
-            <!-- <p class="text-slate-600 leading-normal font-light">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-            </p> -->
-          </div>
-          <div class="px-4 pb-4 pt-0 mt-2">
-            <div>
-              <button
-                class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mr-2"
-                type="button"
-              >
-                <nuxt-link
-                  :to="{
-                    path: '/animalprofile',
-                  }"
-                >
-                  View Animal
-                </nuxt-link>
-              </button>
-            </div>
-            <div v-if="isAdmin" class="mt-2">
-              <button
-                class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-2"
-                type="button"
-                @click="
-                  () => {
-                    deleteAnimalHandler(animal);
-                  }
-                "
-              >
-                Delete Animal
-              </button>
-              <button
-                class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                type="button"
-                @click="() => onClick(animal)"
-              >
-                Update Animal
-              </button>
-            </div>
-          </div>
-        </div>
+        <ShowCards
+          :entity-data="animal"
+          @delete="deleteAnimalHandler(animal)"
+          @update="onClick(animal)"
+          delete-button-label="Delete Animal"
+          update-button-label="Update Animal"
+          view-button-label="view Animal"
+        />
       </li>
     </div>
     <Pagination
@@ -135,7 +84,6 @@
       @update:currentPage="changePage"
       @fetch-data="fetchAnimals"
     />
-
   </div>
 </template>
 
@@ -184,6 +132,7 @@ const openAddAnimalHandler = () => {
 
 const route = useRoute();
 const zooId = route.query.zooId;
+
 const selectedZoo = ref(null);
 const animals = ref([]);
 const token = useCookie("auth");

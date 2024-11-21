@@ -66,10 +66,13 @@
           cardName="animal"
           @delete="deleteZooHandler"
           @update="onClick(zoo)"
+          delete-button-label="Delete Zoo"
+          update-button-label="Update Zoo"
+          view-button-label="view Zoo"
         />
       </li>
     </div>
-    
+
     <Pagination
       :currentPage="currentPage"
       :totalPages="totalPages"
@@ -77,7 +80,6 @@
       @update:currentPage="changePage"
       @fetch-data="fetchZoo"
     />
-
   </div>
 </template>
 
