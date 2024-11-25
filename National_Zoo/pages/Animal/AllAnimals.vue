@@ -14,6 +14,8 @@
         </button>
       </div>
     </div>
+    <SearchBarr :zooId="zooId" @results="updateAnimalList" />
+    <p v-if="animals.length === 0" class="text-gray-500 text-center">No Results Found</p>
     <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
       <AddAnimal
         :from-data="formData"
@@ -39,16 +41,22 @@
       />
     </div>
 
-    <div v-if="deletedAlert" class="z-50 absolute top-1/2">
+    <div v-if="deletedAlert" class="absolute top-30 end-0">
       <ShowAlert
         :alert-message="'Animal Deleted Successfully'"
         @close-modal="deletedAertClose"
       />
     </div>
-    <div v-if="addAnimalAlert" class="z-50 absolute top-1/2">
+    <div v-if="addAnimalAlert" class="absolute top-30 end-0">
       <ShowAlert
         :alert-message="'Animal Added Successfully'"
         @close-modal="addAertClose"
+      />
+    </div>
+    <div v-if="updateAnimalAlert" class="absolute top-30 end-0">
+      <ShowAlert
+        :alert-message="'Animal Updated SuccessFully'"
+        @close-modal="updateAlertClose"
       />
     </div>
 
@@ -132,7 +140,8 @@ const openAddAnimalHandler = () => {
 
 const route = useRoute();
 const zooId = route.query.zooId;
-
+const updateAnimalAlert = ref(false);
+const updateAnimalAlertMessage = ref("");
 const selectedZoo = ref(null);
 const animals = ref([]);
 const token = useCookie("auth");
@@ -159,6 +168,18 @@ if (decodedToken && decodedToken.role === "admin") {
 }
 
 console.log("isAdmin Value", isAdmin.value);
+
+const afterUpdate = () => {
+  updateAnimalAlert.value = true;
+}
+
+const updateAlertClose = () => {
+  updateAnimalAlert.value = false;
+}
+
+const updateAnimalAlertMessageSet = () => {
+  return updateAnimalAlertMessage;
+}
 
 const deletedAertClose = () => {
   deletedAlert.value = false;
@@ -197,6 +218,14 @@ const fetchAnimals = async (
   totalPages.value = data.totalPages;
   console.log("Total Animals in Zoo is", animals);
 };
+
+const updateAnimalList = (results) => {
+  console.log("Before Updated Animals List", animals.value);
+  
+  animals.value = results;
+  console.log('Updated Animals List:', animals.value);
+};
+
 
 const deleteAnimal = async () => {
   try {
@@ -252,10 +281,14 @@ const updateAnimal = async () => {
     });
     openUpdateModal.value = false;
     intiliazeFormData();
+    updateAnimalAlertMessage.value = res;
+    afterUpdate()
 
     fetchAnimals(currentPage.value, pageSize.value);
   } catch (error) {
     console.error("Error updating Animal:", error);
+    updateAnimalAlertMessage.value = error;
+    afterUpdate()
   }
 };
 

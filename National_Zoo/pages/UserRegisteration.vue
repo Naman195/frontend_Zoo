@@ -1,5 +1,5 @@
 <template>
-  <div v-if="registeredAlert" class="z-50 absolute top-1/2">
+  <div v-if="registeredAlert" class="absolute top-11 start-1/2 -translate-x-1/2">
     <ShowAlert
       :alert-message="registerAlertRes()"
       @close-modal="registerAlertClose"

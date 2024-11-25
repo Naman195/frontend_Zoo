@@ -6,20 +6,33 @@
       <button
         class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
         type="button"
-        @click="
-          () => {
-            openModal = true;
-          }
-        "
+        @click="openModal = true"
       >
         Add Zoo
       </button>
     </div>
 
-    <div v-if="deletedAlert" class="z-50 absolute top-1/2">
+    <SearchBar @results="updateZooList" />
+    <p v-if="filteredZoos.length === 0" class="text-gray-500 text-center">No Results Found</p>
+      
+
+    <div v-if="deletedAlert" class="absolute top-30 end-0">
       <ShowAlert
         :alert-message="deleteAlertMessageSet()"
         @close-modal="deletedAertClose"
+      />
+    </div>
+    <div v-if="addAlert" class="absolute top-30 end-0">
+      <ShowAlert
+        :alert-message="addAlertMessageSet()"
+        @close-modal="addAlertClose"
+      />
+    </div>
+
+    <div v-if="updateAlert" class="absolute top-30 end-0">
+      <ShowAlert
+        :alert-message="handleUpdateAlert()"
+        @close-modal="updateAlertClose"
       />
     </div>
 
@@ -59,7 +72,7 @@
 
     <!-- Display All Zoos -->
     <div class="flex flex-wrap justify-center">
-      <li v-for="(zoo, id) in Zoos" :key="id" class="m-4 list-none">
+      <li v-for="(zoo, id) in filteredZoos" :key="id" class="m-4 list-none">
         <ShowCards
           :entity-data="zoo"
           :zooId="nextZooId"
@@ -72,19 +85,24 @@
         />
       </li>
     </div>
+    <div v-if="!isSearching">
 
-    <Pagination
+      <Pagination
       :currentPage="currentPage"
       :totalPages="totalPages"
       :pageSize="pageSize"
       @update:currentPage="changePage"
       @fetch-data="fetchZoo"
-    />
+    
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
 const Zoos = ref();
+const filteredZoos = ref([]);
+const isSearching = ref(false); 
 const id = ref(null);
 const zooId = ref(null);
 const nextZooId = ref(0);
@@ -93,6 +111,10 @@ const totalPages = ref(0);
 const pageSize = ref(3);
 const deletedAlert = ref(false);
 const deleteAlertMessage = ref("");
+const addAlert = ref(false);
+const addAlertMessage = ref("");
+const updateAlert = ref(false);
+const updateAlertMessage = ref("");
 const opendeleteModal = ref(false);
 const openModal = ref(false);
 const openUpdateModal = ref(false);
@@ -141,6 +163,26 @@ const deleteAlertMessageSet = () => {
   return deleteAlertMessage;
 };
 
+const addAlertMessageSet = () => {
+  return addAlertMessage;
+}
+
+const afterAdd = () => {
+  addAlert.value = true;
+};
+
+const addAlertClose = () => {
+  addAlert.value = false;
+}
+
+const afterUpdate = () => {
+  updateAlert.value = true;
+}
+
+const updateAlertClose = () => {
+  updateAlert.value = false
+}
+
 const changePage = (page) => {
   if (page >= 0 && page < totalPages.value) {
     currentPage.value = page;
@@ -158,6 +200,10 @@ const deleteZooHandler = (id) => {
 
   opendeleteModal.value = true;
 };
+
+const handleUpdateAlert = () => {
+  return updateAlertMessage;
+}
 
 function intiliazeFormData() {
   (updatedformData.value.zooName = ""),
@@ -179,6 +225,8 @@ function onClick(zoo) {
   console.log("Update Zoo Object is", zoo);
 
   openUpdateModal.value = true;
+  
+  zooId.value = zoo.zooId;
   id.value = zoo.zooId;
   updatedformData.value.zooName = zoo.zooName;
   updatedformData.value.address.zipCode = zoo.address.zipCode;
@@ -198,23 +246,37 @@ function onClick(zoo) {
     zoo.address.city.state.country.countryId;
 }
 
+
+
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
   try {
     const data = await useCustomFetch(`/zoo/all?page=${page}&size=${size}`);
-    Zoos.value = data.content;
+    Zoos.value = data.content; // Reactive assignment
+    filteredZoos.value = [...Zoos.value]; // Ensure reactivity
     totalPages.value = data.totalPages;
+    isSearching.value = false;
+    console.log("Updated filteredZoos in fetchZoo:", filteredZoos.value);
   } catch (error) {
     console.error("Error fetching zoos:", error);
   }
 };
 
+
+
+const updateZooList = (results) => {
+  isSearching.value = true;
+  filteredZoos.value = [...results.value];
+};
+
+
+
 const deleteZoo = async () => {
-  //   if (zooId.value) {
   try {
     const data = await useCustomFetch(`/zoo/del/${zooId.value}`, {
       method: "PATCH",
     });
     Zoos.value = Zoos.value.filter((zoo) => zoo.zooId !== zooId.value);
+    filteredZoos.value = Zoos.value;
     opendeleteModal.value = false;
     deleteAlertMessage.value = data;
     afterDelete();
@@ -222,7 +284,7 @@ const deleteZoo = async () => {
     console.error("Error deleting zoo:", error);
   }
 };
-// };
+
 
 const addZoo = async () => {
   const resbody = {
@@ -243,8 +305,14 @@ const addZoo = async () => {
     });
     openModal.value = false;
     intiliazeFormData();
+    // console.log(response);
+    addAlertMessage.value = response;
+    afterAdd()
+    fetchZoo(currentPage.value, pageSize.value);
+    
   } catch (error) {
     console.log("Error in Adding Zoo", error);
+    addAlertMessage.value = error;
   }
 };
 
@@ -273,7 +341,9 @@ const updateZoo = async () => {
     intiliazeFormData();
     updateAlertMessage.value = "Zoo Update SuccessFully";
     handleUpdateAlert();
-    fetchZoo();
+    afterUpdate()
+    // fetchZoo();
+    fetchZoo(currentPage.value, pageSize.value);
   } catch (error) {
     updateAlertMessage.value = error;
     console.error("Error updating zoo:", error);

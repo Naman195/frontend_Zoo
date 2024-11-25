@@ -1,5 +1,5 @@
 <template>
-  <div v-if="logInAlert" class="z-50 absolute top-1/2">
+  <div v-if="logInAlert" class="absolute bottom-12 start-1/2 -translate-x-1/2">
     <ShowAlert
       :alert-message="afterLoginMessageRes"
       @close-modal="handleLoginAlertClose"
@@ -88,6 +88,8 @@ const loginUser = async () => {
     });
     token.value = data.token;
     logIn(data.userId);
+    console.log("login Message", data);
+    
     afterLoginMessageRes.value = data.message;
     loginAlertopen();
     setTimeout(() => {

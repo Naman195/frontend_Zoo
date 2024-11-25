@@ -36,7 +36,7 @@ const handleSetPassword = async () => {
       body: setPassword.value,
     });
     console.log("PAssword Set Successfully", response);
-    router.push("/");
+    router.push("/userlogin");
 
     console.log("Token Value", token);
   } catch (error) {

@@ -52,15 +52,15 @@
     </div>
 
     <div
-      v-if="isProfileVisible"
+      v-if="isProfileVisible && userProfile"
       class="absolute right-0 mt-2 w-64 bg-white shadow-md p-4 rounded-lg"
     >
       <h2 class="font-bold text-lg">User Profile</h2>
       <p>
-        <strong>Name:</strong>{{ userProfile.firstName }}
+        <strong>Name:</strong> {{ userProfile.fullName }}
         {{ userProfile.lastName }}
       </p>
-      <p><strong>City:</strong>{{ userProfile.address.city.cityName }}</p>
+      <p><strong>City:</strong> {{ userProfile.address.city.cityName }}</p>
 
       <!-- Buttons container -->
       <div class="flex justify-between mt-4">
@@ -75,6 +75,7 @@
             () => {
               toggleUpdateModal();
               fillupdateFormData();
+              fetchCountries()
             }
           "
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-3 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -286,9 +287,6 @@ const { userProfile, setUser, getUser } = useUserProfile();
 const userToken = useCookie("isLoggedIn");
 const isProfileVisible = ref(false);
 const isUpdateModalVisible = ref(false);
-
-const token = useCookie("auth");
-
 const updateAlert = ref(false);
 
 const afterUpdate = () => {
@@ -338,7 +336,7 @@ onBeforeMount(() => {
   if (userToken.value == true) {
     // getUser();
     fetchProfile();
-    fetchCountries();
+    // fetchCountries();
   }
 });
 

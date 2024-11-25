@@ -1,35 +1,24 @@
 <template>
-  <div
-    id="toast-success"
-    class="fixed flex items-center w-full max-w-xs p-4 text-white-600 bg-red-600 rounded-lg top-20 right-10 shadow dark:text-black-400 dark:bg-gray-800"
-    role="alert"
-  >
-    <div class="ms-3 text-sm font-normal">{{ alertMessage }}</div>
-    <button
-      @click="emit('closeModal')"
-      type="button"
-      class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
-      data-dismiss-target="#toast-danger"
-      aria-label="Close"
-    >
-      <span class="sr-only">Close</span>
-      <svg
-        class="w-3 h-3"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 14 14"
-      >
-        <path
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-        />
-      </svg>
-    </button>
+ 
+<!-- Toast -->
+<div id="dismiss-toast" class="hs-removing:translate-x-5 hs-removing:opacity-0 transition duration-300 max-w-xs bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-neutral-800 dark:border-neutral-700" role="alert" tabindex="-1" aria-labelledby="hs-toast-dismiss-button-label">
+  <div class="flex p-4">
+    <p id="hs-toast-dismiss-button-label" class="text-sm text-gray-700 dark:text-neutral-400">
+      {{alertMessage}}
+    </p>
+
+    <div class="ms-auto">
+      <button  @click="emit('closeModal')" type="button" class="inline-flex shrink-0 justify-center items-center size-5 rounded-lg text-gray-800 opacity-50 hover:opacity-100 focus:outline-none focus:opacity-100 dark:text-white" aria-label="Close" data-hs-remove-element="#dismiss-toast">
+        <span class="sr-only">Close</span>
+        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button>
+    </div>
   </div>
+</div>
+<!-- End Toast -->
 </template>
 
 <script setup>
