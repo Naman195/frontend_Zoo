@@ -1,5 +1,5 @@
 <template>
-  <div v-if="forgetPassAlert" class="z-50 absolute top-1/2">
+  <div v-if="forgetPassAlert" class="absolute top-11 start-1/2 -translate-x-1/2">
     <ShowAlert
       :alert-message="forgotPassAlertRes()"
       @close-modal="forgetPassAlert = false"
@@ -49,10 +49,10 @@ const handleForgotPassword = async () => {
    forgotPassmessage.value = response.message
    forgetPassAlert.value = true;
    const email = response.email;
-   setTimeout(() => {
+  //  setTimeout(() => {
      router.push({ path: '/otpverify', query: { email } });
     
-   }, 1000);
+  //  }, 1000);
    
   } catch (error) {
     console.log("An error occurred: " + error);
