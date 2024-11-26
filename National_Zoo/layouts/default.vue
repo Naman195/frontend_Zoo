@@ -1,10 +1,4 @@
 <template>
-  <div v-if="updateAlert">
-    <ShowAlert
-      :alert-message="'User Updated  Successfully'"
-      @close-modal="closeUpdateAlert"
-    />
-  </div>
   <nav class="bg-gray-800 p-4">
     <div class="container mx-auto flex justify-between items-center">
       <div class="text-white text-lg font-semibold">
@@ -75,7 +69,7 @@
             () => {
               toggleUpdateModal();
               fillupdateFormData();
-              fetchCountries()
+              fetchCountries();
             }
           "
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-3 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -270,6 +264,13 @@
     <!-- <cuctom :name = /> -->
     <!-- ......new .... -->
   </nav>
+
+  <div v-if="updateAlert" class="absolute top-30 end-0">
+    <ShowAlert
+      :alert-message="'User Updated  Successfully'"
+      @close-modal="closeUpdateAlert"
+    />
+  </div>
   <div>
     <slot />
   </div>

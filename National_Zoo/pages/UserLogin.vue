@@ -43,11 +43,14 @@
       <p class="note">
         If new user, please <NuxtLink to="/userregisteration">sign up</NuxtLink>
       </p>
+      <p class="note">
+        Forgot Pass, <NuxtLink to="/forgotpass">forgot pass</NuxtLink>
+      </p>
     </Form>
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { Field, Form, ErrorMessage } from "vee-validate";
 
 import "../assests/css/LoginStyle.css";
@@ -82,22 +85,24 @@ const handleLoginAlertClose = () => {
 
 const loginUser = async () => {
   try {
-    const data = await useCustomFetch("/auth/user/login", {
+    const data: any = await useCustomFetch("/auth/user/login", {
       method: "POST",
       body: form,
     });
     token.value = data.token;
     logIn(data.userId);
     console.log("login Message", data);
-    
+
     afterLoginMessageRes.value = data.message;
     loginAlertopen();
     setTimeout(() => {
       router.push("/");
     }, 1000);
-  } catch (err) {
+  } catch (err: any) {
     afterLoginMessageRes.value = err.response._data.message;
     loginAlertopen();
+    console.log(err);
+
     console.error(
       "An error occurred during login:",
       err.response._data.message

@@ -13,8 +13,9 @@
     </div>
 
     <SearchBar @results="updateZooList" />
-    <p v-if="filteredZoos.length === 0" class="text-gray-500 text-center">No Results Found</p>
-      
+    <p v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
+      No Results Found
+    </p>
 
     <div v-if="deletedAlert" class="absolute top-30 end-0">
       <ShowAlert
@@ -86,14 +87,12 @@
       </li>
     </div>
     <div v-if="!isSearching">
-
       <Pagination
-      :currentPage="currentPage"
-      :totalPages="totalPages"
-      :pageSize="pageSize"
-      @update:currentPage="changePage"
-      @fetch-data="fetchZoo"
-    
+        :currentPage="currentPage"
+        :totalPages="totalPages"
+        :pageSize="pageSize"
+        @update:currentPage="changePage"
+        @fetch-data="fetchZoo"
       />
     </div>
   </div>
@@ -102,7 +101,7 @@
 <script setup>
 const Zoos = ref();
 const filteredZoos = ref([]);
-const isSearching = ref(false); 
+const isSearching = ref(false);
 const id = ref(null);
 const zooId = ref(null);
 const nextZooId = ref(0);
@@ -165,7 +164,7 @@ const deleteAlertMessageSet = () => {
 
 const addAlertMessageSet = () => {
   return addAlertMessage;
-}
+};
 
 const afterAdd = () => {
   addAlert.value = true;
@@ -173,15 +172,15 @@ const afterAdd = () => {
 
 const addAlertClose = () => {
   addAlert.value = false;
-}
+};
 
 const afterUpdate = () => {
   updateAlert.value = true;
-}
+};
 
 const updateAlertClose = () => {
-  updateAlert.value = false
-}
+  updateAlert.value = false;
+};
 
 const changePage = (page) => {
   if (page >= 0 && page < totalPages.value) {
@@ -203,7 +202,7 @@ const deleteZooHandler = (id) => {
 
 const handleUpdateAlert = () => {
   return updateAlertMessage;
-}
+};
 
 function intiliazeFormData() {
   (updatedformData.value.zooName = ""),
@@ -225,7 +224,7 @@ function onClick(zoo) {
   console.log("Update Zoo Object is", zoo);
 
   openUpdateModal.value = true;
-  
+
   zooId.value = zoo.zooId;
   id.value = zoo.zooId;
   updatedformData.value.zooName = zoo.zooName;
@@ -246,8 +245,6 @@ function onClick(zoo) {
     zoo.address.city.state.country.countryId;
 }
 
-
-
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
   try {
     const data = await useCustomFetch(`/zoo/all?page=${page}&size=${size}`);
@@ -255,20 +252,16 @@ const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
     filteredZoos.value = [...Zoos.value]; // Ensure reactivity
     totalPages.value = data.totalPages;
     isSearching.value = false;
-    console.log("Updated filteredZoos in fetchZoo:", filteredZoos.value);
+    // console.log("Updated filteredZoos in fetchZoo:", filteredZoos.value);
   } catch (error) {
     console.error("Error fetching zoos:", error);
   }
 };
 
-
-
 const updateZooList = (results) => {
   isSearching.value = true;
   filteredZoos.value = [...results.value];
 };
-
-
 
 const deleteZoo = async () => {
   try {
@@ -284,7 +277,6 @@ const deleteZoo = async () => {
     console.error("Error deleting zoo:", error);
   }
 };
-
 
 const addZoo = async () => {
   const resbody = {
@@ -307,9 +299,8 @@ const addZoo = async () => {
     intiliazeFormData();
     // console.log(response);
     addAlertMessage.value = response;
-    afterAdd()
+    afterAdd();
     fetchZoo(currentPage.value, pageSize.value);
-    
   } catch (error) {
     console.log("Error in Adding Zoo", error);
     addAlertMessage.value = error;
@@ -341,7 +332,7 @@ const updateZoo = async () => {
     intiliazeFormData();
     updateAlertMessage.value = "Zoo Update SuccessFully";
     handleUpdateAlert();
-    afterUpdate()
+    afterUpdate();
     // fetchZoo();
     fetchZoo(currentPage.value, pageSize.value);
   } catch (error) {

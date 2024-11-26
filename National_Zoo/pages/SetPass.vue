@@ -1,16 +1,35 @@
 <template>
+  <div
+    v-if="passwordAlert"
+    class="absolute bottom-12 start-1/2 -translate-x-1/2"
+  >
+    <ShowAlert
+      :alert-message="passwordAlertRes()"
+      @close-modal="passAlertClose"
+    />
+  </div>
   <div class="login-container">
     <h1>Set new Password</h1>
 
     <form @submit.prevent="handleSetPassword" class="login-form">
       <div v-if="isLoggedIn" class="form-group">
         <label for="oldPassword">Old Password</label>
-        <input type="password" id = "oldPassword" v-model="oldPassword" placeholder="Enter your Old Password" required />
-
+        <input
+          type="password"
+          id="oldPassword"
+          v-model="oldPassword"
+          placeholder="Enter your Old Password"
+          required
+        />
       </div>
       <div class="form-group">
         <label for="username">Password</label>
-        <input type="password" v-model="newPassword" required />
+        <input
+          type="password"
+          v-model="newPassword"
+          placeholder="Enter your new Password"
+          required
+        />
       </div>
 
       <button type="submit" class="submit-btn">Set Pass</button>
@@ -26,42 +45,52 @@ import { useRoute } from "vue-router";
 const newPassword = ref("");
 const oldPassword = ref("");
 
-const route = useRoute();
 const router = useRouter();
 
+const passwordAlert = ref(false);
+const passwordAlertMessage = ref("");
+
+const passwordAlertRes = () => {
+  return passwordAlertMessage;
+};
+
+const afterSetPass = () => {
+  passwordAlert.value = true;
+};
+
+const passAlertClose = () => {
+  passwordAlert.value = false;
+};
 // token.value = route.query.token;
 
-const tokenCookie = useCookie("auth");
+// const tokenCookie = useCookie("auth");
 const isLoggedIn = useCookie("isLoggedIn");
 console.log("IsLOgged value is ", isLoggedIn.value);
 
-// const isLoggedIn = computed(() => !!tokenCookie);
-
-// const token = computed(() =>  tokenCookie.value || route.query.token || "");
-// const token = tokenCookie.value || route.query.token || "";
-
-// console.log("User LOggedIn Value", userLogin.value);
-
 const handleSetPassword = async () => {
   try {
-
     const requestBody = {
-      newPassword : newPassword.value,
+      newPassword: newPassword.value,
     };
 
-    if(isLoggedIn.value){
+    if (isLoggedIn.value) {
       requestBody.oldPassword = oldPassword.value;
     }
     const response = await useCustomFetch(`/auth/setpassword`, {
-
       method: "POST",
-      body: requestBody
+      body: requestBody,
     });
     console.log("PAssword Set Successfully", response);
-    router.push("/userlogin");
+    passwordAlertMessage.value = response;
+    afterSetPass();
+    setTimeout(() => {
+      router.push("/userlogin");
+    }, 1000);
     console.log("Token Value", token);
   } catch (error) {
-    console.log("Error in Set Pass Password Try Again", error);
+    console.log("Error in Set Pass Password Try Again", error.data);
+    passwordAlertMessage.value = error.data;
+    afterSetPass();
   }
 };
 </script>

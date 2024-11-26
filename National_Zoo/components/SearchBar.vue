@@ -1,4 +1,3 @@
-
 <template>
   <div class="flex items-center space-x-2">
     <input
@@ -15,12 +14,10 @@
     </button>
   </div>
 </template>
-  
+
 <script setup>
-
-
-const searchQuery = ref('');
-const emit = defineEmits(['results']);
+const searchQuery = ref("");
+const emit = defineEmits(["results"]);
 
 const performSearch = async () => {
   const trimmedQuery = searchQuery.value.trim();
@@ -29,18 +26,25 @@ const performSearch = async () => {
   }
   const results = ref([]);
 
-  if (trimmedQuery.includes(',')) {
-    const [country, state, city] = trimmedQuery.split(',').map(part => part.trim());
-    const data = await useCustomFetch(`/zoo/search/zoos/location?country=${country}&state=${state || ''}&city=${city || ''}`);
-    console.log(data); 
-    results.value = data
+  if (trimmedQuery.includes(",")) {
+    const [country, state, city] = trimmedQuery
+      .split(",")
+      .map((part) => part.trim());
+    const data = await useCustomFetch(
+      `/zoo/search/zoos/location?country=${country}&state=${state || ""}&city=${
+        city || ""
+      }`
+    );
+    console.log(data);
+    results.value = data;
   } else {
-    const  data  = await useCustomFetch(`/zoo/search/zoos/name?name=${trimmedQuery}`);
-    console.log("Content is",data.content); 
-    results.value = data
+    const data = await useCustomFetch(
+      `/zoo/search/zoos/name?name=${trimmedQuery}`
+    );
+    console.log("Content is", data.content);
+    results.value = data;
     console.log("Results Array is", results);
-    
-  } 
-  emit('results', results);
+  }
+  emit("results", results);
 };
 </script>

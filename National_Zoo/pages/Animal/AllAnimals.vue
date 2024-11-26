@@ -15,7 +15,9 @@
       </div>
     </div>
     <SearchBarr :zooId="zooId" @results="updateAnimalList" />
-    <p v-if="animals.length === 0" class="text-gray-500 text-center">No Results Found</p>
+    <p v-if="animals.length === 0" class="text-gray-500 text-center">
+      No Results Found
+    </p>
     <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
       <AddAnimal
         :from-data="formData"
@@ -85,13 +87,15 @@
         />
       </li>
     </div>
-    <Pagination
-      :currentPage="currentPage"
-      :totalPages="totalPages"
-      :pageSize="pageSize"
-      @update:currentPage="changePage"
-      @fetch-data="fetchAnimals"
-    />
+    <div v-if="!isSearching">
+      <Pagination
+        :currentPage="currentPage"
+        :totalPages="totalPages"
+        :pageSize="pageSize"
+        @update:currentPage="changePage"
+        @fetch-data="fetchAnimals"
+      />
+    </div>
   </div>
 </template>
 
@@ -153,6 +157,7 @@ const openUpdateModal = ref(false);
 const addAnimalAlert = ref(false);
 const fetchCategories = ref([]);
 const isAdmin = ref(false);
+const isSearching = ref(false);
 
 const decodeJWT = (token) => {
   if (!token) return null;
@@ -171,15 +176,15 @@ console.log("isAdmin Value", isAdmin.value);
 
 const afterUpdate = () => {
   updateAnimalAlert.value = true;
-}
+};
 
 const updateAlertClose = () => {
   updateAnimalAlert.value = false;
-}
+};
 
 const updateAnimalAlertMessageSet = () => {
   return updateAnimalAlertMessage;
-}
+};
 
 const deletedAertClose = () => {
   deletedAlert.value = false;
@@ -217,15 +222,16 @@ const fetchAnimals = async (
   animals.value = data.content;
   totalPages.value = data.totalPages;
   console.log("Total Animals in Zoo is", animals);
+  isSearching.value = false;
 };
 
 const updateAnimalList = (results) => {
   console.log("Before Updated Animals List", animals.value);
-  
-  animals.value = results;
-  console.log('Updated Animals List:', animals.value);
-};
 
+  animals.value = results;
+  console.log("Updated Animals List:", animals.value);
+  isSearching.value = true;
+};
 
 const deleteAnimal = async () => {
   try {
@@ -282,13 +288,13 @@ const updateAnimal = async () => {
     openUpdateModal.value = false;
     intiliazeFormData();
     updateAnimalAlertMessage.value = res;
-    afterUpdate()
+    afterUpdate();
 
     fetchAnimals(currentPage.value, pageSize.value);
   } catch (error) {
     console.error("Error updating Animal:", error);
     updateAnimalAlertMessage.value = error;
-    afterUpdate()
+    afterUpdate();
   }
 };
 

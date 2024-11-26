@@ -100,5 +100,5 @@ const props = defineProps({
 });
 
 // console.log("Zoo Object from Data is", props.entityData);
-console.log("Animal Object is", props.entityData);
+// console.log("Animal Object is", props.entityData);
 </script>
