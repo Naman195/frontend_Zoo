@@ -15,14 +15,14 @@
   <div class="card-grid">
     <div v-if="openModal" class="z-50 absolute top-1/2">
       <Modal
-        :message="'User'"
+        :message:any="'User'"
         @delete-user="deleteUserApi"
         @close-modal="openModal = false"
       />
     </div>
     <div class="card" v-for="user in filteredUsers" :key="user.userId">
       <div class="card-body">
-        <h5 class="card-title">{{ user.firstName }} {{ user.lastName }}</h5>
+        <h5 class="card-title">{{ user.fullName }} {{ user.email }}</h5>
         <p class="card-text">{{ user.userId }}</p>
         <p class="card-text">{{ user.address.zipCode }}</p>
         <div class="flex justify-between mt-4">
@@ -242,24 +242,54 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import "../assests/css/AllUsers.css";
 
+interface Country {
+  countryId: number;
+  countryName: string;
+}
+
+interface State {
+  stateId: number;
+  stateName: string;
+}
+
+interface City {
+  cityId: number,
+  cityName: string
+}
+
+interface User {
+  userId: number;
+  fullName: string;
+  email: string;
+  address: {
+    zipCode: string;
+    street: string;
+    city: {
+      cityId: null 
+    }
+  };
+}
+
 const isUpdateModalVisible = ref(false);
-const userId = ref(null);
+const userId = ref<number | null>(null);
+
 // const userID = useCookie("userId");
 const user = ref(null);
 const token = useCookie("auth");
 const updateAlert = ref(false);
 
-const countries = ref([]);
-const states = ref([]);
-const cities = ref([]);
+const countries = ref<Country[]>([]);
+const states = ref<State[]>([]);
+const cities = ref<City[]>([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
 
 const openModal = ref(false);
-const userLoggedInId = useCookie("userId");
+// const userLoggedInId = useCookie("userId");
+const userLoggedInId = useCookie<string>('userId');
 
 const form = reactive({
   firstName: "",
@@ -281,7 +311,7 @@ const closeUpdateAlert = () => {
   updateAlert.value = false;
 };
 
-const getUserId = (user) => {
+const getUserId = (user: User): void => {
   userId.value = user.userId;
   console.log("Delete User Id", userId.value);
 };
@@ -297,7 +327,7 @@ const toggleUpdateModal = () => {
 
 const fetchProfile = async () => {
   try {
-    const fetchedUser = await useCustomFetch(`/auth/user/${userId.value}`);
+    const fetchedUser :any= await useCustomFetch(`/auth/user/${userId.value}`);
     user.value = fetchedUser;
     form.firstName = fetchedUser.firstName;
     form.lastName = fetchedUser.lastName;
@@ -315,7 +345,7 @@ const fetchProfile = async () => {
 
 const fetchCountries = async () => {
   try {
-    const data = await useCustomFetch(`/auth/countries`);
+    const data :any= await useCustomFetch<Country[]>(`/auth/countries`);
     countries.value = data;
   } catch (error) {
     console.error("Error fetching countries:", error);
@@ -331,7 +361,7 @@ const handleCountryChange = () => {
 const fetchStates = async () => {
   if (!selectedCountry.value) return;
   try {
-    const data = await useCustomFetch(`/auth/state/${selectedCountry.value}`);
+    const data :any= await useCustomFetch(`/auth/state/${selectedCountry.value}`);
     states.value = data;
   } catch (error) {
     console.error("Error fetching States:", error);
@@ -346,7 +376,7 @@ const handleStateChange = () => {
 
 const fetchCities = async () => {
   try {
-    const data = await useCustomFetch(`/auth/cities/${selectedState.value}`);
+    const data :any= await useCustomFetch(`/auth/cities/${selectedState.value}`);
     cities.value = data;
   } catch (error) {
     console.error("Error fetching Cities:", error);
@@ -369,18 +399,22 @@ const updateUser = async () => {
   }
 };
 
-const users = ref([]);
+const users = ref<User[]>([]);
 
-const filteredUsers = ref([]);
+const filteredUsers = ref<User[]>([]);
 
 const fetchUsers = async () => {
   try {
-    const data = await useCustomFetch("/auth/allusers");
+    const data :any= await useCustomFetch("/auth/allusers");
     users.value = data;
 
-    filteredUsers.value = users.value.filter(
-      (user) => user.userId !== userLoggedInId.value
-    );
+    if (userLoggedInId.value) {
+      const loggedInUserId = parseInt(userLoggedInId.value, 10);
+      filteredUsers.value = users.value.filter(user => user.userId !== loggedInUserId);
+    } else {
+      // If no user is logged in, show all users
+      filteredUsers.value = users.value;
+    }
     // fetchProfile();
     // console.log(filteredUsers.value);
   } catch (error) {
@@ -409,8 +443,8 @@ const deleteUser = async () => {
 
     //alert(deleteUser);
     console.log("Data Deleted");
-  } catch (error) {
-    alert("error in deleting the User", error);
+  } catch (error:any) {
+    // alert("error in deleting the User", error);
   }
 };
 

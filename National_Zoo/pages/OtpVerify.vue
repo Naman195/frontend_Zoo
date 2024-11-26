@@ -18,29 +18,30 @@
     </div>
   </template>
   
-  <script setup>
+  <script setup lang="ts">
   import "../assests/css/Otpverify.css";
   
-  const form = ref({
-    email: "",
-    otp: ""
-  });
+
+  const form = ref<{ email: string; otp: string }>({
+  email: "",
+  otp: "",
+});
   
-  const otpArray = ref(new Array(5).fill('')); 
+  const otpArray = ref<string[]>(new Array(5).fill('')); 
   const isDisabled = computed(() => otpArray.value.some((digit) => digit === '')); 
   
 
-  const moveFocus = (index, event) => {
-    const input = event.target;
-    if (input.value && index < otpArray.value.length - 1) {
-      const nextInput = input.nextElementSibling;
-      nextInput?.focus();
-    }
-  };
+  const moveFocus = (index: number, event: Event): void => {
+  const input = event.target as HTMLInputElement;
+  if (input.value && index < otpArray.value.length - 1) {
+    const nextInput = input.nextElementSibling as HTMLInputElement | null;
+    nextInput?.focus();
+  }
+};
   
   const route = useRoute();
   const router = useRouter();
-  const email = route.query.email;
+  const email = route.query.email as string;
   
   onMounted(() => {
     form.value.email = email;
@@ -49,10 +50,10 @@
   
   const submitOtp = async () => {
   form.value.otp = otpArray.value.join(''); 
-  // console.log('Submitted OTP:', form.value.otp);
+
 
   try {
-    const response = await useCustomFetch("/auth/verifyotp", {
+    const response :any= await useCustomFetch("/auth/verifyotp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -74,11 +75,11 @@
     } else {
       alert(response.message || "Verification failed. Please try again.");
     }
-  } catch (error) {
+  } catch (error:any) {
     console.error("An error occurred: " + error);
     alert("An error occurred during OTP verification. Please try again.");
   }
 };
   </script>
   
-  <style></style>
+  

@@ -4,7 +4,7 @@
     class="absolute bottom-12 start-1/2 -translate-x-1/2"
   >
     <ShowAlert
-      :alert-message="passwordAlertRes()"
+      :alert-message:="passwordAlertRes()"
       @close-modal="passAlertClose"
     />
   </div>
@@ -37,7 +37,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import "../assests/css/LoginStyle.css";
 import { useRoute } from "vue-router";
 
@@ -65,18 +65,17 @@ const passAlertClose = () => {
 
 // const tokenCookie = useCookie("auth");
 const isLoggedIn = useCookie("isLoggedIn");
-console.log("IsLOgged value is ", isLoggedIn.value);
 
 const handleSetPassword = async () => {
   try {
-    const requestBody = {
+    const requestBody: {newPassword: string; oldPassword?: string} = {
       newPassword: newPassword.value,
     };
 
     if (isLoggedIn.value) {
       requestBody.oldPassword = oldPassword.value;
     }
-    const response = await useCustomFetch(`/auth/setpassword`, {
+    const response :any= await useCustomFetch(`/auth/setpassword`, {
       method: "POST",
       body: requestBody,
     });
@@ -86,8 +85,8 @@ const handleSetPassword = async () => {
     setTimeout(() => {
       router.push("/userlogin");
     }, 1000);
-    console.log("Token Value", token);
-  } catch (error) {
+  
+  } catch (error: any) {
     console.log("Error in Set Pass Password Try Again", error.data);
     passwordAlertMessage.value = error.data;
     afterSetPass();

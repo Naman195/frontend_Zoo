@@ -1,7 +1,7 @@
 <template>
   <div v-if="registeredAlert" class="absolute top-11 start-1/2 -translate-x-1/2">
     <ShowAlert
-      :alert-message="registerAlertRes()"
+      :alert-message:any ="registerAlertRes()"
       @close-modal="registerAlertClose"
     />
   </div>
@@ -180,22 +180,41 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Field, Form, ErrorMessage } from "vee-validate";
 import "../assests/css/style.css";
 // import CustomInput from '~/components/CustomInput.vue';
 
+interface Country {
+  countryId: number;
+  countryName: string;
+}
+
+interface State {
+  stateId: number;
+  stateName: string;
+}
+
+interface City {
+  cityId: number,
+  cityName: string
+}
+
+interface Role {
+  id: number;
+  role: string;
+}
+
 const passwordVisible = ref(false);
-const userToken = useCookie("isLoggedIn");
 const router = useRouter();
-const countries = ref([]);
-const states = ref([]);
-const cities = ref([]);
+const countries = ref<Country[]>([]);
+const states = ref<State[]>([]);
+const cities = ref<City[]>([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
 const registeredAlert = ref(false);
-const afterRegisterationMessage = ref("");
-const roles = ref([]);
+const afterRegisterationMessage :any = ref("");
+const roles = ref<Role[]>([]);
 
 // const formkey = Math.random();
 
@@ -232,7 +251,7 @@ const togglePasswordVisibility = () => {
 
 const fetchCountries = async () => {
   try {
-    const data = await $fetch(`http://localhost:8080/api/auth/countries`);
+    const data = await $fetch<Country[]>(`http://localhost:8080/api/auth/countries`);
     countries.value = data;
   } catch (error) {
     console.error("Error fetching countries:", error);
@@ -248,7 +267,7 @@ const handleCountryChange = () => {
 const fetchStates = async () => {
   if (!selectedCountry) return;
   try {
-    const data = await $fetch(
+    const data = await $fetch<State[]>(
       `http://localhost:8080/api/auth/state/${selectedCountry.value}`
     );
     states.value = data;
@@ -265,7 +284,7 @@ const handleStateChange = () => {
 
 const fetchCities = async () => {
   try {
-    const data = await $fetch(
+    const data = await $fetch<City[]>(
       `http://localhost:8080/api/auth/cities/${selectedState.value}`
     );
     cities.value = data;
@@ -276,7 +295,7 @@ const fetchCities = async () => {
 
 const registerUser = async () => {
   try {
-    const data = await useCustomFetch("/auth/user/create", {
+    const data :any = await useCustomFetch("/auth/user/create", {
       method: "POST",
       body: form,
     });
@@ -286,7 +305,7 @@ const registerUser = async () => {
       form.email = "";
       form.userName = "";
       form.password = "";
-      form.role = "";
+      form.roleId = "";
       form.address.street = "";
       form.address.zipCode = "";
       form.address.city.cityId = null;
@@ -307,7 +326,7 @@ const registerUser = async () => {
       afterRegisterationMessage.value = data;
       alert("Error: " + data.response);
     }
-  } catch (err) {
+  } catch (err:any) {
     afterRegisterationMessage.value = err.response._data;
     console.error("An error occurred during registration:", err.response);
     registerAlert();
@@ -318,7 +337,7 @@ const registerUser = async () => {
 
 const fetchRoles = async () => {
   try {
-    const data = await useCustomFetch("/role/all");
+    const data :any = await useCustomFetch("/role/all");
     roles.value = data;
   } catch (error) {
     console.log("Error In fetching Roles", error);
