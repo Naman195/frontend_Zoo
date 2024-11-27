@@ -1,0 +1,179 @@
+package com.example.naman.services;
+
+import java.sql.Date;
+import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.example.naman.dto.AnimalResponseDTO;
+import com.example.naman.entities.Animal;
+import com.example.naman.entities.TransferHistory;
+import com.example.naman.entities.User;
+import com.example.naman.entities.Zoo;
+import com.example.naman.exceptions.ResourceNotFoundException;
+import com.example.naman.repositories.AnimalRepository;
+import com.example.naman.repositories.TransferHistoryRepository;
+import com.example.naman.repositories.ZooRepository;
+
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+
+@Service
+@RequiredArgsConstructor
+public class TransferHistoryService {
+
+    private final AnimalRepository animalRepository;
+    private final ZooRepository zooRepository;
+    private final TransferHistoryRepository transferHistoryRepository;
+    private final ModelMapper modelMapper;
+
+    // Transfer Animal Between Zoos
+    public AnimalResponseDTO transferAnimal(Long animalId, Long newZooId) {
+        // Fetch the animal and validate
+        Animal animal = animalRepository.findById(animalId)
+                .orElseThrow(() -> new ResourceNotFoundException("AnimalId is not valid"));
+
+        // Fetch the target zoo and validate
+        Zoo newZoo = zooRepository.findById(newZooId)
+                .orElseThrow(() -> new ResourceNotFoundException("Zoo not found with ZooId"));
+
+        // Get the current zoo of the animal
+        Zoo currentZoo = animal.getZoo();
+        if (currentZoo.getId().equals(newZoo.getId())) {
+            throw new IllegalArgumentException("Animal is already in the target zoo");
+        }
+
+        // Update the animal's zoo
+        animal.setZoo(newZoo);
+        animalRepository.save(animal);
+
+        // Log the transfer history
+        TransferHistory transferHistory = new TransferHistory();
+        transferHistory.setAnimalId(animal);
+        transferHistory.setFromZoo(currentZoo);
+        transferHistory.setToZoo(newZoo);
+
+        // Get the logged-in user (assumes Spring Security is used)
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        transferHistory.setUserId(currentUser);
+        transferHistory.setDate(new Date(System.currentTimeMillis()));
+
+        // Save the transfer history
+        transferHistoryRepository.save(transferHistory);
+
+        // Map the updated animal to a response DTO
+        return modelMapper.map(animal, AnimalResponseDTO.class);
+    }
+
+    // Get Transfer History for an Animal
+    public ResponseEntity<?> getAnimalTransferHistory(Long animalId) {
+        // Fetch history for the given animal
+        List<TransferHistory> historyList = transferHistoryRepository.findByAnimalId_Id(animalId);
+
+        if (historyList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No transfer history found for the animal");
+        }
+
+        return ResponseEntity.ok(historyList);
+    }
+}
+
+
+package com.example.naman.controllers;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.naman.dto.AnimalResponseDTO;
+import com.example.naman.services.TransferHistoryService;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/transfer-history")
+@RequiredArgsConstructor
+public class TransferHistoryController {
+
+    private final TransferHistoryService transferHistoryService;
+
+    // Endpoint to transfer an animal
+    @PostMapping("/transfer")
+    public AnimalResponseDTO transferAnimal(@RequestParam Long animalId, @RequestParam Long newZooId) {
+        return transferHistoryService.transferAnimal(animalId, newZooId);
+    }
+
+    // Endpoint to get the transfer history of an animal
+    @GetMapping("/history/{animalId}")
+    public ResponseEntity<?> getAnimalTransferHistory(@PathVariable Long animalId) {
+        return transferHistoryService.getAnimalTransferHistory(animalId);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package com.example.naman.repositories;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.example.naman.entities.TransferHistory;
+
+@Repository
+public interface TransferHistoryRepository extends JpaRepository<TransferHistory, Long> {
+    List<TransferHistory> findByAnimalId_Id(Long animalId);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package com.example.naman.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class AnimalResponseDTO {
+    private Long id;
+    private String name;
+    private String gender;
+    private String dob; // Assuming date of birth as a string
+    private String zooName;
+}
+
+
+
+
