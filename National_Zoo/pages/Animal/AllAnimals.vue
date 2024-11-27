@@ -42,6 +42,13 @@
         @save="updateAnimal()"
       />
     </div>
+    <div v-if="openTransferModal" class="z-50 absolute top-1/2">
+      <TransferAnimal
+        :fetch-zoo-list="zooList"
+        @close="openTransferModal = false"
+        @save="handleTransferAnimal"
+      />
+    </div>
 
     <div v-if="deletedAlert" class="absolute top-30 end-0">
       <ShowAlert
@@ -81,6 +88,7 @@
           :entity-data="animal"
           @delete="deleteAnimalHandler(animal)"
           @update="onClick(animal)"
+          @transfer="onTransferButtonClick(animal)"
           delete-button-label="Delete Animal"
           update-button-label="Update Animal"
           view-button-label="view Animal"
@@ -158,6 +166,8 @@ const addAnimalAlert = ref(false);
 const fetchCategories = ref([]);
 const isAdmin = ref(false);
 const isSearching = ref(false);
+const openTransferModal = ref(false);
+const selectedTransferredAnimalId = ref(0);
 
 const decodeJWT = (token) => {
   if (!token) return null;
@@ -203,6 +213,17 @@ function onClick(animal) {
   compareFormdata.value.animalType = animal.animalType;
   compareFormdata.value.animalName = animal.animalName;
   fetchCategoriesApi();
+}
+
+function onTransferButtonClick(animal) {
+  selectedTransferredAnimalId.value = animal.animalId;
+  openTransferModal.value = true;
+  FetchZooList();
+  console.log("Selected Animal Id is", selectedTransferredAnimalId.value);
+}
+
+function getZooId(id) {
+  console.log("New ZooId is", id);
 }
 
 console.log("Deleted ANimal Id is", animalId.value);
@@ -303,6 +324,30 @@ const fetchCategoriesApi = async () => {
     const data = await useCustomFetch("/category/all");
     fetchCategories.value = data;
     console.log("FetchedCategory", fetchCategories);
+  } catch (error) {}
+};
+
+const zooList = ref([]);
+
+const FetchZooList = async () => {
+  const data = await useCustomFetch(`/animal/zoo/${zooId}`);
+  zooList.value = data;
+  console.log("Zoo List are ", data);
+};
+
+const handleTransferAnimal = async (newZooId) => {
+  // console.log("Zoo New id is", id);
+  try {
+    const res = await useCustomFetch(
+      `/animal/transfer/${selectedTransferredAnimalId.value}/to/${newZooId}`,
+      {
+        method: "patch",
+      }
+    );
+    openTransferModal.value = false;
+    fetchAnimals(currentPage.value, pageSize.value);
+
+    console.log("Animal Transferred SuccessFully", res);
   } catch (error) {}
 };
 
