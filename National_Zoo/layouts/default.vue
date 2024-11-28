@@ -69,7 +69,7 @@
             () => {
               toggleUpdateModal();
               fillupdateFormData();
-              fetchCountries();
+              // fetchCountries();
             }
           "
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-3 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -80,7 +80,18 @@
     </div>
     <!-- Use Modal for Update Profile -->
     <div v-if="isUpdateModalVisible">
-      <AddZoo :from-data="form" :update-click="true" />
+      <AddZoo
+       :from-data="form"
+       :update-click="true"
+       :modal-title="'User Profile Update'"
+       :submit-button-label="'Update Profile'" 
+       @save="updateUser"
+       @close="
+          isUpdateModalVisible = false;
+          
+        "
+       />
+       
     </div>
     <!-- Main modal for updating profile -->
 
@@ -138,19 +149,34 @@ const toggleUpdateModal = () => {
   console.log("User LoggedIn data", userProfile);
 };
 
-const fillupdateFormData = () => {
-  // console.log("Running..");
+const form = ref({
+  fullName: "",
+  address: {
+    street: "",
+    zipCode: "",
+    city: {
+      cityId: null,
+      state: {
+        stateId: null,
+        country: {
+          countryId: null,
+        },
+      },
+    },
+  },
+});
 
-  form.fullName = userProfile.value.fullName;
-  // form.email = userProfile.value.email;
-  form.address.street = userProfile.value.address.street;
-  form.address.zipCode = userProfile.value.address.zipCode;
-  selectedCountry.value =
+const fillupdateFormData = () => {
+  
+  form.value.fullName = userProfile.value.fullName;
+  form.value.address.zipCode = userProfile.value.address.zipCode;
+  form.value.address.street = userProfile.value.address.street;
+  form.value.address.city.cityId = userProfile.value.address.city.cityId;
+  form.value.address.city.state.stateId =
+  userProfile.value.address.city.state.stateId;
+    form.value.address.city.state.country.countryId =
     userProfile.value.address.city.state.country.countryId;
-  selectedState.value = userProfile.value.address.city.state.stateId;
-  form.address.city.cityId = userProfile.value.address.city.cityId;
-  fetchStates();
-  fetchCities();
+  
 };
 
 // Fetch User Profile
@@ -177,90 +203,47 @@ onBeforeMount(() => {
 //   },
 // });
 
-const form = ref({
-  fullName: "",
-  address: {
-    street: "",
-    zipCode: "",
-    city: {
-      cityId: null,
-      state: {
-        stateId: null,
-        country: {
-          countryId: null,
-        },
-      },
-    },
-  },
-});
+
 
 const fetchProfile = async () => {
   try {
     const fetchedUser = await useCustomFetch(`/auth/user/${userId.value}`);
     userProfile.value = fetchedUser;
     setUser(fetchedUser);
+    console.log("FetchEd Profile", fetchedUser);
+    
   } catch (error) {
     console.error("Error fetching User:", error);
   }
 };
 
-const countries = ref([]);
-const states = ref([]);
-const cities = ref([]);
-const selectedCountry = ref(null);
-const selectedState = ref(null);
 
-const fetchCountries = async () => {
-  try {
-    const data = await useCustomFetch(`/auth/countries`);
-    countries.value = data;
-  } catch (error) {
-    console.error("Error fetching countries:", error);
-  }
-};
-
-const handleCountryChange = () => {
-  if (selectedCountry.value) {
-    fetchStates();
-  }
-};
-
-const fetchStates = async () => {
-  if (!selectedCountry.value) return;
-  try {
-    const data = await useCustomFetch(`/auth/state/${selectedCountry.value}`);
-    states.value = data;
-  } catch (error) {
-    console.error("Error fetching States:", error);
-  }
-};
-
-const handleStateChange = () => {
-  if (selectedState.value) {
-    fetchCities();
-  }
-};
-
-const fetchCities = async () => {
-  try {
-    const data = await useCustomFetch(`/auth/cities/${selectedState.value}`);
-    cities.value = data;
-  } catch (error) {
-    console.error("Error fetching Cities:", error);
-  }
-};
 
 const updateUser = async () => {
+
+ const  resBody = {
+      fullName: form.value.fullName,
+  address: {
+    street: form.value.address.street,
+    zipCode: form.value.address.zipCode,
+    city: {
+      cityId: form.value.address.city.cityId
+    },
+  },
+  }
+
+
   try {
     await useCustomFetch(`/auth/userupdate/${userId.value}`, {
       method: "PATCH",
-      body: form,
+      body: resBody,
     });
     setUser(form);
     afterUpdate();
 
     toggleUpdateModal();
     // router.push("/");
+    isUpdateModalVisible.value = false;
   } catch (err) {
     console.error("Error updating user:", err);
   }

@@ -13,6 +13,8 @@
       </button>
     </div>
 
+    
+
     <SearchBar @results="updateZooList" />
     <div v-if="isSearching">
       <p v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
@@ -69,7 +71,7 @@
 
     <div v-if="openModal" class="z-50 absolute top-1/2">
       <AddZoo
-        :modal-title="'Add'"
+        :modal-title="'Add Zoo'"
         :submit-button-label="'Add Zoo'"
         :from-data="updatedformData"
         :update-click="false"
@@ -83,7 +85,7 @@
 
     <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
       <AddZoo
-        :modal-title="'Update'"
+        :modal-title="'Update Zoo'"
         :submit-button-label="'Update Zoo'"
         :from-data="updatedformData"
         :update-click="false"

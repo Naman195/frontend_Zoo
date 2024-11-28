@@ -249,7 +249,7 @@ const selectedCountry = ref(null);
 const selectedState = ref(null);
 const formData = ref({ ...props.fromData });
 
-console.log("Selected Country", formData);
+console.log("Selected Country FormData", formData);
 
 onMounted(() => {
   fetchCountries();
