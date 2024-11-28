@@ -1,9 +1,10 @@
 <template>
-  <div class="flex flex-col items-center">
+  <div class="">
     <div class="flex justify-between items-center w-full mb-6">
       <h1 class="flex-grow text-center font-semibold">All Zoo</h1>
 
       <button
+        v-if="Zoos?.length !== 0"
         class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
         type="button"
         @click="openModal = true"
@@ -13,9 +14,30 @@
     </div>
 
     <SearchBar @results="updateZooList" />
-    <p v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
-      No Results Found
-    </p>
+    <div v-if="isSearching">
+      <p v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
+        <h1 class="font-bold">
+        No Result Found!
+      </h1>
+      </p>
+    </div>
+
+    <div v-if="Zoos?.length === 0"
+      class="grid grid-cols-1 gap-15 justify-items-center p-2 max-w-md mt-10 space-x"
+    >
+      <p class="text-bold"><h1 class="font-bold">
+        No Zoo Found! Please Add Zoo
+      </h1> </p>
+      <div>
+        <button
+          class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
+          type="button"
+          @click="openModal = true"
+        >
+          Add Zoo
+        </button>
+      </div>
+    </div>
 
     <div v-if="deletedAlert" class="absolute top-30 end-0">
       <ShowAlert
@@ -50,6 +72,7 @@
         :modal-title="'Add'"
         :submit-button-label="'Add Zoo'"
         :from-data="updatedformData"
+        :update-click="false"
         @save="addZoo"
         @close="
           openModal = false;
@@ -63,6 +86,7 @@
         :modal-title="'Update'"
         :submit-button-label="'Update Zoo'"
         :from-data="updatedformData"
+        :update-click="false"
         @save="updateZoo"
         @close="
           openUpdateModal = false;
@@ -86,7 +110,7 @@
         />
       </li>
     </div>
-    <div v-if="!isSearching">
+    <div v-if="!isSearching && filteredZoos.length !== 0">
       <Pagination
         :currentPage="currentPage"
         :totalPages="totalPages"

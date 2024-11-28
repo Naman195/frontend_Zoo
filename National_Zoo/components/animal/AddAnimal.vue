@@ -48,6 +48,9 @@
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Animal Name</label
               >
+              <!-- field: { name: string, rules: string, label: string, type: string,
+              options: {} id: string }
+               fieldData: { [x:string] : key of type of field } -->
               <Field
                 name="animalname"
                 rules="alpha|required"
@@ -56,7 +59,6 @@
                 type="text"
                 id="animalName"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                required
               />
               <ErrorMessage
                 name="animalname"
@@ -124,7 +126,9 @@
 
 <script setup lang="ts">
 import { Field, Form, ErrorMessage } from "vee-validate";
+
 const emit = defineEmits(["close", "save"]);
+
 type formDataType = {
   animalName: string;
   animalType: string;
@@ -134,7 +138,9 @@ const props = defineProps<{
   fromData: formDataType;
   submitButtonLabel: string;
   modalTitle: string;
-  fetchCategories: Object;
+  fetchCategories: {
+    id: number;
+    categoryName: string;
+  }[];
 }>();
-console.log("Categories Are", props.fetchCategories);
 </script>

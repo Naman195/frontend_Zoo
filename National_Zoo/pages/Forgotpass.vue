@@ -4,7 +4,7 @@
     class="absolute top-11 start-1/2 -translate-x-1/2"
   >
     <ShowAlert
-      :alert-message:any = "forgotPassAlertRes()"
+      :alert-message:any="forgotPassAlertRes()"
       @close-modal="forgetPassAlert = false"
     />
   </div>
@@ -20,7 +20,7 @@
       <button v-if="!loader" type="submit" class="submit-btn">
         Forgot Pass
       </button>
-      <div v-if="loader">
+      <div v-else class="flex justify-center">
         <Loader />
       </div>
     </form>
@@ -30,19 +30,14 @@
 <script setup lang="ts">
 import "../assests/css/LoginStyle.css";
 
-
-
-const form = ref<{ email: string }> ({
+const form = ref<{ email: string }>({
   email: "",
-})
-
-
+});
 
 const loader = ref(false);
 
 const forgetPassAlert = ref(false);
 const forgotPassmessage = ref("");
-
 
 const forgotPassAlertRes = () => {
   return forgotPassmessage;
@@ -53,7 +48,7 @@ const router = useRouter();
 const handleForgotPassword = async (): Promise<void> => {
   loader.value = true;
   try {
-    const response :any= await useCustomFetch(`/auth/forgotpassword`, {
+    const response: any = await useCustomFetch(`/auth/forgotpassword`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,7 +64,7 @@ const handleForgotPassword = async (): Promise<void> => {
     router.push({ path: "/otpverify", query: { email } });
 
     //  }, 1000);
-  } catch (error:any) {
+  } catch (error: any) {
     console.log("An error occurred: " + error);
   }
 };

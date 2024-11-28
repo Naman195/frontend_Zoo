@@ -42,7 +42,7 @@
           <Form @submit="emit('save')" class="space-y-4">
             <!-- First Name Field -->
 
-            <div>
+            <div v-if="!props.updateClick">
               <label
                 for="ZooName"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -57,6 +57,24 @@
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               />
               <ErrorMessage name="zooName" class="text-red-600 text-sm mt-1" />
+            </div>
+
+            <div v-else>
+              <label
+                for="fullName"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Full Name</label
+              >
+              <Field
+                name="fullName"
+                type="text"
+                rules="required|alpha_spaces"
+                v-model="props.fromData.fullName"
+                id="fullName"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                required
+              />
+              <ErrorMessage name="fullName" class="text-red-600 text-sm mt-1" />
             </div>
             <!-- Country Select -->
             <div class="register-pair">
@@ -216,6 +234,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  updateClick: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 console.log("Zoo Ibject is", props.fromData);
@@ -226,6 +248,8 @@ const cities = ref([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
 const formData = ref({ ...props.fromData });
+
+console.log("Selected Country", formData);
 
 onMounted(() => {
   fetchCountries();

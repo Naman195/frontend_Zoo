@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center">
+  <div class="">
     <div class="flex justify-between items-center w-full mb-6">
       <h1 class="flex-grow text-center">
         All Animals in Zoo - {{ selectedZoo?.zooName }}
@@ -168,6 +168,7 @@ const isAdmin = ref(false);
 const isSearching = ref(false);
 const openTransferModal = ref(false);
 const selectedTransferredAnimalId = ref(0);
+const filteredAnimals = ref([]);
 
 const decodeJWT = (token) => {
   if (!token) return null;
