@@ -81,22 +81,14 @@
     <!-- Use Modal for Update Profile -->
     <div v-if="isUpdateModalVisible">
       <AddZoo
-       :from-data="form"
-       :update-click="true"
-       :modal-title="'User Profile Update'"
-       :submit-button-label="'Update Profile'" 
-       @save="updateUser"
-       @close="
-          isUpdateModalVisible = false;
-          
-        "
-       />
-       
+        :from-data="form"
+        :update-click="true"
+        :modal-title="'User Profile'"
+        :submit-button-label="'Update Profile'"
+        @save="updateUser"
+        @close="isUpdateModalVisible = false"
+      />
     </div>
-    <!-- Main modal for updating profile -->
-
-    <!-- <cuctom :name = /> -->
-    <!-- ......new .... -->
   </nav>
 
   <div v-if="updateAlert" class="absolute top-30 end-0">
@@ -167,16 +159,14 @@ const form = ref({
 });
 
 const fillupdateFormData = () => {
-  
   form.value.fullName = userProfile.value.fullName;
   form.value.address.zipCode = userProfile.value.address.zipCode;
   form.value.address.street = userProfile.value.address.street;
   form.value.address.city.cityId = userProfile.value.address.city.cityId;
   form.value.address.city.state.stateId =
-  userProfile.value.address.city.state.stateId;
-    form.value.address.city.state.country.countryId =
+    userProfile.value.address.city.state.stateId;
+  form.value.address.city.state.country.countryId =
     userProfile.value.address.city.state.country.countryId;
-  
 };
 
 // Fetch User Profile
@@ -203,35 +193,28 @@ onBeforeMount(() => {
 //   },
 // });
 
-
-
 const fetchProfile = async () => {
   try {
     const fetchedUser = await useCustomFetch(`/auth/user/${userId.value}`);
     userProfile.value = fetchedUser;
     setUser(fetchedUser);
     console.log("FetchEd Profile", fetchedUser);
-    
   } catch (error) {
     console.error("Error fetching User:", error);
   }
 };
 
-
-
 const updateUser = async () => {
-
- const  resBody = {
-      fullName: form.value.fullName,
-  address: {
-    street: form.value.address.street,
-    zipCode: form.value.address.zipCode,
-    city: {
-      cityId: form.value.address.city.cityId
+  const resBody = {
+    fullName: form.value.fullName,
+    address: {
+      street: form.value.address.street,
+      zipCode: form.value.address.zipCode,
+      city: {
+        cityId: form.value.address.city.cityId,
+      },
     },
-  },
-  }
-
+  };
 
   try {
     await useCustomFetch(`/auth/userupdate/${userId.value}`, {

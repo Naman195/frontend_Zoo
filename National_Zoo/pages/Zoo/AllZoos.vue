@@ -89,7 +89,7 @@
         :submit-button-label="'Update Zoo'"
         :from-data="updatedformData"
         :update-click="false"
-        @save="updateZoo"
+        @save="updateZooHandler"
         @close="
           openUpdateModal = false;
           intiliazeFormData();
@@ -105,7 +105,7 @@
           :zooId="nextZooId"
           cardName="animal"
           @delete="deleteZooHandler"
-          @update="onClick(zoo)"
+          @update="updateZoo(zoo)"
           delete-button-label="Delete Zoo"
           update-button-label="Update Zoo"
           view-button-label="view Zoo"
@@ -246,7 +246,7 @@ const formDataChanged = () => {
   );
 };
 
-function onClick(zoo) {
+function updateZoo(zoo) {
   console.log("Update Zoo Object is", zoo);
 
   openUpdateModal.value = true;
@@ -333,7 +333,7 @@ const addZoo = async () => {
   }
 };
 
-const updateZoo = async () => {
+const updateZooHandler = async () => {
   if (!formDataChanged()) {
     return;
   }

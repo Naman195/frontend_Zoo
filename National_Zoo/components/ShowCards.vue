@@ -53,6 +53,7 @@
           <nuxt-link
             :to="{
               path: `/animalprofile`,
+              query: { id: entityData.animalId },
             }"
           >
             {{ viewButtonLabel }}
@@ -109,5 +110,5 @@ const props = defineProps({
 });
 
 // console.log("Zoo Object from Data is", props.entityData);
-// console.log("Animal Object is", props.entityData);
+console.log("Animal Object is", props.entityData);
 </script>
