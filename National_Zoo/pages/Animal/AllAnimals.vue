@@ -21,7 +21,7 @@
         </button>
       </div>
     </div>
-    <SearchBarr :zooId="zooId" @results="updateAnimalList" />
+    <SearchBarr :zooId="zooId" @results="updateAnimalList"  @clear="resetSearch" />
     <p v-if="animals.length === 0" class="text-gray-500 text-center">
       No Results Found
     </p>
@@ -101,6 +101,12 @@ import AddAnimal from "~/components/animal/AddAnimal.vue";
 const closeToast = () => {
   isToastVisible.value = false;
 };
+
+const resetSearch = () => {
+  console.log('Resetting search...');
+  fetchAnimals(currentPage.value, pageSize.value); // Load default animal list
+};
+
 const toastMessage = ref("");
 const isToastVisible = ref(false);
 const formData = ref({

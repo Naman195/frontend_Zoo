@@ -12,6 +12,13 @@
       >
         Search
       </button>
+      <button
+      v-if="searchQuery"
+      @click="clearSearch"
+      class="px-4 py-2 text-white bg-gray-500 rounded-md hover:bg-gray-600 transition duration-200"
+    >
+      Clear
+    </button>
     </div>
   </template>
   
@@ -26,7 +33,7 @@
   })
   
   const searchQuery = ref('');
-  const emit = defineEmits(['results']);
+  const emit = defineEmits(['results', 'clear']);
   
   console.log("ZooId is", props.zooId);
   
@@ -46,5 +53,11 @@
       console.error('Error during search:', error);
     }
   };
+
+  // Clear the search input and emit event to parent
+const clearSearch = () => {
+  searchQuery.value = '';
+  emit('clear'); // Notify parent to reset search
+};
   </script>
   

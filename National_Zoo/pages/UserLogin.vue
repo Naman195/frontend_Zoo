@@ -1,10 +1,4 @@
 <template>
-  <!-- <div v-if="logInAlert" class="absolute bottom-12 start-1/2 -translate-x-1/2">
-    <ShowAlert
-      :alert-message="afterLoginMessageRes"
-      @close-modal="handleLoginAlertClose"
-    />
-  </div> -->
   <div class="absolute bottom-12 start-1/2 -translate-x-1/2">
     <ShowAlert
       :alert-message="toastMessage"
