@@ -39,7 +39,7 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 max-h-[60vh] overflow-y-auto">
-          <Form @submit="emit('save')" class="space-y-4">
+          <Form @submit="emit('save', props.fromData)" class="space-y-4">
             <!-- First Name Field -->
 
             <div v-if="!props.updateClick">
@@ -220,7 +220,7 @@
 <script setup>
 import { ErrorMessage, Field, Form } from "vee-validate";
 
-const emit = defineEmits(["close", "save"]);
+const emit = defineEmits(["close", "save", "updateData"]);
 const props = defineProps({
   fromData: {
     type: Object,
@@ -249,7 +249,10 @@ const selectedCountry = ref(null);
 const selectedState = ref(null);
 const formData = ref({ ...props.fromData });
 
-console.log("Selected Country FormData", formData);
+console.log(
+  "Selected Country FormData transferred from props.fromData is",
+  formData
+);
 
 onMounted(() => {
   fetchCountries();
@@ -257,7 +260,7 @@ onMounted(() => {
 });
 
 const fetchCountries = async () => {
-  const data = await $fetch(`http://localhost:8080/api/auth/countries`);
+  const data = await $fetch(`http://localhost:8080/api/countries`);
   countries.value = data;
 };
 
@@ -272,7 +275,7 @@ const handleCountryChange = () => selectedCountry.value && fetchStates();
 const fetchStates = async () => {
   if (selectedCountry.value) {
     const data = await $fetch(
-      `http://localhost:8080/api/auth/state/${selectedCountry.value}`
+      `http://localhost:8080/api/state/${selectedCountry.value}`
     );
     states.value = data;
   }
@@ -282,7 +285,7 @@ const handleStateChange = () => selectedState.value && fetchCities();
 const fetchCities = async () => {
   if (selectedState.value) {
     const data = await $fetch(
-      `http://localhost:8080/api/auth/cities/${selectedState.value}`
+      `http://localhost:8080/api/cities/${selectedState.value}`
     );
     cities.value = data;
   }

@@ -108,7 +108,4 @@ const props = defineProps({
   updateButtonLabel: String,
   viewButtonLabel: String,
 });
-
-// console.log("Zoo Object from Data is", props.entityData);
-console.log("Animal Object is", props.entityData);
 </script>

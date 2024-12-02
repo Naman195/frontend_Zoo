@@ -39,7 +39,7 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 max-h-[60vh] overflow-y-auto">
-          <Form @submit="emit('save')" class="space-y-4">
+          <Form @submit="emit('save', props.fromData)" class="space-y-4">
             <!-- First Name Field -->
 
             <div>
@@ -72,21 +72,7 @@
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Animal Type</label
               >
-              <!-- <Field
-                name="animalType"
-                rules="alpha|required"
-                v-model="props.fromData.animalType"
-                type="text"
-                id="animaltype"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-              /> -->
 
-              <!-- <Field name="role" as="select" v-model="form.role" rules="required">
-            <option value="" selected disabled>Select Role</option>
-            <option v-for="r in props.fetchCategories" :value="r.categoryName">
-              {{ r.categoryName }}
-            </option>
-          </Field> -->
               <Field
                 name="animalType"
                 as="select"
@@ -143,4 +129,6 @@ const props = defineProps<{
     categoryName: string;
   }[];
 }>();
+
+console.log("Selected Animal formData is", props.fromData);
 </script>

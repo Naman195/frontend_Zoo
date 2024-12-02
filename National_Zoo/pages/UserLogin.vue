@@ -1,8 +1,15 @@
 <template>
-  <div v-if="logInAlert" class="absolute bottom-12 start-1/2 -translate-x-1/2">
+  <!-- <div v-if="logInAlert" class="absolute bottom-12 start-1/2 -translate-x-1/2">
     <ShowAlert
       :alert-message="afterLoginMessageRes"
       @close-modal="handleLoginAlertClose"
+    />
+  </div> -->
+  <div class="absolute bottom-12 start-1/2 -translate-x-1/2">
+    <ShowAlert
+      :alert-message="toastMessage"
+      :is-visible="isToastVisible"
+      @close-modal="closeToast"
     />
   </div>
   <div class="login-container">
@@ -55,13 +62,13 @@ import { Field, Form, ErrorMessage } from "vee-validate";
 
 import "../assests/css/LoginStyle.css";
 import { useAuth } from "@/composables/useAuth";
-import { useUserProfile } from "@/composables/useUserProfile";
 import { useRouter } from "vue-router";
-import { useCookie } from "#app";
+
+const toastMessage: Ref<string> = ref("");
+const isToastVisible = ref(false);
 
 const { logIn } = useAuth();
-const afterLoginMessageRes = ref("");
-const logInAlert = ref(false);
+
 const passwordVisible = ref(false);
 const token = useCookie("auth", { maxAge: 3600 });
 const router = useRouter();
@@ -70,17 +77,12 @@ const form = reactive({
   password: "",
 });
 
+const closeToast = () => {
+  isToastVisible.value = false;
+};
+
 const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
-};
-
-const loginAlertopen = () => {
-  logInAlert.value = true;
-};
-
-const handleLoginAlertClose = () => {
-  logInAlert.value = false;
-  // router.push({ path: "/" });
 };
 
 const loginUser = async () => {
@@ -91,24 +93,15 @@ const loginUser = async () => {
     });
     token.value = data.token;
     logIn(data.userId);
-    console.log("login Message", data);
 
-    afterLoginMessageRes.value = data.message;
-    loginAlertopen();
+    toastMessage.value = data.message;
+    isToastVisible.value = true;
     setTimeout(() => {
       router.push("/");
     }, 1000);
   } catch (err: any) {
-    afterLoginMessageRes.value = err.response._data.message;
-    loginAlertopen();
-    console.log(err);
-
-    console.error(
-      "An error occurred during login:",
-      err.response._data.message
-    );
+    toastMessage.value = err.response._data.message;
+    isToastVisible.value = true;
   }
 };
 </script>
-
-

@@ -1,5 +1,12 @@
 <template>
   <div class="">
+    <div class="absolute top-0 end-0">
+      <ShowAlert
+        :alert-message="toastMessage"
+        :is-visible="isToastVisible"
+        @close-modal="closeToast"
+      />
+    </div>
     <div class="flex justify-between items-center w-full mb-6">
       <h1 class="flex-grow text-center">
         All Animals in Zoo - {{ selectedZoo?.zooName }}
@@ -34,12 +41,12 @@
 
     <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
       <AddAnimal
-        :from-data="formData"
+        :from-data="selectedAnimal"
         :modal-title="'Update'"
         :submit-button-label="'Update Animal'"
         :fetch-categories="fetchCategories"
         @close="(openUpdateModal = false), intiliazeFormData()"
-        @save="updateAnimal()"
+        @save="updateAnimalHandler"
       />
     </div>
     <div v-if="openTransferModal" class="z-50 absolute top-1/2">
@@ -47,25 +54,6 @@
         :fetch-zoo-list="zooList"
         @close="openTransferModal = false"
         @save="handleTransferAnimal"
-      />
-    </div>
-
-    <div v-if="deletedAlert" class="absolute top-30 end-0">
-      <ShowAlert
-        :alert-message="'Animal Deleted Successfully'"
-        @close-modal="deletedAertClose"
-      />
-    </div>
-    <div v-if="addAnimalAlert" class="absolute top-30 end-0">
-      <ShowAlert
-        :alert-message="'Animal Added Successfully'"
-        @close-modal="addAertClose"
-      />
-    </div>
-    <div v-if="updateAnimalAlert" class="absolute top-30 end-0">
-      <ShowAlert
-        :alert-message="'Animal Updated SuccessFully'"
-        @close-modal="updateAlertClose"
       />
     </div>
 
@@ -87,7 +75,7 @@
         <ShowCards
           :entity-data="animal"
           @delete="deleteAnimalHandler(animal)"
-          @update="onClick(animal)"
+          @update="updateAnimal(animal)"
           @transfer="onTransferButtonClick(animal)"
           delete-button-label="Delete Animal"
           update-button-label="Update Animal"
@@ -110,6 +98,11 @@
 <script setup>
 import AddAnimal from "~/components/animal/AddAnimal.vue";
 
+const closeToast = () => {
+  isToastVisible.value = false;
+};
+const toastMessage = ref("");
+const isToastVisible = ref(false);
 const formData = ref({
   animalName: "",
   animalType: "",
@@ -119,10 +112,6 @@ const compareFormdata = ref({
   animalName: "",
   animalType: "",
 });
-
-const addAertClose = () => {
-  addAnimalAlert.value = false;
-};
 
 const formDataChanged = () => {
   return (
@@ -149,26 +138,21 @@ const openAddAnimalHandler = () => {
   openAddAnimalModal.value = true;
   fetchCategoriesApi(); // Fetch categories when opening the add modal
 };
-
+const selectedAnimal = ref([]);
 const route = useRoute();
 const zooId = route.query.zooId;
-const updateAnimalAlert = ref(false);
-const updateAnimalAlertMessage = ref("");
 const selectedZoo = ref(null);
 const animals = ref([]);
 const token = useCookie("auth");
 const openAddAnimalModal = ref(false);
-const deletedAlert = ref(false);
 const opendeleteModal = ref(false);
 const animalId = ref("");
 const openUpdateModal = ref(false);
-const addAnimalAlert = ref(false);
 const fetchCategories = ref([]);
 const isAdmin = ref(false);
 const isSearching = ref(false);
 const openTransferModal = ref(false);
 const selectedTransferredAnimalId = ref(0);
-const filteredAnimals = ref([]);
 
 const decodeJWT = (token) => {
   if (!token) return null;
@@ -185,32 +169,15 @@ if (decodedToken && decodedToken.role === "admin") {
 
 console.log("isAdmin Value", isAdmin.value);
 
-const afterUpdate = () => {
-  updateAnimalAlert.value = true;
-};
-
-const updateAlertClose = () => {
-  updateAnimalAlert.value = false;
-};
-
-const updateAnimalAlertMessageSet = () => {
-  return updateAnimalAlertMessage;
-};
-
-const deletedAertClose = () => {
-  deletedAlert.value = false;
-};
-
 const deleteAnimalHandler = (animal) => {
   animalId.value = animal.animalId;
   opendeleteModal.value = true;
 };
 
-function onClick(animal) {
+function updateAnimal(animal) {
   openUpdateModal.value = true;
   animalId.value = animal.animalId;
-  formData.value.animalName = animal.animalName;
-  formData.value.animalType = animal.animalType;
+  selectedAnimal.value = animal;
   compareFormdata.value.animalType = animal.animalType;
   compareFormdata.value.animalName = animal.animalName;
   fetchCategoriesApi();
@@ -220,14 +187,7 @@ function onTransferButtonClick(animal) {
   selectedTransferredAnimalId.value = animal.animalId;
   openTransferModal.value = true;
   FetchZooList();
-  console.log("Selected Animal Id is", selectedTransferredAnimalId.value);
 }
-
-function getZooId(id) {
-  console.log("New ZooId is", id);
-}
-
-console.log("Deleted ANimal Id is", animalId.value);
 
 const fetchZooById = async () => {
   const response = await useCustomFetch(`/zoo/id/${zooId}`);
@@ -248,10 +208,7 @@ const fetchAnimals = async (
 };
 
 const updateAnimalList = (results) => {
-  console.log("Before Updated Animals List", animals.value);
-
   animals.value = results;
-  console.log("Updated Animals List:", animals.value);
   isSearching.value = true;
 };
 
@@ -265,8 +222,12 @@ const deleteAnimal = async () => {
       (animal) => animal.animalId !== animalId.value
     );
     opendeleteModal.value = false;
-    deletedAlert.value = true;
-  } catch (error) {}
+    toastMessage.value = data;
+    isToastVisible.value = true;
+  } catch (error) {
+    toastMessage.value = error;
+    isToastVisible.value = true;
+  }
 };
 
 const addAnimal = async () => {
@@ -282,17 +243,29 @@ const addAnimal = async () => {
     });
 
     openAddAnimalModal.value = false;
-    // console.log("AnimalAdded SuccessFully", res);
-    addAnimalAlert.value = true;
+    // addAnimalAlert.value = true;
+    toastMessage.value = "Added Successfully";
+    isToastVisible.value = true;
+    fetchAnimals(currentPage.value, pageSize.value);
   } catch (error) {
-    console.log("Error in Adding Animal", error);
+    // console.log("Error in Adding Animal", error);
+    toastMessage.value = error;
+    isToastVisible.value = true;
   }
 };
 
-const updateAnimal = async () => {
+const updateAnimalHandler = async (fromdata) => {
   if (!formDataChanged()) {
     return;
   }
+
+  const resBody = {
+    animalName: fromdata.animalName,
+    animalType: fromdata.animalType,
+    zoo: {
+      zooId: fromdata.zoo.zooId,
+    },
+  };
   try {
     const res = await useCustomFetch(`/animal/update/${animalId.value}`, {
       headers: {
@@ -300,23 +273,18 @@ const updateAnimal = async () => {
         "Content-Type": "application/json",
       },
       method: "PATCH",
-      body: {
-        ...formData.value,
-        zoo: {
-          zooId: zooId,
-        },
-      },
+      body: resBody,
     });
     openUpdateModal.value = false;
     intiliazeFormData();
-    updateAnimalAlertMessage.value = res;
-    afterUpdate();
+
+    toastMessage.value = "Update Successfully";
+    isToastVisible.value = true;
 
     fetchAnimals(currentPage.value, pageSize.value);
   } catch (error) {
-    console.error("Error updating Animal:", error);
-    updateAnimalAlertMessage.value = error;
-    afterUpdate();
+    toastMessage.value = error;
+    isToastVisible.value = true;
   }
 };
 
@@ -324,7 +292,6 @@ const fetchCategoriesApi = async () => {
   try {
     const data = await useCustomFetch("/category/all");
     fetchCategories.value = data;
-    console.log("FetchedCategory", fetchCategories);
   } catch (error) {}
 };
 
@@ -333,11 +300,9 @@ const zooList = ref([]);
 const FetchZooList = async () => {
   const data = await useCustomFetch(`/animal/zoo/${zooId}`);
   zooList.value = data;
-  console.log("Zoo List are ", data);
 };
 
 const handleTransferAnimal = async (newZooId) => {
-  // console.log("Zoo New id is", id);
   try {
     const res = await useCustomFetch(
       `/animal/transfer/${selectedTransferredAnimalId.value}/to/${newZooId}`,
@@ -348,8 +313,12 @@ const handleTransferAnimal = async (newZooId) => {
     openTransferModal.value = false;
     fetchAnimals(currentPage.value, pageSize.value);
 
-    console.log("Animal Transferred SuccessFully", res);
-  } catch (error) {}
+    toastMessage.value = "Animal Transferred Successfully";
+    isToastVisible.value = true;
+  } catch (error) {
+    toastMessage.value = error;
+    isToastVisible.value = true;
+  }
 };
 
 onMounted(() => {

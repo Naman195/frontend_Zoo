@@ -1,8 +1,9 @@
 <template>
-  <div v-if="registeredAlert" class="absolute top-11 start-1/2 -translate-x-1/2">
+  <div class="absolute bottom-12 start-1/2 -translate-x-1/2">
     <ShowAlert
-      :alert-message:any ="registerAlertRes()"
-      @close-modal="registerAlertClose"
+      :alert-message:any="toastMessage"
+      :is-visible="isToastVisible"
+      @close-modal="closeToast"
     />
   </div>
   <div class="register-container">
@@ -183,7 +184,6 @@
 <script setup lang="ts">
 import { Field, Form, ErrorMessage } from "vee-validate";
 import "../assests/css/style.css";
-// import CustomInput from '~/components/CustomInput.vue';
 
 interface Country {
   countryId: number;
@@ -196,8 +196,8 @@ interface State {
 }
 
 interface City {
-  cityId: number,
-  cityName: string
+  cityId: number;
+  cityName: string;
 }
 
 interface Role {
@@ -212,9 +212,9 @@ const states = ref<State[]>([]);
 const cities = ref<City[]>([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
-const registeredAlert = ref(false);
-const afterRegisterationMessage :any = ref("");
 const roles = ref<Role[]>([]);
+const toastMessage: Ref<string> = ref("");
+const isToastVisible = ref(false);
 
 // const formkey = Math.random();
 
@@ -233,16 +233,8 @@ const form = reactive({
   },
 });
 
-const registerAlert = () => {
-  registeredAlert.value = true;
-};
-
-const registerAlertClose = () => {
-  registeredAlert.value = false;
-};
-
-const registerAlertRes = () => {
-  return afterRegisterationMessage;
+const closeToast = () => {
+  isToastVisible.value = false;
 };
 
 const togglePasswordVisibility = () => {
@@ -251,7 +243,7 @@ const togglePasswordVisibility = () => {
 
 const fetchCountries = async () => {
   try {
-    const data = await $fetch<Country[]>(`http://localhost:8080/api/auth/countries`);
+    const data = await $fetch<Country[]>(`http://localhost:8080/api/countries`);
     countries.value = data;
   } catch (error) {
     console.error("Error fetching countries:", error);
@@ -268,7 +260,7 @@ const fetchStates = async () => {
   if (!selectedCountry) return;
   try {
     const data = await $fetch<State[]>(
-      `http://localhost:8080/api/auth/state/${selectedCountry.value}`
+      `http://localhost:8080/api/state/${selectedCountry.value}`
     );
     states.value = data;
   } catch (error) {
@@ -285,7 +277,7 @@ const handleStateChange = () => {
 const fetchCities = async () => {
   try {
     const data = await $fetch<City[]>(
-      `http://localhost:8080/api/auth/cities/${selectedState.value}`
+      `http://localhost:8080/api/cities/${selectedState.value}`
     );
     cities.value = data;
   } catch (error) {
@@ -295,11 +287,14 @@ const fetchCities = async () => {
 
 const registerUser = async () => {
   try {
-    const data :any = await useCustomFetch("/auth/user/create", {
+    const data: any = await useCustomFetch("/auth/user/create", {
       method: "POST",
       body: form,
     });
     console.log("Registered User", data);
+    toastMessage.value = data as string;
+    isToastVisible.value = true;
+    alert(data);
     if (data === "User successfully created") {
       form.fullName = "";
       form.email = "";
@@ -315,21 +310,17 @@ const registerUser = async () => {
       cities.value = [];
       states.value = [];
 
-      // alert("User registered successfully!");
-      afterRegisterationMessage.value = data;
-      registerAlert();
-      setTimeout(() => {
-        router.push("/userlogin");
-      }, 3000);
+      // setTimeout(() => {
+      //   router.push("/userlogin");
+      // }, 3000);
       // formkey.valueOf = Math.random();
     } else {
-      afterRegisterationMessage.value = data;
-      alert("Error: " + data.response);
+      toastMessage.value = data.response;
+      isToastVisible.value = true;
     }
-  } catch (err:any) {
-    afterRegisterationMessage.value = err.response._data;
-    console.error("An error occurred during registration:", err.response);
-    registerAlert();
+  } catch (err: any) {
+    toastMessage.value = err.response._data;
+    isToastVisible.value = true;
   }
 };
 
@@ -337,7 +328,7 @@ const registerUser = async () => {
 
 const fetchRoles = async () => {
   try {
-    const data :any = await useCustomFetch("/role/all");
+    const data: any = await useCustomFetch("/role/all");
     roles.value = data;
   } catch (error) {
     console.log("Error In fetching Roles", error);
