@@ -20,11 +20,15 @@
       </button>
     </div>
 
-    <div w-full>
+    <div class="w-full max-w-6xl px-4">
+
+    
+
+    
       
       
-      <SearchBar @search="performSearch" @clear="resetSearch" />
-    </div>
+      <SearchBar class="w-full" @search="performSearch" @clear="resetSearch" />
+    
     <div v-if="isSearching">
       <p v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
         <h1 class="font-bold">
@@ -88,7 +92,7 @@
 
     <!-- Display All Zoos -->
     <div class="flex flex-wrap justify-center">
-      <li v-for="(zoo, id) in filteredZoos" :key="id" class="m-4 list-none">
+      <li v-for="(zoo, id) in filteredZoos" :key="id" class="m-4 list-none w-full sm:w-[48%] lg:w-[30%]">
         <ShowCards
           :entity-data="zoo"
           cardName="animal"
@@ -102,6 +106,7 @@
         />
       </li>
     </div>
+  </div>
     <div v-if="!isSearching && filteredZoos.length !== 0">
       <Pagination
         :currentPage="currentPage"
@@ -224,6 +229,11 @@ const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
     filteredZoos.value = [...Zoos.value]; 
     totalPages.value = data.totalPages;
     isSearching.value = false;
+
+    if (filteredZoos.length === 0 && currentPage.value > 0) {
+      currentPage.value -= 1; // Go to the previous page
+      await fetchZoo(currentPage.value, size); // Fetch zoos for the previous page
+    }
   } catch (error) {
     console.error("Error fetching zoos:", error);
   }
@@ -241,6 +251,15 @@ const deleteZoo = async () => {
     toastMessage.value = data;
     isToastVisible.value = true;
     // fetchZoo(currentPage.value-1, pageSize.value);
+    // Check if filteredZoos has only one item before deletion
+    if (filteredZoos.value.length === 0 && currentPage.value > 0) {
+      // Go to the previous page
+      currentPage.value -= 1;
+      fetchZoo(currentPage.value, pageSize.value);
+    } else {
+      // Refresh the current page
+      fetchZoo(currentPage.value, pageSize.value);
+    }
   } catch (error) {
     console.error("Error deleting zoo:", error);
     toastMessage.value = error;
