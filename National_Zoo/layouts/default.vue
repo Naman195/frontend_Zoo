@@ -110,7 +110,7 @@ import { useAuth } from "~/composables/useAuth";
 import { useUserProfile } from "~/composables/useUserProfile";
 
 const router = useRouter();
-const { isLoggedIn, logOut } = useAuth();
+const { logOut } = useAuth();
 const { userProfile, setUser, getUser } = useUserProfile();
 const userToken = useCookie("isLoggedIn");
 const isProfileVisible = ref(false);
@@ -138,7 +138,6 @@ const toggleProfile = () => {
 const toggleUpdateModal = () => {
   isUpdateModalVisible.value = !isUpdateModalVisible.value;
   isProfileVisible.value = false;
-  console.log("User LoggedIn data", userProfile);
 };
 
 const form = ref({
@@ -173,7 +172,7 @@ const fillupdateFormData = () => {
 const user = ref(null);
 const userId = useCookie("userId");
 
-onBeforeMount(() => {
+onMounted(() => {
   if (userToken.value == true) {
     // getUser();
     fetchProfile();
@@ -198,7 +197,6 @@ const fetchProfile = async () => {
     const fetchedUser = await useCustomFetch(`/auth/user/${userId.value}`);
     userProfile.value = fetchedUser;
     setUser(fetchedUser);
-    console.log("FetchEd Profile", fetchedUser);
   } catch (error) {
     console.error("Error fetching User:", error);
   }
@@ -227,6 +225,7 @@ const updateUser = async () => {
     toggleUpdateModal();
     // router.push("/");
     isUpdateModalVisible.value = false;
+    fetchProfile();
   } catch (err) {
     console.error("Error updating user:", err);
   }

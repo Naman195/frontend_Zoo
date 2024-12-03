@@ -13,7 +13,7 @@ if(token.value){
 
     
         if (userLoggedIn.value === true) {
-          console.log("Valid token:", userLoggedIn.value);
+         
           //  router.push("/")
          
           if (to.path === '/userlogin') {

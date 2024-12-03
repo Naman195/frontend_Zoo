@@ -114,7 +114,6 @@
 <script setup>
 const route = useRoute();
 
-console.log("AnimalId", route.query.id);
 const animalId = route.query.id;
 
 const selectedAnimal = ref();
@@ -130,7 +129,6 @@ const fetchAnimal = async () => {
 const handleAnimalHistory = async () => {
   buttonClick.value = true;
   const data = await useCustomFetch(`/animal/history/${animalId}`);
-  console.log("Fetched Data Animal History", data);
   animalHistory.value = data;
 };
 

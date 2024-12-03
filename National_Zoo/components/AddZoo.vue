@@ -240,19 +240,12 @@ const props = defineProps({
   },
 });
 
-console.log("Zoo Ibject is", props.fromData);
-
 const countries = ref([]);
 const states = ref([]);
 const cities = ref([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
 const formData = ref({ ...props.fromData });
-
-console.log(
-  "Selected Country FormData transferred from props.fromData is",
-  formData
-);
 
 onMounted(() => {
   fetchCountries();

@@ -7,44 +7,27 @@
       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
     <button
-      @click="performSearch"
+      @click="emit('search', searchQuery)"
       class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 transition duration-200"
     >
       Search
+    </button>
+    <button
+      v-if="searchQuery"
+      @click="clearSearch"
+      class="px-4 py-2 text-white bg-gray-500 rounded-md hover:bg-gray-600 transition duration-200"
+    >
+      Clear
     </button>
   </div>
 </template>
 
 <script setup>
 const searchQuery = ref("");
-const emit = defineEmits(["results"]);
+const emit = defineEmits(["search", "clear"]);
 
-const performSearch = async () => {
-  const trimmedQuery = searchQuery.value.trim();
-  if (!trimmedQuery) {
-    return;
-  }
-  const results = ref([]);
-
-  if (trimmedQuery.includes(",")) {
-    const [country, state, city] = trimmedQuery
-      .split(",")
-      .map((part) => part.trim());
-    const data = await useCustomFetch(
-      `/zoo/search/zoos/location?country=${country}&state=${state || ""}&city=${
-        city || ""
-      }`
-    );
-    console.log(data);
-    results.value = data;
-  } else {
-    const data = await useCustomFetch(
-      `/zoo/search/zoos/name?name=${trimmedQuery}`
-    );
-    console.log("Content is", data.content);
-    results.value = data;
-    console.log("Results Array is", results);
-  }
-  emit("results", results);
+const clearSearch = () => {
+  searchQuery.value = "";
+  emit("clear");
 };
 </script>

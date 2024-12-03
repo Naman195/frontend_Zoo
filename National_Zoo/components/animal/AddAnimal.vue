@@ -129,6 +129,4 @@ const props = defineProps<{
     categoryName: string;
   }[];
 }>();
-
-console.log("Selected Animal formData is", props.fromData);
 </script>

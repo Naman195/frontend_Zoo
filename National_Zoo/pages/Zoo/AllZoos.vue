@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col items-center">
     <div  class="absolute top-0 end-0">
       <ShowAlert
         :alert-message="toastMessage"
@@ -20,9 +20,11 @@
       </button>
     </div>
 
-    
-
-    <SearchBar @results="updateZooList" />
+    <div w-full>
+      
+      
+      <SearchBar @search="performSearch" @clear="resetSearch" />
+    </div>
     <div v-if="isSearching">
       <p v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
         <h1 class="font-bold">
@@ -31,7 +33,7 @@
       </p>
     </div>
 
-    <div v-if="Zoos?.length === 0"
+    <div v-if="Zoos?.length === 0 && currentPage === 0"
       class="grid grid-cols-1 gap-15 justify-items-center p-2 max-w-md mt-10 space-x"
     >
       <p class="text-bold"><h1 class="font-bold">
@@ -227,10 +229,6 @@ const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
   }
 };
 
-const updateZooList = (results) => {
-  isSearching.value = true;
-  filteredZoos.value = [...results.value];
-};
 
 const deleteZoo = async () => {
   try {
@@ -242,7 +240,7 @@ const deleteZoo = async () => {
     opendeleteModal.value = false;
     toastMessage.value = data;
     isToastVisible.value = true;
-    fetchZoo(currentPage.value, pageSize.value);
+    // fetchZoo(currentPage.value-1, pageSize.value);
   } catch (error) {
     console.error("Error deleting zoo:", error);
     toastMessage.value = error;
@@ -310,6 +308,40 @@ const updateZooHandler = async (formData) => {
     isToastVisible.value = true;
   }
 };
+
+const resetSearch = () => {
+  fetchZoo(currentPage.value, pageSize.value);
+}
+
+// const results = ref([]);
+const performSearch = async (searchQuery) => {  
+  const trimmedQuery = searchQuery.trim();
+  if (!trimmedQuery) {
+    return;
+  }
+
+  if (trimmedQuery.includes(",")) {
+    const [country, state, city] = trimmedQuery
+      .split(",")
+      .map((part) => part.trim());
+    const data = await useCustomFetch(
+      `/zoo/search/zoos/location?country=${country}&state=${state || ""}&city=${
+        city || ""
+      }`
+    );
+    filteredZoos.value = data;
+    isSearching.value = true;
+  } else {
+    const data = await useCustomFetch(
+      `/zoo/search/zoos/name?name=${trimmedQuery}`
+    );
+
+    filteredZoos.value = data;
+    isSearching.value = true;
+  }
+  // emit("results", results);
+};
+
 
 onMounted(() => {
   fetchZoo(currentPage.value, pageSize.value);

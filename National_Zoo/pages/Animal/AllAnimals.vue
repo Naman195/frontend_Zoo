@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="flex flex-col items-center">
     <div class="absolute top-0 end-0">
       <ShowAlert
         :alert-message="toastMessage"
@@ -8,7 +8,7 @@
       />
     </div>
     <div class="flex justify-between items-center w-full mb-6">
-      <h1 class="flex-grow text-center">
+      <h1 class="flex-grow text-center font-bold">
         All Animals in Zoo - {{ selectedZoo?.zooName }}
       </h1>
       <div v-if="isAdmin">
@@ -21,7 +21,7 @@
         </button>
       </div>
     </div>
-    <SearchBarr :zooId="zooId" @results="updateAnimalList"  @clear="resetSearch" />
+    <SearchBar @search="performSearch" @clear="resetSearch" />
     <p v-if="animals.length === 0" class="text-gray-500 text-center">
       No Results Found
     </p>
@@ -83,7 +83,7 @@
         />
       </li>
     </div>
-    <div v-if="!isSearching">
+    <div v-if="!isSearching && animals.length !== 0">
       <Pagination
         :currentPage="currentPage"
         :totalPages="totalPages"
@@ -103,8 +103,7 @@ const closeToast = () => {
 };
 
 const resetSearch = () => {
-  console.log('Resetting search...');
-  fetchAnimals(currentPage.value, pageSize.value); // Load default animal list
+  fetchAnimals(currentPage.value, pageSize.value);
 };
 
 const toastMessage = ref("");
@@ -142,7 +141,7 @@ const changePage = (page) => {
 
 const openAddAnimalHandler = () => {
   openAddAnimalModal.value = true;
-  fetchCategoriesApi(); // Fetch categories when opening the add modal
+  fetchCategoriesApi();
 };
 const selectedAnimal = ref([]);
 const route = useRoute();
@@ -172,8 +171,6 @@ const decodedToken = decodeJWT(token.value);
 if (decodedToken && decodedToken.role === "admin") {
   isAdmin.value = true;
 }
-
-console.log("isAdmin Value", isAdmin.value);
 
 const deleteAnimalHandler = (animal) => {
   animalId.value = animal.animalId;
@@ -209,13 +206,7 @@ const fetchAnimals = async (
   );
   animals.value = data.content;
   totalPages.value = data.totalPages;
-  console.log("Total Animals in Zoo is", animals);
   isSearching.value = false;
-};
-
-const updateAnimalList = (results) => {
-  animals.value = results;
-  isSearching.value = true;
 };
 
 const deleteAnimal = async () => {
@@ -230,6 +221,7 @@ const deleteAnimal = async () => {
     opendeleteModal.value = false;
     toastMessage.value = data;
     isToastVisible.value = true;
+    // fetchAnimals(currentPage.value, pageSize.value);
   } catch (error) {
     toastMessage.value = error;
     isToastVisible.value = true;
@@ -249,12 +241,11 @@ const addAnimal = async () => {
     });
 
     openAddAnimalModal.value = false;
-    // addAnimalAlert.value = true;
+    intiliazeFormData();
     toastMessage.value = "Added Successfully";
     isToastVisible.value = true;
     fetchAnimals(currentPage.value, pageSize.value);
   } catch (error) {
-    // console.log("Error in Adding Animal", error);
     toastMessage.value = error;
     isToastVisible.value = true;
   }
@@ -324,6 +315,22 @@ const handleTransferAnimal = async (newZooId) => {
   } catch (error) {
     toastMessage.value = error;
     isToastVisible.value = true;
+  }
+};
+
+const performSearch = async (searchQuery) => {
+  const trimmedQuery = searchQuery.trim();
+  if (!trimmedQuery) {
+    return;
+  }
+  try {
+    const results = await useCustomFetch(
+      `/animal/search?searchTerm=${trimmedQuery}&zooId=${route.query.zooId}`
+    );
+    animals.value = results;
+    isSearching.value = true;
+  } catch (error) {
+    console.error("Error during search:", error);
   }
 };
 

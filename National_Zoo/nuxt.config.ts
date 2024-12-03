@@ -10,9 +10,9 @@ export default defineNuxtConfig({
     public:{
       baseUrl:"http://localhost:8080/api"
     }
-  }
-  // css: [
-  //   '@fortawesome/fontawesome-free/css/all.css'
-  // ],
+  },
+  css: [
+    '@fortawesome/fontawesome-free/css/all.css'
+  ],
  
 })

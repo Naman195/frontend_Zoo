@@ -1,5 +1,6 @@
 const isLoggedIn = ref(false);
 const userId = ref(null);
+const isAdmin = ref(false);
 
 
 export function useAuth() {
@@ -28,12 +29,6 @@ export function useAuth() {
     userId.value = null;
     token.value = null
   };
-
-  
-
-
-
-
 
   return { isLoggedIn, logIn, logOut, userId,  };
 }

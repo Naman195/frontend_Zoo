@@ -1,7 +1,7 @@
 <template>
-  <div class="absolute bottom-12 start-1/2 -translate-x-1/2">
+  <div class="absolute top-13 right-0">
     <ShowAlert
-      :alert-message:any="toastMessage"
+      :alert-message="toastMessage"
       :is-visible="isToastVisible"
       @close-modal="closeToast"
     />
@@ -18,7 +18,7 @@
             label="Full Name"
             type="text"
             v-model="form.fullName"
-            rules="required|alpha"
+            rules="required|alpha_spaces"
           />
           <ErrorMessage name="fullname" class="text-red-600 text-sm mt-1" />
         </div>
@@ -292,9 +292,9 @@ const registerUser = async () => {
       body: form,
     });
     console.log("Registered User", data);
-    toastMessage.value = data as string;
+    toastMessage.value = data;
     isToastVisible.value = true;
-    alert(data);
+    // alert(data);
     if (data === "User successfully created") {
       form.fullName = "";
       form.email = "";
@@ -310,15 +310,17 @@ const registerUser = async () => {
       cities.value = [];
       states.value = [];
 
-      // setTimeout(() => {
-      //   router.push("/userlogin");
-      // }, 3000);
+      setTimeout(() => {
+        router.push("/userlogin");
+      }, 3000);
       // formkey.valueOf = Math.random();
     } else {
       toastMessage.value = data.response;
       isToastVisible.value = true;
     }
   } catch (err: any) {
+    console.log("Exception", err.response._data);
+
     toastMessage.value = err.response._data;
     isToastVisible.value = true;
   }
@@ -333,9 +335,6 @@ const fetchRoles = async () => {
   } catch (error) {
     console.log("Error In fetching Roles", error);
   }
-
-  // console.log(data);
-  console.log(roles);
 };
 
 onMounted(() => {
