@@ -11,7 +11,7 @@
       <h1 class="flex-grow text-center font-semibold">All Zoo</h1>
 
       <button
-        v-if="Zoos?.length !== 0"
+        v-if="isAdmin && Zoos?.length > 0"
         class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
         type="button"
         @click="openModal = true"
@@ -22,12 +22,7 @@
 
     <div class="w-full max-w-6xl px-4">
 
-    
-
-    
-      
-      
-      <SearchBar class="w-full" @search="performSearch" @clear="resetSearch" />
+      <SearchBar  @search="performSearch" @clear="resetSearch" />
     
     <div v-if="isSearching">
       <p v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
@@ -37,14 +32,14 @@
       </p>
     </div>
 
-    <div v-if="Zoos?.length === 0 && currentPage === 0"
-      class="grid grid-cols-1 gap-15 justify-items-center p-2 max-w-md mt-10 space-x"
+    <div v-if="Zoos?.length === 0 && currentPage === 0 && !isSearching"
+      class="flex justify-items-center justify-around mt-5"
     >
       <p class="text-bold"><h1 class="font-bold">
         No Zoo Found! Please Add Zoo
       </h1> </p>
       <div>
-        <button
+        <button v-if="isAdmin"
           class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
           type="button"
           @click="openModal = true"
@@ -126,14 +121,15 @@ const selectedZoo = ref([]);
 const Zoos = ref();
 const filteredZoos = ref([]);
 const isSearching = ref(false);
-// const id = ref(null);
 const zooId = ref(null);
+const isAdmin = ref(false);
 const currentPage = ref(0);
 const totalPages = ref(0);
 const pageSize = ref(3);
 const opendeleteModal = ref(false);
 const openModal = ref(false);
 const openUpdateModal = ref(false);
+const token = useCookie('auth');
 const updatedformData = ref({
   zooName: "",
   address: {
@@ -230,10 +226,6 @@ const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
     totalPages.value = data.totalPages;
     isSearching.value = false;
 
-    if (filteredZoos.length === 0 && currentPage.value > 0) {
-      currentPage.value -= 1; // Go to the previous page
-      await fetchZoo(currentPage.value, size); // Fetch zoos for the previous page
-    }
   } catch (error) {
     console.error("Error fetching zoos:", error);
   }
@@ -250,16 +242,12 @@ const deleteZoo = async () => {
     opendeleteModal.value = false;
     toastMessage.value = data;
     isToastVisible.value = true;
-    // fetchZoo(currentPage.value-1, pageSize.value);
-    // Check if filteredZoos has only one item before deletion
+    
     if (filteredZoos.value.length === 0 && currentPage.value > 0) {
-      // Go to the previous page
       currentPage.value -= 1;
       fetchZoo(currentPage.value, pageSize.value);
-    } else {
-      // Refresh the current page
-      fetchZoo(currentPage.value, pageSize.value);
-    }
+    } 
+    
   } catch (error) {
     console.error("Error deleting zoo:", error);
     toastMessage.value = error;
@@ -358,8 +346,20 @@ const performSearch = async (searchQuery) => {
     filteredZoos.value = data;
     isSearching.value = true;
   }
-  // emit("results", results);
 };
+
+const decodeJWT = (token) => {
+  if (!token) return null;
+  const payload = token.split(".")[1];
+  const decodedPayload = JSON.parse(atob(payload));
+
+  return decodedPayload;
+};
+
+const decodedToken = decodeJWT(token.value);
+if (decodedToken && decodedToken.role === "admin") {
+  isAdmin.value = true;
+}
 
 
 onMounted(() => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute top-13 right-0">
+  <div class="absolute top-0 right-0">
     <ShowAlert
       :alert-message="toastMessage"
       :is-visible="isToastVisible"

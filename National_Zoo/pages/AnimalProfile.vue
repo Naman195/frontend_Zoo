@@ -1,38 +1,41 @@
-
 <template>
-  <div class="flex flex-col items-center h-screen justify-center">
-    
-    <div
+  <div class="flex flex-col items-center">
+    <!-- <div
       :class="[
         'flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row transition-all duration-300',
-        buttonClick
-          ? 'scale-90 md:max-w-2xl' 
-          : 'scale-100 md:max-w-6xl' 
+        buttonClick ? 'scale-90 md:max-w-4xl' : 'scale-100 md:max-w-6xl',
       ]"
-    >
-      <img
-        class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg"
-        src="https://images.unsplash.com/photo-1496436818536-e239445d3327?q=80&w=1200"
-        alt="Animal Image"
-      />
-      <div class="flex flex-col justify-between p-4 leading-normal">
-        <h5
-          class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
-        >
-          {{ selectedAnimal?.animalName }} -- {{ selectedAnimal?.zoo?.zooName }}
-        </h5>
-        <p class="mb-3 font-bold text-gray-700 dark:text-gray-400">
-          {{ selectedAnimal?.animalType }}
-        </p>
-        <button
-          class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-          type="button"
-          @click="handleAnimalHistory"
-        >
-          View Animal History
-        </button>
-      </div>
+    > -->
+    <!-- object-cover w-full rounded-t-lg h-96 md:h-48 md:w-48 md:rounded-none md:rounded-s-lg -->
+    <img
+      class="rounded w-80 h-50 mt-5"
+      src="https://images.unsplash.com/photo-1496436818536-e239445d3327?q=80&w=1200"
+      alt="Animal Image"
+    />
+    <div class="flex flex-col justify-between p-4 leading-normal">
+      <h5
+        class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+      >
+        {{ selectedAnimal?.animalName }} -- {{ selectedAnimal?.zoo?.zooName }}
+      </h5>
+      <p class="mb-3 font-bold text-gray-700 dark:text-gray-400">
+        {{ selectedAnimal?.animalType }}
+      </p>
+
+      <h1 v-if="!isAdmin" class="font-bold">
+        {{ selectedAnimal?.animalName }}
+      </h1>
+
+      <button
+        v-if="isAdmin"
+        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+        type="button"
+        @click="handleAnimalHistory"
+      >
+        View Animal History
+      </button>
     </div>
+    <!-- </div> -->
 
     <div
       v-if="buttonClick"
@@ -93,6 +96,8 @@ const animalId = route.query.id;
 const selectedAnimal = ref();
 const animalHistory = ref([]);
 const buttonClick = ref(false);
+const isAdmin = ref(false);
+const token = useCookie("auth");
 
 const fetchAnimal = async () => {
   const animal = await useCustomFetch(`/animal/ani-id/${animalId}`);
@@ -108,4 +113,17 @@ const handleAnimalHistory = async () => {
 onMounted(() => {
   fetchAnimal();
 });
+
+const decodeJWT = (token) => {
+  if (!token) return null;
+  const payload = token.split(".")[1];
+  const decodedPayload = JSON.parse(atob(payload));
+
+  return decodedPayload;
+};
+
+const decodedToken = decodeJWT(token.value);
+if (decodedToken && decodedToken.role === "admin") {
+  isAdmin.value = true;
+}
 </script>

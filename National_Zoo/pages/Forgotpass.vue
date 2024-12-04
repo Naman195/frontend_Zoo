@@ -1,11 +1,9 @@
 <template>
-  <div
-    v-if="forgetPassAlert"
-    class="absolute top-11 start-1/2 -translate-x-1/2"
-  >
+  <div class="absolute top-0 right-0">
     <ShowAlert
-      :alert-message:any="forgotPassAlertRes()"
-      @close-modal="forgetPassAlert = false"
+      :alert-message="toastMessage"
+      :is-visible="isToastVisible"
+      @close-modal="closeToast"
     />
   </div>
   <div class="login-container">
@@ -34,14 +32,17 @@ const form = ref<{ email: string }>({
   email: "",
 });
 
+const toastMessage: Ref<string> = ref("");
+const isToastVisible = ref(false);
+
+const closeToast = () => {
+  isToastVisible.value = false;
+};
+
 const loader = ref(false);
 
 const forgetPassAlert = ref(false);
 const forgotPassmessage = ref("");
-
-const forgotPassAlertRes = () => {
-  return forgotPassmessage;
-};
 
 const router = useRouter();
 
@@ -55,17 +56,18 @@ const handleForgotPassword = async (): Promise<void> => {
       },
       body: JSON.stringify(form.value),
     });
+    toastMessage.value = response.message;
+    isToastVisible.value = true;
 
-    console.log("Response is", response);
-    forgotPassmessage.value = response.message;
-    forgetPassAlert.value = true;
     const email = response.email;
-    //  setTimeout(() => {
-    router.push({ path: "/otpverify", query: { email } });
-
-    //  }, 1000);
+    setTimeout(() => {
+      router.push({ path: "/otpverify", query: { email } });
+    }, 1000);
   } catch (error: any) {
-    console.log("An error occurred: " + error);
+    console.log("Response is", error.response._data.message );
+
+    toastMessage.value = error.message;
+    isToastVisible.value = true;
   }
 };
 </script>

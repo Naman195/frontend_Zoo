@@ -169,28 +169,13 @@ const fillupdateFormData = () => {
 };
 
 // Fetch User Profile
-const user = ref(null);
 const userId = useCookie("userId");
 
 onMounted(() => {
   if (userToken.value == true) {
-    // getUser();
     fetchProfile();
-    // fetchCountries();
   }
 });
-
-// Handle Update Profile Logic
-// const form = reactive({
-//   fullName: "",
-//   address: {
-//     street: "",
-//     zipCode: "",
-//     city: {
-//       cityId: null,
-//     },
-//   },
-// });
 
 const fetchProfile = async () => {
   try {

@@ -11,7 +11,7 @@
       <h1 class="flex-grow text-center font-bold">
         All Animals in Zoo - {{ selectedZoo?.zooName }}
       </h1>
-      <div v-if="isAdmin">
+      <div v-if="isAdmin && animals.length !== 0">
         <button
           class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
           type="button"
@@ -21,67 +21,95 @@
         </button>
       </div>
     </div>
-    <SearchBar @search="performSearch" @clear="resetSearch" />
-    <p v-if="animals.length === 0" class="text-gray-500 text-center">
-      No Results Found
-    </p>
-    <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
-      <AddAnimal
-        :from-data="formData"
-        :modal-title="'Add'"
-        :submit-button-label="'Add Animal'"
-        :fetch-categories="fetchCategories"
-        @close="
-          openAddAnimalModal = false;
-          intiliazeFormData();
-        "
-        @save="addAnimal()"
-      />
+    <div class="w-full max-w-6xl px-4">
+      <SearchBar @search="performSearch" @clear="resetSearch" />
+      <!-- <p v-if="animals.length === 0" class="text-gray-500 text-center">
+        No Results Found
+      </p> -->
+      <div v-if="isSearching">
+      <p v-if="animals.length === 0" class="text-gray-500 text-center">
+        <h1 class="font-bold">
+        No Result Found!
+      </h1>
+      </p>
+    </div>
+    <div v-if="animals?.length === 0 && currentPage === 0 && !isSearching" 
+      class="flex justify-items-center justify-around mt-5"
+      :class="['justify-around', isAdmin]"
+    >
+    
+      <p class="text-bold"><h1 class="font-bold">
+        No Animal Found!
+      </h1> </p>
+      <div v-if="isAdmin">
+        <button 
+          class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
+          type="button"
+          @click="openAddAnimalHandler()"
+        >
+          Add Animal
+        </button>
+      </div>
     </div>
 
-    <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
-      <AddAnimal
-        :from-data="selectedAnimal"
-        :modal-title="'Update'"
-        :submit-button-label="'Update Animal'"
-        :fetch-categories="fetchCategories"
-        @close="(openUpdateModal = false), intiliazeFormData()"
-        @save="updateAnimalHandler"
-      />
-    </div>
-    <div v-if="openTransferModal" class="z-50 absolute top-1/2">
-      <TransferAnimal
-        :fetch-zoo-list="zooList"
-        @close="openTransferModal = false"
-        @save="handleTransferAnimal"
-      />
-    </div>
-
-    <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
-      <Modal
-        :message="'Animal'"
-        @delete-user="deleteAnimal"
-        @close-modal="opendeleteModal = false"
-      />
-    </div>
-
-    <!-- Display All Animals -->
-    <div class="flex flex-wrap justify-center">
-      <li
-        v-for="animal in animals"
-        :key="animal.animalId"
-        class="m-4 list-none"
-      >
-        <ShowCards
-          :entity-data="animal"
-          @delete="deleteAnimalHandler(animal)"
-          @update="updateAnimal(animal)"
-          @transfer="onTransferButtonClick(animal)"
-          delete-button-label="Delete Animal"
-          update-button-label="Update Animal"
-          view-button-label="view Animal"
+      <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
+        <AddAnimal
+          :from-data="formData"
+          :modal-title="'Add'"
+          :submit-button-label="'Add Animal'"
+          :fetch-categories="fetchCategories"
+          @close="
+            openAddAnimalModal = false;
+            intiliazeFormData();
+          "
+          @save="addAnimal()"
         />
-      </li>
+      </div>
+
+      <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
+        <AddAnimal
+          :from-data="selectedAnimal"
+          :modal-title="'Update'"
+          :submit-button-label="'Update Animal'"
+          :fetch-categories="fetchCategories"
+          @close="(openUpdateModal = false), intiliazeFormData()"
+          @save="updateAnimalHandler"
+        />
+      </div>
+      <div v-if="openTransferModal" class="z-50 absolute top-1/2">
+        <TransferAnimal
+          :fetch-zoo-list="zooList"
+          @close="openTransferModal = false"
+          @save="handleTransferAnimal"
+        />
+      </div>
+
+      <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
+        <Modal
+          :message="'Animal'"
+          @delete-user="deleteAnimal"
+          @close-modal="opendeleteModal = false"
+        />
+      </div>
+
+      <!-- Display All Animals -->
+      <div class="flex flex-wrap justify-center">
+        <li
+          v-for="animal in animals"
+          :key="animal.animalId"
+          class="m-4 list-none"
+        >
+          <ShowCards
+            :entity-data="animal"
+            @delete="deleteAnimalHandler(animal)"
+            @update="updateAnimal(animal)"
+            @transfer="onTransferButtonClick(animal)"
+            delete-button-label="Delete Animal"
+            update-button-label="Update Animal"
+            view-button-label="view Animal"
+          />
+        </li>
+      </div>
     </div>
     <div v-if="!isSearching && animals.length !== 0">
       <Pagination
@@ -221,7 +249,11 @@ const deleteAnimal = async () => {
     opendeleteModal.value = false;
     toastMessage.value = data;
     isToastVisible.value = true;
-    // fetchAnimals(currentPage.value, pageSize.value);
+
+    if (animals.value.length === 0 && currentPage.value > 0) {
+      currentPage.value -= 1;
+      fetchAnimals(currentPage.value, pageSize.value);
+    }
   } catch (error) {
     toastMessage.value = error;
     isToastVisible.value = true;
