@@ -86,16 +86,18 @@ const submitOtp = async () => {
         });
       }, 1000);
     } else {
+      console.log("Response is ", response.message);
+
       toastMessage.value =
         response.message || "Verification failed. Please try again.";
       isToastVisible.value = true;
       // alert(response.message || "Verification failed. Please try again.");
     }
   } catch (error: any) {
-    // console.error("An error occurred: " + error);
+    console.error("An error occurred: " + error.response._data.message);
     // alert("An error occurred during OTP verification. Please try again.");
     toastMessage.value =
-      error.message || "Verification failed. Please try again.";
+      error.response._data.message || "Verification failed. Please try again.";
     isToastVisible.value = true;
   }
 };

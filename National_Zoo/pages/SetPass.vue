@@ -1,11 +1,9 @@
 <template>
-  <div
-    v-if="passwordAlert"
-    class="absolute bottom-12 start-1/2 -translate-x-1/2"
-  >
+  <div class="absolute top-0 right-0">
     <ShowAlert
-      :alert-message:="passwordAlertRes()"
-      @close-modal="passAlertClose"
+      :alert-message="toastMessage"
+      :is-visible="isToastVisible"
+      @close-modal="closeToast"
     />
   </div>
   <div class="login-container">
@@ -39,57 +37,42 @@
 
 <script setup lang="ts">
 import "../assests/css/LoginStyle.css";
-import { useRoute } from "vue-router";
 
-// const token = ref("");
 const newPassword = ref("");
 const oldPassword = ref("");
-
+const toastMessage: Ref<string> = ref("");
+const isToastVisible = ref(false);
 const router = useRouter();
-
-const passwordAlert = ref(false);
-const passwordAlertMessage = ref("");
-
-const passwordAlertRes = () => {
-  return passwordAlertMessage;
-};
-
-const afterSetPass = () => {
-  passwordAlert.value = true;
-};
-
-const passAlertClose = () => {
-  passwordAlert.value = false;
-};
-// token.value = route.query.token;
-
-// const tokenCookie = useCookie("auth");
 const isLoggedIn = useCookie("isLoggedIn");
+
+const closeToast = () => {
+  isToastVisible.value = false;
+};
 
 const handleSetPassword = async () => {
   try {
-    const requestBody: {newPassword: string; oldPassword?: string} = {
+    const requestBody: { newPassword: string; oldPassword?: string } = {
       newPassword: newPassword.value,
     };
 
     if (isLoggedIn.value) {
       requestBody.oldPassword = oldPassword.value;
     }
-    const response :any= await useCustomFetch(`/auth/setpassword`, {
+
+    const response: any = await useCustomFetch(`/auth/setpassword`, {
       method: "POST",
       body: requestBody,
     });
-    console.log("PAssword Set Successfully", response);
-    passwordAlertMessage.value = response;
-    afterSetPass();
+
+    toastMessage.value = response;
+    isToastVisible.value = true;
+
     setTimeout(() => {
       router.push("/userlogin");
     }, 1000);
-  
   } catch (error: any) {
-    console.log("Error in Set Pass Password Try Again", error.data);
-    passwordAlertMessage.value = error.data;
-    afterSetPass();
+    toastMessage.value = error.data;
+    isToastVisible.value = true;
   }
 };
 </script>

@@ -34,17 +34,12 @@ const form = ref<{ email: string }>({
 
 const toastMessage: Ref<string> = ref("");
 const isToastVisible = ref(false);
+const loader = ref(false);
+const router = useRouter();
 
 const closeToast = () => {
   isToastVisible.value = false;
 };
-
-const loader = ref(false);
-
-const forgetPassAlert = ref(false);
-const forgotPassmessage = ref("");
-
-const router = useRouter();
 
 const handleForgotPassword = async (): Promise<void> => {
   loader.value = true;
@@ -64,9 +59,8 @@ const handleForgotPassword = async (): Promise<void> => {
       router.push({ path: "/otpverify", query: { email } });
     }, 1000);
   } catch (error: any) {
-    console.log("Response is", error.response._data.message );
-
-    toastMessage.value = error.message;
+    loader.value = false;
+    toastMessage.value = error.response._data.message;
     isToastVisible.value = true;
   }
 };

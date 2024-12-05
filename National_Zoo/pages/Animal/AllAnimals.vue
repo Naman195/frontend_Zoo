@@ -171,7 +171,7 @@ const openAddAnimalHandler = () => {
   openAddAnimalModal.value = true;
   fetchCategoriesApi();
 };
-const selectedAnimal = ref([]);
+const selectedAnimal = ref({});
 const route = useRoute();
 const zooId = route.query.zooId;
 const selectedZoo = ref(null);
@@ -209,8 +209,9 @@ function updateAnimal(animal) {
   openUpdateModal.value = true;
   animalId.value = animal.animalId;
   selectedAnimal.value = animal;
-  compareFormdata.value.animalType = animal.animalType;
-  compareFormdata.value.animalName = animal.animalName;
+  compareFormdata.value = {...animal};
+  // compareFormdata.value.animalType = animal.animalType;
+  // compareFormdata.value.animalName = animal.animalName;
   fetchCategoriesApi();
 }
 
@@ -284,7 +285,10 @@ const addAnimal = async () => {
 };
 
 const updateAnimalHandler = async (fromdata) => {
-  if (!formDataChanged()) {
+  
+  if(!(
+    JSON.stringify(fromdata) !== JSON.stringify(compareFormdata.value)
+  )){
     return;
   }
 

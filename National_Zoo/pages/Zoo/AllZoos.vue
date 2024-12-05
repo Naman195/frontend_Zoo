@@ -117,7 +117,7 @@
 <script setup>
 const toastMessage =  ref("");
 const isToastVisible = ref(false);
-const selectedZoo = ref([]);
+const selectedZoo = ref({});
 const Zoos = ref();
 const filteredZoos = ref([]);
 const isSearching = ref(false);
@@ -197,25 +197,11 @@ function intiliazeFormData() {
     (updatedformData.value.address.city.state.country.countryId = "");
 }
 
-const formDataChanged = () => {
-  return (
-    JSON.stringify(updatedformData.value) !==
-    JSON.stringify(compareUpdatedformData.value)
-  );
-};
-
 function updateZoo(zoo) {
   openUpdateModal.value = true;
   zooId.value = zoo.zooId;
   selectedZoo.value = zoo;
-  compareUpdatedformData.value.zooName = zoo.zooName;
-  compareUpdatedformData.value.address.zipCode = zoo.address.zipCode;
-  compareUpdatedformData.value.address.street = zoo.address.street;
-  compareUpdatedformData.value.address.city.cityId = zoo.address.city.cityId;
-  compareUpdatedformData.value.address.city.state.stateId =
-    zoo.address.city.state.stateId;
-  compareUpdatedformData.value.address.city.state.country.countryId =
-    zoo.address.city.state.country.countryId;
+  compareUpdatedformData.value = {...zoo }
 }
 
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
@@ -285,9 +271,8 @@ const addZoo = async () => {
 };
 
 const updateZooHandler = async (formData) => {
-  console.log("Update Zoo Form Data ", formData);
-  
-  if (!formDataChanged()) {
+  if(!(JSON.stringify(formData) !==
+  JSON.stringify(compareUpdatedformData.value)) ){
     return;
   }
   const resBody = {
@@ -300,6 +285,7 @@ const updateZooHandler = async (formData) => {
       },
     },
   };
+  
   try {
     const response = await useCustomFetch(`/zoo/update/${zooId.value}`, {
       method: "PATCH",
