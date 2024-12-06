@@ -47,7 +47,7 @@
   <!-- End Toast -->
 </template>
 
-<script setup>
+<script setup lang="ts">
 const emit = defineEmits(["closeModal"]);
 defineProps({ alertMessage: String, isVisible: Boolean });
 </script>

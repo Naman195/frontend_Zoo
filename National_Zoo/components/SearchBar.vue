@@ -3,7 +3,6 @@
     <input
       v-model="searchQuery"
       type="text"
-      placeholder="Search by zoo name or location (e.g., Country, State, City)"
       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
     <button
@@ -22,7 +21,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const searchQuery = ref("");
 const emit = defineEmits(["search", "clear"]);
 

@@ -28,6 +28,11 @@
 <script setup lang="ts">
 import "../assests/css/LoginStyle.css";
 
+interface obj {
+  email: string;
+  message: string;
+}
+
 const form = ref<{ email: string }>({
   email: "",
 });
@@ -44,7 +49,7 @@ const closeToast = () => {
 const handleForgotPassword = async (): Promise<void> => {
   loader.value = true;
   try {
-    const response: any = await useCustomFetch(`/auth/forgotpassword`, {
+    const response = <obj>await useCustomFetch(`/auth/forgotpassword`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

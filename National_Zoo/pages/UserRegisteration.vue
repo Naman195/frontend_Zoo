@@ -9,7 +9,7 @@
   <div class="register-container">
     <h1>User Registration Page</h1>
     <!-- :key="formkey" -->
-    <Form @submit="registerUser" class="register-form">
+    <Form @submit="registerUser" class="register-form" :key="formkey">
       <div class="register-pair">
         <div class="form-group">
           <label for="fullname">Full Name</label>
@@ -216,7 +216,7 @@ const roles = ref<Role[]>([]);
 const toastMessage: Ref<string> = ref("");
 const isToastVisible = ref(false);
 
-// const formkey = Math.random();
+var formkey = Math.random();
 
 const form = reactive({
   fullName: "",
@@ -287,14 +287,13 @@ const fetchCities = async () => {
 
 const registerUser = async () => {
   try {
-    const data: any = await useCustomFetch("/auth/user/create", {
+    const data = <string>await useCustomFetch("/auth/user/create", {
       method: "POST",
       body: form,
     });
-    console.log("Registered User", data);
     toastMessage.value = data;
     isToastVisible.value = true;
-    // alert(data);
+
     if (data === "User successfully created") {
       form.fullName = "";
       form.email = "";
@@ -313,9 +312,9 @@ const registerUser = async () => {
       setTimeout(() => {
         router.push("/userlogin");
       }, 3000);
-      // formkey.valueOf = Math.random();
+      formkey = Math.random();
     } else {
-      toastMessage.value = data.response;
+      toastMessage.value = "Error during SignUp Please Try Again";
       isToastVisible.value = true;
     }
   } catch (err: any) {

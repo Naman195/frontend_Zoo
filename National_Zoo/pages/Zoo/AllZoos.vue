@@ -87,7 +87,7 @@
 
     <!-- Display All Zoos -->
     <div class="flex flex-wrap justify-center">
-      <li v-for="(zoo, id) in filteredZoos" :key="id" class="m-4 list-none w-full sm:w-[48%] lg:w-[30%]">
+      <li v-for="(zoo, id) in filteredZoos" :key="id" class="m-4 list-none "> <!-- w-full sm:w-[48%] lg:w-[30%]-->
         <ShowCards
           :entity-data="zoo"
           cardName="animal"
@@ -147,22 +147,7 @@ const updatedformData = ref({
   },
 });
 
-const compareUpdatedformData = ref({
-  zooName: "",
-  address: {
-    street: "",
-    zipCode: "",
-    city: {
-      cityId: null,
-      state: {
-        stateId: null,
-        country: {
-          countryId: null,
-        },
-      },
-    },
-  },
-});
+let compareUpdatedformData = {};
 
 
 const closeToast = () => {
@@ -201,7 +186,9 @@ function updateZoo(zoo) {
   openUpdateModal.value = true;
   zooId.value = zoo.zooId;
   selectedZoo.value = zoo;
-  compareUpdatedformData.value = {...zoo }
+  compareUpdatedformData = {...zoo }
+  compareUpdatedformData = JSON.parse(JSON.stringify(compareUpdatedformData));
+ 
 }
 
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
@@ -271,8 +258,17 @@ const addZoo = async () => {
 };
 
 const updateZooHandler = async (formData) => {
-  if(!(JSON.stringify(formData) !==
-  JSON.stringify(compareUpdatedformData.value)) ){
+  console.log(("From Data from Update Modal", formData));
+
+  const data = (JSON.stringify(formData));
+  console.log("After Update", data);
+  
+  const data2 = JSON.stringify(compareUpdatedformData);
+  console.log(data2);
+  // console.log(JSON.stringify(formData) ==
+  // JSON.stringify(compareUpdatedformData));
+  if((JSON.stringify(formData) ==
+  JSON.stringify(compareUpdatedformData)) ){
     return;
   }
   const resBody = {
@@ -306,33 +302,26 @@ const resetSearch = () => {
   fetchZoo(currentPage.value, pageSize.value);
 }
 
-// const results = ref([]);
 const performSearch = async (searchQuery) => {  
   const trimmedQuery = searchQuery.trim();
   if (!trimmedQuery) {
     return;
   }
-
-  if (trimmedQuery.includes(",")) {
-    const [country, state, city] = trimmedQuery
-      .split(",")
-      .map((part) => part.trim());
-    const data = await useCustomFetch(
-      `/zoo/search/zoos/location?country=${country}&state=${state || ""}&city=${
-        city || ""
-      }`
-    );
-    filteredZoos.value = data;
-    isSearching.value = true;
-  } else {
-    const data = await useCustomFetch(
-      `/zoo/search/zoos/name?name=${trimmedQuery}`
+    try {
+      const data = await useCustomFetch(
+      `/zoo/search?searchItem=${trimmedQuery}`
     );
 
     filteredZoos.value = data;
     isSearching.value = true;
+      
+    } catch (error) {
+      console.log("Error in Searching Zoo", error);
+      
+    }
+   
   }
-};
+
 
 const decodeJWT = (token) => {
   if (!token) return null;

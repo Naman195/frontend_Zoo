@@ -66,13 +66,9 @@
                   {{ zoo.zooName }}
                 </option>
               </Field>
-              <!-- {{ props.fetchZooList.zooId }} -->
-              <ErrorMessage
-                name="animalType"
-                class="text-red-600 text-sm mt-1"
-              />
+              <ErrorMessage name="zooList" class="text-red-600 text-sm mt-1" />
             </div>
-            <!-- Buttons -->
+
             <button
               type="submit"
               class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -90,10 +86,13 @@
 import { Field, Form, ErrorMessage } from "vee-validate";
 const emit = defineEmits(["close", "save"]);
 const props = defineProps<{
-  //   submitButtonLabel: string;
-  //   modalTitle: string;
-  fetchZooList: Object;
+  fetchZooList: {
+    zooId: {
+      type: number;
+    };
+    zooName: {
+      type: string;
+    };
+  };
 }>();
-
-// console.log("Zoo List Are in Tranfer Animal Component", props.fetchZooList);
 </script>

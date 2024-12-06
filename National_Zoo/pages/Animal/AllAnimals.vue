@@ -123,7 +123,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import AddAnimal from "~/components/animal/AddAnimal.vue";
 
 const closeToast = () => {
@@ -332,6 +332,7 @@ const zooList = ref([]);
 
 const FetchZooList = async () => {
   const data = await useCustomFetch(`/animal/zoo/${zooId}`);
+  console.log(data);
   zooList.value = data;
 };
 

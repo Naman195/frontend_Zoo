@@ -59,10 +59,12 @@ const handleSetPassword = async () => {
       requestBody.oldPassword = oldPassword.value;
     }
 
-    const response: any = await useCustomFetch(`/auth/setpassword`, {
+    const response = <string>await useCustomFetch(`/auth/setpassword`, {
       method: "POST",
       body: requestBody,
     });
+
+    console.log("Response is ", response);
 
     toastMessage.value = response;
     isToastVisible.value = true;

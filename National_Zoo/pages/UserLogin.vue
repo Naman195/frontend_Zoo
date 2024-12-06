@@ -57,6 +57,7 @@ import { Field, Form, ErrorMessage } from "vee-validate";
 import "../assests/css/LoginStyle.css";
 import { useAuth } from "@/composables/useAuth";
 import { useRouter } from "vue-router";
+import type { userLogin } from "~/types/userLogin";
 
 const toastMessage: Ref<string> = ref("");
 const isToastVisible = ref(false);
@@ -81,10 +82,12 @@ const togglePasswordVisibility = () => {
 
 const loginUser = async () => {
   try {
-    const data: any = await useCustomFetch("/auth/user/login", {
+    const data = await useCustomFetch<userLogin>("/auth/user/login", {
       method: "POST",
       body: form,
     });
+    console.log("Data is ", data);
+
     token.value = data.token;
     logIn(data.userId);
 

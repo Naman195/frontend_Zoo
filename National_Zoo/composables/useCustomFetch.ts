@@ -22,7 +22,7 @@ export function useCustomFetch<T>(
 
     let mergeOptions = {}
     mergeOptions = {...defaults, ...options };
-    return $fetch(url, mergeOptions);
+    return $fetch<T>(url, mergeOptions);
 }
 
 

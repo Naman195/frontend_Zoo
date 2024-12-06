@@ -129,4 +129,6 @@ const props = defineProps<{
     categoryName: string;
   }[];
 }>();
+
+console.log("Fetched Categories Type", props.fetchCategories);
 </script>

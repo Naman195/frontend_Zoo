@@ -200,7 +200,7 @@ const updateUser = async () => {
   };
 
   try {
-    await useCustomFetch(`/auth/userupdate/${userId.value}`, {
+    await useCustomFetch(`/auth/update/${userId.value}`, {
       method: "PATCH",
       body: resBody,
     });

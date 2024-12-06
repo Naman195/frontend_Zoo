@@ -59,7 +59,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { defineProps, defineEmits } from "vue";
 
 const props = defineProps({
@@ -79,7 +79,7 @@ const props = defineProps({
 
 const emit = defineEmits(["update:currentPage", "fetch-data"]);
 
-const changePage = (page) => {
+const changePage = (page: number) => {
   if (page >= 0 && page < props.totalPages) {
     emit("update:currentPage", page);
     emit("fetch-data", page, props.pageSize);

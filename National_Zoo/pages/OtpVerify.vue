@@ -28,6 +28,11 @@
 <script setup lang="ts">
 import "../assests/css/Otpverify.css";
 
+interface resObj {
+  message: string;
+  url: string;
+}
+
 const toastMessage: Ref<string> = ref("");
 const isToastVisible = ref(false);
 
@@ -63,13 +68,14 @@ const submitOtp = async () => {
   form.value.otp = otpArray.value.join("");
 
   try {
-    const response: any = await useCustomFetch("/auth/verifyotp", {
+    const response = <resObj>await useCustomFetch("/auth/verifyotp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(form.value),
     });
+    console.log("Rresponse is", response);
 
     if (response.message === "OTP verified successfully") {
       const resetUrl = response.url;
@@ -86,16 +92,11 @@ const submitOtp = async () => {
         });
       }, 1000);
     } else {
-      console.log("Response is ", response.message);
-
       toastMessage.value =
         response.message || "Verification failed. Please try again.";
       isToastVisible.value = true;
-      // alert(response.message || "Verification failed. Please try again.");
     }
   } catch (error: any) {
-    console.error("An error occurred: " + error.response._data.message);
-    // alert("An error occurred during OTP verification. Please try again.");
     toastMessage.value =
       error.response._data.message || "Verification failed. Please try again.";
     isToastVisible.value = true;
