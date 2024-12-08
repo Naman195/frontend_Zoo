@@ -1,12 +1,5 @@
 <template>
   <div class="flex flex-col items-center">
-    <!-- <div
-      :class="[
-        'flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row transition-all duration-300',
-        buttonClick ? 'scale-90 md:max-w-4xl' : 'scale-100 md:max-w-6xl',
-      ]"
-    > -->
-    <!-- object-cover w-full rounded-t-lg h-96 md:h-48 md:w-48 md:rounded-none md:rounded-s-lg -->
     <img
       class="rounded w-80 h-50 mt-5"
       src="https://images.unsplash.com/photo-1496436818536-e239445d3327?q=80&w=1200"
@@ -88,25 +81,30 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts" >
+import type { Animal } from '~/types/Animal';
+import type { AnimalHistory } from '~/types/AnimalHistory';
+
 const route = useRoute();
 
-const animalId = route.query.id;
+const animalId = route.query.id as string;
 
-const selectedAnimal = ref();
-const animalHistory = ref([]);
+const selectedAnimal = ref<Animal | null>(null);
+const animalHistory = ref<AnimalHistory[]>([]);
 const buttonClick = ref(false);
 const isAdmin = ref(false);
 const token = useCookie("auth");
 
 const fetchAnimal = async () => {
-  const animal = await useCustomFetch(`/animal/ani-id/${animalId}`);
+  const animal = await useCustomFetch<Animal>(`/animal/ani-id/${animalId}`);
   selectedAnimal.value = animal;
 };
 
 const handleAnimalHistory = async () => {
   buttonClick.value = true;
-  const data = await useCustomFetch(`/animal/history/${animalId}`);
+  const data = await useCustomFetch<AnimalHistory[]>(`/animal/history/${animalId}`);
+  console.log("Hostory is", data);
+  
   animalHistory.value = data;
 };
 
@@ -114,7 +112,7 @@ onMounted(() => {
   fetchAnimal();
 });
 
-const decodeJWT = (token) => {
+const decodeJWT = (token: string | undefined) => {
   if (!token) return null;
   const payload = token.split(".")[1];
   const decodedPayload = JSON.parse(atob(payload));
@@ -122,7 +120,7 @@ const decodeJWT = (token) => {
   return decodedPayload;
 };
 
-const decodedToken = decodeJWT(token.value);
+const decodedToken = decodeJWT(token?.value ?? undefined);
 if (decodedToken && decodedToken.role === "admin") {
   isAdmin.value = true;
 }

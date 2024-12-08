@@ -61,14 +61,12 @@
     </div>
   </div>
 </template>
-<script setup>
-import { string } from "yup";
+<script setup lang="ts" >
+
 
 const emit = defineEmits(["deleteUser", "closeModal"]);
 
 defineProps({
-  message: {
-    type: string,
-  },
+  message: { type: String, required: true }
 });
 </script>

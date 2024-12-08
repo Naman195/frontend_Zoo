@@ -25,19 +25,19 @@
       <SearchBar  @search="performSearch" @clear="resetSearch" />
     
     <div v-if="isSearching">
-      <p v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
-        <h1 class="font-bold">
+      <h1 v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
+        <p class="font-bold">
         No Result Found!
+        </p>
       </h1>
-      </p>
     </div>
 
     <div v-if="Zoos?.length === 0 && currentPage === 0 && !isSearching"
       class="flex justify-items-center justify-around mt-5"
     >
-      <p class="text-bold"><h1 class="font-bold">
+      <h1 class="text-bold"><p class="font-bold">
         No Zoo Found! Please Add Zoo
-      </h1> </p>
+      </p> </h1>
       <div>
         <button v-if="isAdmin"
           class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"

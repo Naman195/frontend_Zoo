@@ -15,7 +15,7 @@
   <div class="card-grid">
     <div v-if="openModal" class="z-50 absolute top-1/2">
       <Modal
-        :message:any="'User'"
+        :message ="'User'"
         @delete-user="deleteUserApi"
         @close-modal="openModal = false"
       />

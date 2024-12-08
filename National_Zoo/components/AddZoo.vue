@@ -217,8 +217,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts" >
 import { ErrorMessage, Field, Form } from "vee-validate";
+import type { City } from "~/types/City";
+import type { Country } from "~/types/Country";
+import type { State } from "~/types/State";
 
 const emit = defineEmits(["close", "save", "updateData"]);
 const props = defineProps({
@@ -242,9 +245,9 @@ const props = defineProps({
 
 // console.log("From Data", props.fromData);
 
-const countries = ref([]);
-const states = ref([]);
-const cities = ref([]);
+const countries = ref<Country[]>([]);
+const states = ref<State[]>([]);
+const cities = ref<City[]>([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
 const formData = ref({ ...props.fromData });
@@ -255,7 +258,7 @@ onMounted(() => {
 });
 
 const fetchCountries = async () => {
-  const data = await $fetch(`http://localhost:8080/api/countries`);
+  const data = await $fetch<Country[]>(`http://localhost:8080/api/countries`);
   countries.value = data;
 };
 
@@ -269,7 +272,7 @@ const initializeSelections = async () => {
 const handleCountryChange = () => selectedCountry.value && fetchStates();
 const fetchStates = async () => {
   if (selectedCountry.value) {
-    const data = await $fetch(
+    const data = await $fetch<State[]>(
       `http://localhost:8080/api/state/${selectedCountry.value}`
     );
     states.value = data;
@@ -279,7 +282,7 @@ const fetchStates = async () => {
 const handleStateChange = () => selectedState.value && fetchCities();
 const fetchCities = async () => {
   if (selectedState.value) {
-    const data = await $fetch(
+    const data = await $fetch<City[]>(
       `http://localhost:8080/api/cities/${selectedState.value}`
     );
     cities.value = data;

@@ -79,7 +79,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   faEye,
   faTrash,
@@ -87,22 +87,38 @@ import {
   faExchangeAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
+import type { Address } from "~/types/Address";
 library.add(faEye, faTrash, faEdit, faExchangeAlt);
-const emit = defineEmits(["update", "delete", "transfer"]);
-const props = defineProps({
-  entityData: {
-    type: Object,
-  },
-  cardName: String,
-  deleteButtonLabel: String,
-  updateButtonLabel: String,
-  viewButtonLabel: String,
-});
+
+interface Entity {
+  id: number;
+  zooId?: number;
+  animalId?: number;
+  zooName?: string;
+  animalName?: string;
+  animalType?: string;
+  address: Address;
+}
+
+// Define props
+const props = defineProps<{
+  entityData: Entity;
+  cardName: string;
+  deleteButtonLabel: string;
+  updateButtonLabel: string;
+  viewButtonLabel: string;
+}>();
+
+const emit = defineEmits<{
+  (e: 'update'): void;
+  (e: 'delete', zooId?: number): void;
+  (e: 'transfer'): void;
+}>();
 
 const isAdmin = ref(false);
 const token = useCookie("auth");
 
-const decodeJWT = (token) => {
+const decodeJWT = (token: string | undefined) => {
   if (!token) return null;
   const payload = token.split(".")[1];
   const decodedPayload = JSON.parse(atob(payload));
@@ -110,7 +126,7 @@ const decodeJWT = (token) => {
   return decodedPayload;
 };
 
-const decodedToken = decodeJWT(token.value);
+const decodedToken = decodeJWT(token?.value ?? undefined);
 if (decodedToken && decodedToken.role === "admin") {
   isAdmin.value = true;
 }

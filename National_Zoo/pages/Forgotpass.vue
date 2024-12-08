@@ -71,4 +71,4 @@ const handleForgotPassword = async (): Promise<void> => {
 };
 </script>
 
-<style></style>
+

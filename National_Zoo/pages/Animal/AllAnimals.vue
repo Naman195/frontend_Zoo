@@ -27,20 +27,20 @@
         No Results Found
       </p> -->
       <div v-if="isSearching">
-      <p v-if="animals.length === 0" class="text-gray-500 text-center">
-        <h1 class="font-bold">
+      <h1 v-if="animals.length === 0" class="text-gray-500 text-center">
+        <p class="font-bold">
         No Result Found!
+        </p>
       </h1>
-      </p>
     </div>
     <div v-if="animals?.length === 0 && currentPage === 0 && !isSearching" 
       class="flex justify-items-center justify-around mt-5"
       :class="['justify-around', isAdmin]"
     >
     
-      <p class="text-bold"><h1 class="font-bold">
+      <h1 class="text-bold"><p class="font-bold">
         No Animal Found!
-      </h1> </p>
+      </p> </h1>
       <div v-if="isAdmin">
         <button 
           class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
@@ -99,6 +99,7 @@
           :key="animal.animalId"
           class="m-4 list-none"
         >
+        {{ animals }}
           <ShowCards
             :entity-data="animal"
             @delete="deleteAnimalHandler(animal)"
@@ -124,7 +125,14 @@
 </template>
 
 <script lang="ts" setup>
-import AddAnimal from "~/components/animal/AddAnimal.vue";
+import type { Animal } from '~/types/Animal';
+import type { Category } from '~/types/Category';
+import type { PaginatedResponse } from '~/types/PaginationResponse';
+import type { Zoo } from '~/types/Zoo';
+
+interface DecodedToken {
+  role?: string;
+}
 
 const closeToast = () => {
   isToastVisible.value = false;
@@ -134,14 +142,15 @@ const resetSearch = () => {
   fetchAnimals(currentPage.value, pageSize.value);
 };
 
-const toastMessage = ref("");
-const isToastVisible = ref(false);
-const formData = ref({
+const toastMessage = ref<string>("");
+const isToastVisible = ref<boolean>(false);
+
+const formData = ref<Partial<Animal>>({
   animalName: "",
   animalType: "",
 });
 
-const compareFormdata = ref({
+const compareFormdata = ref<Partial<Animal>>({
   animalName: "",
   animalType: "",
 });
@@ -160,7 +169,7 @@ const currentPage = ref(0);
 const totalPages = ref(0);
 const pageSize = ref(3);
 
-const changePage = (page) => {
+const changePage = (page: number) => {
   if (page >= 0 && page < totalPages.value) {
     currentPage.value = page;
     fetchAnimals(currentPage.value, pageSize.value);
@@ -171,23 +180,24 @@ const openAddAnimalHandler = () => {
   openAddAnimalModal.value = true;
   fetchCategoriesApi();
 };
-const selectedAnimal = ref({});
+
+const selectedAnimal = ref<Partial<Animal>>({});
 const route = useRoute();
 const zooId = route.query.zooId;
-const selectedZoo = ref(null);
-const animals = ref([]);
-const token = useCookie("auth");
+const selectedZoo = ref<Zoo | null>(null);
+const animals = ref<Animal[]>([]);
+const token = useCookie("auth") || undefined;
 const openAddAnimalModal = ref(false);
 const opendeleteModal = ref(false);
-const animalId = ref("");
-const openUpdateModal = ref(false);
-const fetchCategories = ref([]);
+const animalId = ref<string>("");
+const openUpdateModal = ref<boolean>(false);
+const fetchCategories = ref<Category[]>([]);
 const isAdmin = ref(false);
 const isSearching = ref(false);
 const openTransferModal = ref(false);
-const selectedTransferredAnimalId = ref(0);
+const selectedTransferredAnimalId = ref<string>("");
 
-const decodeJWT = (token) => {
+const decodeJWT = (token: string | undefined): DecodedToken | null => {
   if (!token) return null;
   const payload = token.split(".")[1];
   const decodedPayload = JSON.parse(atob(payload));
@@ -195,42 +205,45 @@ const decodeJWT = (token) => {
   return decodedPayload;
 };
 
-const decodedToken = decodeJWT(token.value);
+const decodedToken = decodeJWT(token?.value ?? undefined);
 if (decodedToken && decodedToken.role === "admin") {
   isAdmin.value = true;
 }
 
-const deleteAnimalHandler = (animal) => {
+const deleteAnimalHandler = (animal: Animal) => {
   animalId.value = animal.animalId;
   opendeleteModal.value = true;
 };
 
-function updateAnimal(animal) {
+function updateAnimal(animal: Animal) {
   openUpdateModal.value = true;
   animalId.value = animal.animalId;
   selectedAnimal.value = animal;
   compareFormdata.value = {...animal};
-  // compareFormdata.value.animalType = animal.animalType;
-  // compareFormdata.value.animalName = animal.animalName;
   fetchCategoriesApi();
 }
 
-function onTransferButtonClick(animal) {
+function onTransferButtonClick(animal: Animal) {
   selectedTransferredAnimalId.value = animal.animalId;
   openTransferModal.value = true;
   FetchZooList();
 }
 
 const fetchZooById = async () => {
-  const response = await useCustomFetch(`/zoo/id/${zooId}`);
-  selectedZoo.value = response;
+  try {
+    const response = await useCustomFetch<Zoo>(`/zoo/id/${zooId}`);
+    selectedZoo.value = response;
+  } catch (error) {
+    console.error("Failed to fetch zoo:", error);
+    selectedZoo.value = null;
+  }
 };
 
 const fetchAnimals = async (
-  page = currentPage.value,
-  size = pageSize.value
-) => {
-  const data = await useCustomFetch(
+  page: number = currentPage.value,
+  size: number = pageSize.value
+) : Promise<void> => {
+  const data = await useCustomFetch<PaginatedResponse<Animal>>(
     `/animal/zoo-ani/${zooId}?page=${page}&size=${size}`
   );
   animals.value = data.content;
@@ -240,7 +253,7 @@ const fetchAnimals = async (
 
 const deleteAnimal = async () => {
   try {
-    const data = await useCustomFetch(`/animal/del/${animalId.value}`, {
+    const data = await useCustomFetch<string>(`/animal/del/${animalId.value}`, {
       method: "PATCH",
     });
 
@@ -248,14 +261,14 @@ const deleteAnimal = async () => {
       (animal) => animal.animalId !== animalId.value
     );
     opendeleteModal.value = false;
-    toastMessage.value = data;
+    toastMessage.value = data || "Animal deleted successfully.";
     isToastVisible.value = true;
 
     if (animals.value.length === 0 && currentPage.value > 0) {
       currentPage.value -= 1;
       fetchAnimals(currentPage.value, pageSize.value);
     }
-  } catch (error) {
+  } catch (error: any) {
     toastMessage.value = error;
     isToastVisible.value = true;
   }
@@ -278,13 +291,13 @@ const addAnimal = async () => {
     toastMessage.value = "Added Successfully";
     isToastVisible.value = true;
     fetchAnimals(currentPage.value, pageSize.value);
-  } catch (error) {
-    toastMessage.value = error;
+  } catch (error:any) {
+    toastMessage.value = error.response._data;
     isToastVisible.value = true;
   }
 };
 
-const updateAnimalHandler = async (fromdata) => {
+const updateAnimalHandler = async (fromdata:  Partial<Animal>): Promise<void> => {
   
   if(!(
     JSON.stringify(fromdata) !== JSON.stringify(compareFormdata.value)
@@ -296,7 +309,7 @@ const updateAnimalHandler = async (fromdata) => {
     animalName: fromdata.animalName,
     animalType: fromdata.animalType,
     zoo: {
-      zooId: fromdata.zoo.zooId,
+      zooId: fromdata.zoo?.zooId,
     },
   };
   try {
@@ -315,7 +328,7 @@ const updateAnimalHandler = async (fromdata) => {
     isToastVisible.value = true;
 
     fetchAnimals(currentPage.value, pageSize.value);
-  } catch (error) {
+  } catch (error: any) {
     toastMessage.value = error;
     isToastVisible.value = true;
   }
@@ -323,20 +336,20 @@ const updateAnimalHandler = async (fromdata) => {
 
 const fetchCategoriesApi = async () => {
   try {
-    const data = await useCustomFetch("/category/all");
+    const data = await useCustomFetch<Category[]>("/category/all");
     fetchCategories.value = data;
   } catch (error) {}
 };
 
-const zooList = ref([]);
+const zooList = ref<Zoo[]>([]);
 
 const FetchZooList = async () => {
-  const data = await useCustomFetch(`/animal/zoo/${zooId}`);
+  const data = await useCustomFetch<Zoo[]>(`/animal/zoo/${zooId}`);
   console.log(data);
   zooList.value = data;
 };
 
-const handleTransferAnimal = async (newZooId) => {
+const handleTransferAnimal = async (newZooId:  number) => {
   try {
     const res = await useCustomFetch(
       `/animal/transfer/${selectedTransferredAnimalId.value}/to/${newZooId}`,
@@ -349,19 +362,19 @@ const handleTransferAnimal = async (newZooId) => {
 
     toastMessage.value = "Animal Transferred Successfully";
     isToastVisible.value = true;
-  } catch (error) {
+  } catch (error:any) {
     toastMessage.value = error;
     isToastVisible.value = true;
   }
 };
 
-const performSearch = async (searchQuery) => {
+const performSearch = async (searchQuery: string) => {
   const trimmedQuery = searchQuery.trim();
   if (!trimmedQuery) {
     return;
   }
   try {
-    const results = await useCustomFetch(
+    const results = await useCustomFetch<Animal[]>(
       `/animal/search?searchTerm=${trimmedQuery}&zooId=${route.query.zooId}`
     );
     animals.value = results;
