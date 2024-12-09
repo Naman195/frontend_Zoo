@@ -1,29 +1,19 @@
 <template>
-  <div>
+  <div class="relative w-100 h-screen">
     <img
       src="../assests/images/bg.jpg"
-      alt=""
+      alt="background"
       srcset=""
-      style="width: 100%; height: 100%"
+      class="absolute top-0 left-0 w-full h-full object-cover"
+      
     />
-    <div class="centered">
-      <h1 class="font-bold">National Zoo</h1>
+    <div
+      class="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-center"
+    >
+    <h1 class="text-5xl font-bold">National Zoo</h1>
     </div>
   </div>
 </template>
 
 <script setup lang="ts"></script>
-<style>
-.container {
-  position: relative;
-  text-align: center;
-  color: white;
-}
 
-.centered {
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-</style>

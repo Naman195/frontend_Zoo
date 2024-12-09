@@ -47,7 +47,7 @@
 
     <div
       v-if="isProfileVisible && userProfile"
-      class="absolute right-0 mt-2 w-64 bg-white shadow-md p-4 rounded-lg"
+      class="absolute right-0 mt-2 w-64 bg-white shadow-md p-4 rounded-lg z-50"
     >
       <h2 class="font-bold text-lg">User Profile</h2>
       <p>

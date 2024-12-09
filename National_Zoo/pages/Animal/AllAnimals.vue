@@ -99,7 +99,7 @@
           :key="animal.animalId"
           class="m-4 list-none"
         >
-        {{ animals }}
+        <!-- {{ animals }} -->
           <ShowCards
             :entity-data="animal"
             @delete="deleteAnimalHandler(animal)"
@@ -125,6 +125,7 @@
 </template>
 
 <script lang="ts" setup>
+import AddAnimal from "~/components/animal/AddAnimal.vue";
 import type { Animal } from '~/types/Animal';
 import type { Category } from '~/types/Category';
 import type { PaginatedResponse } from '~/types/PaginationResponse';
