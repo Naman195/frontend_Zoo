@@ -5,4 +5,4 @@ export interface Animal {
     animalName: string;
     animalType: string;
     zoo: Zoo;
-  }
+  }[]

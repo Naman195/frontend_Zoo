@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col items-center">
-    <div  class="absolute top-0 end-0">
+  <div class="flex flex-col items-center h-screen bg-red-100">
+    <div class="absolute top-0 end-0">
       <ShowAlert
         :alert-message="toastMessage"
         :is-visible="isToastVisible"
@@ -21,87 +21,86 @@
     </div>
 
     <div class="w-full max-w-6xl px-4">
+      <SearchBar @search="performSearch" @clear="resetSearch" />
 
-      <SearchBar  @search="performSearch" @clear="resetSearch" />
-    
-    <div v-if="isSearching">
-      <h1 v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
-        <p class="font-bold">
-        No Result Found!
-        </p>
-      </h1>
-    </div>
+      <div v-if="isSearching">
+        <h1 v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
+          <p class="font-bold">No Result Found!</p>
+        </h1>
+      </div>
 
-    <div v-if="Zoos?.length === 0 && currentPage === 0 && !isSearching"
-      class="flex justify-items-center justify-around mt-5"
-    >
-      <h1 class="text-bold"><p class="font-bold">
-        No Zoo Found! Please Add Zoo
-      </p> </h1>
-      <div>
-        <button v-if="isAdmin"
-          class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
-          type="button"
-          @click="openModal = true"
-        >
-          Add Zoo
-        </button>
+      <div
+        v-if="Zoos?.length === 0 && currentPage === 0 && !isSearching"
+        class="flex justify-items-center justify-around mt-5"
+      >
+        <h1 class="text-bold">
+          <p class="font-bold">No Zoo Found! Please Add Zoo</p>
+        </h1>
+        <div>
+          <button
+            v-if="isAdmin"
+            class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
+            type="button"
+            @click="openModal = true"
+          >
+            Add Zoo
+          </button>
+        </div>
+      </div>
+
+      <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
+        <Modal
+          :message="'Zoo'"
+          @delete-user="deleteZoo"
+          @close-modal="opendeleteModal = false"
+        />
+      </div>
+
+      <div v-if="openModal" class="z-50 absolute top-1/2">
+        <AddZoo
+          :modal-title="'Add Zoo'"
+          :submit-button-label="'Add Zoo'"
+          :from-data="updatedformData"
+          :update-click="false"
+          @save="addZoo"
+          @close="
+            openModal = false;
+            intiliazeFormData();
+          "
+        />
+      </div>
+
+      <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
+        <AddZoo
+          :modal-title="'Update Zoo'"
+          :submit-button-label="'Update Zoo'"
+          :from-data="selectedZoo"
+          :update-click="false"
+          @save="updateZooHandler"
+          @close="
+            openUpdateModal = false;
+            intiliazeFormData();
+          "
+        />
+      </div>
+
+      <!-- Display All Zoos -->
+
+      <div class="flex flex-wrap justify-center">
+        <li v-for="(zoo, id) in filteredZoos" :key="id" class="m-4 list-none">
+          <!-- w-full sm:w-[48%] lg:w-[30%]-->
+          <ShowCards
+            :entity-data="zoo"
+            cardName="animal"
+            @delete="deleteZooHandler"
+            @update="updateZoo(zoo)"
+            delete-button-label="Delete Zoo"
+            update-button-label="Update Zoo"
+            view-button-label="view Zoo"
+          />
+        </li>
       </div>
     </div>
-
-    <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
-      <Modal
-        :message="'Zoo'"
-        @delete-user="deleteZoo"
-        @close-modal="opendeleteModal = false"
-      />
-    </div>
-
-    <div v-if="openModal" class="z-50 absolute top-1/2">
-      <AddZoo
-        :modal-title="'Add Zoo'"
-        :submit-button-label="'Add Zoo'"
-        :from-data="updatedformData"
-        :update-click="false"
-        @save="addZoo"
-        @close="
-          openModal = false;
-          intiliazeFormData();
-        "
-      />
-    </div>
-
-    <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
-      <AddZoo
-        :modal-title="'Update Zoo'"
-        :submit-button-label="'Update Zoo'"
-        :from-data="selectedZoo"
-        :update-click="false"
-        @save="updateZooHandler"
-        @close="
-          openUpdateModal = false;
-          intiliazeFormData();
-        "
-      />
-    </div>
-
-    <!-- Display All Zoos -->
-    <div class="flex flex-wrap justify-center">
-      <li v-for="(zoo, id) in filteredZoos" :key="id" class="m-4 list-none "> <!-- w-full sm:w-[48%] lg:w-[30%]-->
-        <ShowCards
-          :entity-data="zoo"
-          cardName="animal"
-          @delete="deleteZooHandler"
-          @update="updateZoo(zoo)"
-        
-          
-          delete-button-label="Delete Zoo"
-          update-button-label="Update Zoo"
-          view-button-label="view Zoo"
-        />
-      </li>
-    </div>
-  </div>
     <div v-if="!isSearching && filteredZoos.length !== 0">
       <Pagination
         :currentPage="currentPage"
@@ -115,7 +114,7 @@
 </template>
 
 <script setup>
-const toastMessage =  ref("");
+const toastMessage = ref("");
 const isToastVisible = ref(false);
 const selectedZoo = ref({});
 const Zoos = ref();
@@ -129,7 +128,7 @@ const pageSize = ref(3);
 const opendeleteModal = ref(false);
 const openModal = ref(false);
 const openUpdateModal = ref(false);
-const token = useCookie('auth');
+const token = useCookie("auth");
 const updatedformData = ref({
   zooName: "",
   address: {
@@ -149,11 +148,9 @@ const updatedformData = ref({
 
 let compareUpdatedformData = {};
 
-
 const closeToast = () => {
   isToastVisible.value = false;
 };
-
 
 const changePage = (page) => {
   if (page >= 0 && page < totalPages.value) {
@@ -172,7 +169,6 @@ const deleteZooHandler = (id) => {
   opendeleteModal.value = true;
 };
 
-
 function intiliazeFormData() {
   (updatedformData.value.zooName = ""),
     (updatedformData.value.address.street = ""),
@@ -186,28 +182,25 @@ function updateZoo(zoo) {
   openUpdateModal.value = true;
   zooId.value = zoo.zooId;
   selectedZoo.value = zoo;
-  compareUpdatedformData = {...zoo }
+  compareUpdatedformData = { ...zoo };
   compareUpdatedformData = JSON.parse(JSON.stringify(compareUpdatedformData));
- 
 }
 
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
   try {
-    const data = await useCustomFetch(`/zoo/all?page=${page}&size=${size}`);
-    Zoos.value = data.content; 
-    filteredZoos.value = [...Zoos.value]; 
+    const data = await useCustomFetch(`/zoo/allZoo?page=${page}&size=${size}`);
+    Zoos.value = data.content;
+    filteredZoos.value = [...Zoos.value];
     totalPages.value = data.totalPages;
     isSearching.value = false;
-
   } catch (error) {
     console.error("Error fetching zoos:", error);
   }
 };
 
-
 const deleteZoo = async () => {
   try {
-    const data = await useCustomFetch(`/zoo/del/${zooId.value}`, {
+    const data = await useCustomFetch(`/zoo/deleleZoo/${zooId.value}`, {
       method: "PATCH",
     });
     Zoos.value = Zoos.value.filter((zoo) => zoo.zooId !== zooId.value);
@@ -215,12 +208,11 @@ const deleteZoo = async () => {
     opendeleteModal.value = false;
     toastMessage.value = data;
     isToastVisible.value = true;
-    
+
     if (filteredZoos.value.length === 0 && currentPage.value > 0) {
       currentPage.value -= 1;
       fetchZoo(currentPage.value, pageSize.value);
-    } 
-    
+    }
   } catch (error) {
     console.error("Error deleting zoo:", error);
     toastMessage.value = error;
@@ -241,7 +233,7 @@ const addZoo = async () => {
   };
 
   try {
-    const response = await useCustomFetch(`/zoo/create-zoo`, {
+    const response = await useCustomFetch(`/zoo/create`, {
       method: "POST",
       body: resbody,
     });
@@ -258,17 +250,7 @@ const addZoo = async () => {
 };
 
 const updateZooHandler = async (formData) => {
-  console.log(("From Data from Update Modal", formData));
-
-  const data = (JSON.stringify(formData));
-  console.log("After Update", data);
-  
-  const data2 = JSON.stringify(compareUpdatedformData);
-  console.log(data2);
-  // console.log(JSON.stringify(formData) ==
-  // JSON.stringify(compareUpdatedformData));
-  if((JSON.stringify(formData) ==
-  JSON.stringify(compareUpdatedformData)) ){
+  if (JSON.stringify(formData) == JSON.stringify(compareUpdatedformData)) {
     return;
   }
   const resBody = {
@@ -281,9 +263,9 @@ const updateZooHandler = async (formData) => {
       },
     },
   };
-  
+
   try {
-    const response = await useCustomFetch(`/zoo/update/${zooId.value}`, {
+    const response = await useCustomFetch(`/zoo/updateZoo/${zooId.value}`, {
       method: "PATCH",
       body: resBody,
     });
@@ -300,28 +282,22 @@ const updateZooHandler = async (formData) => {
 
 const resetSearch = () => {
   fetchZoo(currentPage.value, pageSize.value);
-}
+};
 
-const performSearch = async (searchQuery) => {  
+const performSearch = async (searchQuery) => {
   const trimmedQuery = searchQuery.trim();
   if (!trimmedQuery) {
     return;
   }
-    try {
-      const data = await useCustomFetch(
-      `/zoo/search?searchItem=${trimmedQuery}`
-    );
+  try {
+    const data = await useCustomFetch(`/zoo/search?searchItem=${trimmedQuery}`);
 
     filteredZoos.value = data;
     isSearching.value = true;
-      
-    } catch (error) {
-      console.log("Error in Searching Zoo", error);
-      
-    }
-   
+  } catch (error) {
+    console.log("Error in Searching Zoo", error);
   }
-
+};
 
 const decodeJWT = (token) => {
   if (!token) return null;
@@ -335,7 +311,6 @@ const decodedToken = decodeJWT(token.value);
 if (decodedToken && decodedToken.role === "admin") {
   isAdmin.value = true;
 }
-
 
 onMounted(() => {
   fetchZoo(currentPage.value, pageSize.value);

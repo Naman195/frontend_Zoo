@@ -21,19 +21,20 @@
       </h2>
 
       <p v-if="props.entityData.zooId">
-        {{ props.entityData.address.street }} ,
-        {{ props.entityData.address.city.cityName }}
+        {{ props.entityData?.address?.street }} ,
+        {{ props.entityData?.address?.city.cityName }}
       </p>
       <p v-else>
         {{ props.entityData.animalType }}
       </p>
     </div>
+    <!-- ?${cardName}Id=${entityData.zooId} -->
     <div class="flex justify-around items-center px-4 pb-4 pt-0 mt-2 space-x-4">
       <!-- View  -->
       <nuxt-link
         v-if="props.entityData.zooId"
         :to="{
-          path: `/${cardName}/all${cardName}s?${cardName}Id=${entityData.id}`,
+          path: `/${cardName}/all${cardName}s`,
           query: { zooId: entityData.zooId },
         }"
         class="text-slate-800 hover:text-slate-600"
@@ -52,7 +53,7 @@
       <i
         v-if="!props.entityData.zooId && isAdmin"
         @click="emit('transfer')"
-        class="fas fa-exchange-alt text-xl cursor-pointer text-slate-800 hover:text-slate-600"
+        class="fas fa-exchange-alt text-xl cursor-pointer text-blue-500 hover:text-blue-700"
       ></i>
 
       <!-- Delete -->
@@ -60,12 +61,12 @@
         <i
           v-if="entityData.zooId"
           @click="emit('delete', entityData.zooId)"
-          class="fas fa-trash text-xl cursor-pointer text-slate-800 hover:text-slate-600"
+          class="fas fa-trash text-xl cursor-pointer text-slate-800 hover:text-red-700 text-red-500"
         ></i>
         <i
           v-else
           @click="emit('delete')"
-          class="fas fa-trash text-xl cursor-pointer text-slate-800 hover:text-slate-600"
+          class="fas fa-trash text-xl cursor-pointer text-slate-800 hover:text-red-700 text-red-500"
         ></i>
       </div>
 
@@ -88,16 +89,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import type { Address } from "~/types/Address";
+import type { Zoo } from "~/types/Zoo";
 library.add(faEye, faTrash, faEdit, faExchangeAlt);
 
 interface Entity {
-  id: number;
-  zooId?: number;
   animalId?: number;
-  zooName?: string;
   animalName?: string;
   animalType?: string;
-  address: Address;
+  zoo?: Zoo;
+  address?: Address;
+  zooId?: number;
+  zooName?: string;
 }
 
 // Define props
@@ -110,9 +112,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update'): void;
-  (e: 'delete', zooId?: number): void;
-  (e: 'transfer'): void;
+  (e: "update"): void;
+  (e: "delete", zooId?: number): void;
+  (e: "transfer"): void;
 }>();
 
 const isAdmin = ref(false);

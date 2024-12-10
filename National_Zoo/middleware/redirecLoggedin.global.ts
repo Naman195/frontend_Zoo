@@ -10,34 +10,27 @@ if(token.value){
 
 
     
-        if (userLoggedIn.value === true) {
-         
-          //  router.push("/")
-         
-          if (to.path === '/userlogin') {
-            return navigateTo('/'); 
-          }
-          if (to.path === '/userregisteration') {
-            return navigateTo('/');
-          }
-    
-          if(to.path === "/forgotpass"){
-            return navigateTo("/setpass")
-          }
-    
-          
-        }else{
-          
-          if(to.path === "/allusers"){
-            return navigateTo("/");
-          }
-          
+        if (userLoggedIn.value === true && to.path === '/userlogin' || to.path === '/userregisteration') {
+          return navigateTo('/'); 
+        }
+        else if(userLoggedIn.value === true && to.path === "/forgotpass"){
+          return navigateTo("/setpass")
+        }
+        else{
+          return
+          // if(to.path === "/zoo/allzoos" || to.path === "/zoo/allzoos"){
+          //   return navigateTo("/");
+          // }
+
+        
         }
 
     }else{
         userLoggedIn.value = false;
         userId.value = null;
-        // return navigateTo("/userlogin");
+        // if(to.path === "/zoo/allzoos" || to.path === "/animal/allanimals?zooId=" || to.path === "/animalprofile?id="){
+        //      return navigateTo("/");
+        //    }
     }
     
 

@@ -81,14 +81,12 @@
   </div>
 </template>
 
-<script setup lang="ts" >
-import type { Animal } from '~/types/Animal';
-import type { AnimalHistory } from '~/types/AnimalHistory';
+<script setup lang="ts">
+import type { Animal } from "~/types/Animal";
+import type { AnimalHistory } from "~/types/AnimalHistory";
 
 const route = useRoute();
-
 const animalId = route.query.id as string;
-
 const selectedAnimal = ref<Animal | null>(null);
 const animalHistory = ref<AnimalHistory[]>([]);
 const buttonClick = ref(false);
@@ -102,21 +100,16 @@ const fetchAnimal = async () => {
 
 const handleAnimalHistory = async () => {
   buttonClick.value = true;
-  const data = await useCustomFetch<AnimalHistory[]>(`/animal/history/${animalId}`);
-  console.log("Hostory is", data);
-  
+  const data = await useCustomFetch<AnimalHistory[]>(
+    `/animal/history/${animalId}`
+  );
   animalHistory.value = data;
 };
-
-onMounted(() => {
-  fetchAnimal();
-});
 
 const decodeJWT = (token: string | undefined) => {
   if (!token) return null;
   const payload = token.split(".")[1];
   const decodedPayload = JSON.parse(atob(payload));
-
   return decodedPayload;
 };
 
@@ -124,4 +117,8 @@ const decodedToken = decodeJWT(token?.value ?? undefined);
 if (decodedToken && decodedToken.role === "admin") {
   isAdmin.value = true;
 }
+
+onMounted(() => {
+  fetchAnimal();
+});
 </script>

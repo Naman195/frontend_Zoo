@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center h-screen bg-red-100">
     <div class="absolute top-0 end-0">
       <ShowAlert
         :alert-message="toastMessage"
@@ -27,30 +27,26 @@
         No Results Found
       </p> -->
       <div v-if="isSearching">
-      <h1 v-if="animals.length === 0" class="text-gray-500 text-center">
-        <p class="font-bold">
-        No Result Found!
-        </p>
-      </h1>
-    </div>
-    <div v-if="animals?.length === 0 && currentPage === 0 && !isSearching" 
-      class="flex justify-items-center justify-around mt-5"
-      :class="['justify-around', isAdmin]"
-    >
-    
-      <h1 class="text-bold"><p class="font-bold">
-        No Animal Found!
-      </p> </h1>
-      <div v-if="isAdmin">
-        <button 
-          class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
-          type="button"
-          @click="openAddAnimalHandler()"
-        >
-          Add Animal
-        </button>
+        <h1 v-if="animals.length === 0" class="text-gray-500 text-center">
+          <p class="font-bold">No Result Found!</p>
+        </h1>
       </div>
-    </div>
+      <div
+        v-if="animals?.length === 0 && currentPage === 0 && !isSearching"
+        class="flex justify-items-center justify-around mt-5"
+        :class="['justify-around', isAdmin]"
+      >
+        <h1 class="text-bold"><p class="font-bold">No Animal Found!</p></h1>
+        <div v-if="isAdmin">
+          <button
+            class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
+            type="button"
+            @click="openAddAnimalHandler()"
+          >
+            Add Animal
+          </button>
+        </div>
+      </div>
 
       <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
         <AddAnimal
@@ -99,7 +95,7 @@
           :key="animal.animalId"
           class="m-4 list-none"
         >
-        <!-- {{ animals }} -->
+          <!-- {{ animal }} -->
           <ShowCards
             :entity-data="animal"
             @delete="deleteAnimalHandler(animal)"
@@ -126,10 +122,10 @@
 
 <script lang="ts" setup>
 import AddAnimal from "~/components/animal/AddAnimal.vue";
-import type { Animal } from '~/types/Animal';
-import type { Category } from '~/types/Category';
-import type { PaginatedResponse } from '~/types/PaginationResponse';
-import type { Zoo } from '~/types/Zoo';
+import type { Animal } from "~/types/Animal";
+import type { Category } from "~/types/Category";
+import type { PaginatedResponse } from "~/types/PaginationResponse";
+import type { Zoo } from "~/types/Zoo";
 
 interface DecodedToken {
   role?: string;
@@ -220,7 +216,7 @@ function updateAnimal(animal: Animal) {
   openUpdateModal.value = true;
   animalId.value = animal.animalId;
   selectedAnimal.value = animal;
-  compareFormdata.value = {...animal};
+  compareFormdata.value = { ...animal };
   fetchCategoriesApi();
 }
 
@@ -243,9 +239,9 @@ const fetchZooById = async () => {
 const fetchAnimals = async (
   page: number = currentPage.value,
   size: number = pageSize.value
-) : Promise<void> => {
+): Promise<void> => {
   const data = await useCustomFetch<PaginatedResponse<Animal>>(
-    `/animal/zoo-ani/${zooId}?page=${page}&size=${size}`
+    `/animal/ZooAnimalsByZooId/${zooId}?page=${page}&size=${size}`
   );
   animals.value = data.content;
   totalPages.value = data.totalPages;
@@ -254,9 +250,12 @@ const fetchAnimals = async (
 
 const deleteAnimal = async () => {
   try {
-    const data = await useCustomFetch<string>(`/animal/del/${animalId.value}`, {
-      method: "PATCH",
-    });
+    const data = await useCustomFetch<string>(
+      `/animal/deleteAnimalById/${animalId.value}`,
+      {
+        method: "PATCH",
+      }
+    );
 
     animals.value = animals.value.filter(
       (animal) => animal.animalId !== animalId.value
@@ -277,7 +276,7 @@ const deleteAnimal = async () => {
 
 const addAnimal = async () => {
   try {
-    const res = await useCustomFetch(`/animal/add`, {
+    const res = await useCustomFetch(`/animal/addAnimal`, {
       method: "POST",
       body: {
         ...formData.value,
@@ -292,17 +291,16 @@ const addAnimal = async () => {
     toastMessage.value = "Added Successfully";
     isToastVisible.value = true;
     fetchAnimals(currentPage.value, pageSize.value);
-  } catch (error:any) {
+  } catch (error: any) {
     toastMessage.value = error.response._data;
     isToastVisible.value = true;
   }
 };
 
-const updateAnimalHandler = async (fromdata:  Partial<Animal>): Promise<void> => {
-  
-  if(!(
-    JSON.stringify(fromdata) !== JSON.stringify(compareFormdata.value)
-  )){
+const updateAnimalHandler = async (
+  fromdata: Partial<Animal>
+): Promise<void> => {
+  if (!(JSON.stringify(fromdata) !== JSON.stringify(compareFormdata.value))) {
     return;
   }
 
@@ -314,7 +312,7 @@ const updateAnimalHandler = async (fromdata:  Partial<Animal>): Promise<void> =>
     },
   };
   try {
-    const res = await useCustomFetch(`/animal/update/${animalId.value}`, {
+    const res = await useCustomFetch(`/animal/updateAnimal/${animalId.value}`, {
       headers: {
         Authorization: `Bearer ${token.value}`,
         "Content-Type": "application/json",
@@ -345,15 +343,14 @@ const fetchCategoriesApi = async () => {
 const zooList = ref<Zoo[]>([]);
 
 const FetchZooList = async () => {
-  const data = await useCustomFetch<Zoo[]>(`/animal/zoo/${zooId}`);
-  console.log(data);
+  const data = await useCustomFetch<Zoo[]>(`/animal/zooListByZooId/${zooId}`);
   zooList.value = data;
 };
 
-const handleTransferAnimal = async (newZooId:  number) => {
+const handleTransferAnimal = async (newZooId: number) => {
   try {
     const res = await useCustomFetch(
-      `/animal/transfer/${selectedTransferredAnimalId.value}/to/${newZooId}`,
+      `/animal/transferAnimal/${selectedTransferredAnimalId.value}/to/${newZooId}`,
       {
         method: "patch",
       }
@@ -363,7 +360,7 @@ const handleTransferAnimal = async (newZooId:  number) => {
 
     toastMessage.value = "Animal Transferred Successfully";
     isToastVisible.value = true;
-  } catch (error:any) {
+  } catch (error: any) {
     toastMessage.value = error;
     isToastVisible.value = true;
   }

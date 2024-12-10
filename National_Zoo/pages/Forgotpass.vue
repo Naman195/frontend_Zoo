@@ -49,7 +49,7 @@ const closeToast = () => {
 const handleForgotPassword = async (): Promise<void> => {
   loader.value = true;
   try {
-    const response = <obj>await useCustomFetch(`/auth/forgotpassword`, {
+    const response = await useCustomFetch<obj>(`/auth/forgotpassword`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,5 +70,3 @@ const handleForgotPassword = async (): Promise<void> => {
   }
 };
 </script>
-
-

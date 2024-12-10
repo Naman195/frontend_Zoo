@@ -53,7 +53,6 @@
 
 <script lang="ts" setup>
 import { Field, Form, ErrorMessage } from "vee-validate";
-
 import "../assests/css/LoginStyle.css";
 import { useAuth } from "@/composables/useAuth";
 import { useRouter } from "vue-router";
@@ -61,9 +60,7 @@ import type { userLogin } from "~/types/userLogin";
 
 const toastMessage: Ref<string> = ref("");
 const isToastVisible = ref(false);
-
 const { logIn } = useAuth();
-
 const passwordVisible = ref(false);
 const token = useCookie("auth", { maxAge: 3600 });
 const router = useRouter();
@@ -86,7 +83,6 @@ const loginUser = async () => {
       method: "POST",
       body: form,
     });
-    console.log("Data is ", data);
 
     token.value = data.token;
     logIn(data.userId);

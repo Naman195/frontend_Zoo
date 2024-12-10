@@ -67,9 +67,7 @@
         <button
           @click="
             () => {
-              toggleUpdateModal();
-              fillupdateFormData();
-              // fetchCountries();
+              handleProfileModal();
             }
           "
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-3 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -81,7 +79,7 @@
     <!-- Use Modal for Update Profile -->
     <div v-if="isUpdateModalVisible">
       <AddZoo
-        :from-data="form"
+        :from-data="userProfile"
         :update-click="true"
         :modal-title="'User Profile'"
         :submit-button-label="'Update Profile'"
@@ -117,14 +115,6 @@ const isProfileVisible = ref(false);
 const isUpdateModalVisible = ref(false);
 const updateAlert = ref(false);
 
-const afterUpdate = () => {
-  updateAlert.value = true;
-};
-
-const closeUpdateAlert = () => {
-  updateAlert.value = false;
-};
-
 const logoutUser = () => {
   logOut();
   router.push("/userlogin");
@@ -135,37 +125,13 @@ const toggleProfile = () => {
   isProfileVisible.value = !isProfileVisible.value;
 };
 
-const toggleUpdateModal = () => {
-  isUpdateModalVisible.value = !isUpdateModalVisible.value;
+let compareUserProfileData = {};
+
+const handleProfileModal = () => {
+  isUpdateModalVisible.value = true;
   isProfileVisible.value = false;
-};
-
-const form = ref({
-  fullName: "",
-  address: {
-    street: "",
-    zipCode: "",
-    city: {
-      cityId: null,
-      state: {
-        stateId: null,
-        country: {
-          countryId: null,
-        },
-      },
-    },
-  },
-});
-
-const fillupdateFormData = () => {
-  form.value.fullName = userProfile.value.fullName;
-  form.value.address.zipCode = userProfile.value.address.zipCode;
-  form.value.address.street = userProfile.value.address.street;
-  form.value.address.city.cityId = userProfile.value.address.city.cityId;
-  form.value.address.city.state.stateId =
-    userProfile.value.address.city.state.stateId;
-  form.value.address.city.state.country.countryId =
-    userProfile.value.address.city.state.country.countryId;
+  compareUserProfileData = { ...userProfile.value };
+  compareUserProfileData = JSON.parse(JSON.stringify(compareUserProfileData));
 };
 
 // Fetch User Profile
@@ -187,14 +153,19 @@ const fetchProfile = async () => {
   }
 };
 
-const updateUser = async () => {
+const updateUser = async (formData) => {
+  console.log("Form Data is", formData.fullName);
+  console.log("Compare User Profile Data", compareUserProfileData);
+  if (JSON.stringify(formData) == JSON.stringify(compareUserProfileData)) {
+    return;
+  }
   const resBody = {
-    fullName: form.value.fullName,
+    fullName: formData.fullName,
     address: {
-      street: form.value.address.street,
-      zipCode: form.value.address.zipCode,
+      street: formData.address.street,
+      zipCode: formData.address.zipCode,
       city: {
-        cityId: form.value.address.city.cityId,
+        cityId: formData.address.city.cityId,
       },
     },
   };
@@ -204,13 +175,8 @@ const updateUser = async () => {
       method: "PATCH",
       body: resBody,
     });
-    setUser(form);
-    afterUpdate();
-
-    toggleUpdateModal();
-    // router.push("/");
+    setUser(formData);
     isUpdateModalVisible.value = false;
-    fetchProfile();
   } catch (err) {
     console.error("Error updating user:", err);
   }

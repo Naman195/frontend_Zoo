@@ -112,18 +112,19 @@
 
 <script setup lang="ts">
 import { Field, Form, ErrorMessage } from "vee-validate";
+import type { Zoo } from "~/types/Zoo";
 
 const emit = defineEmits(["close", "save"]);
 
 type formDataType = {
-  animalName: string;
-  animalType: string;
+  animalName: string | undefined;
+  animalType: string | undefined;
 };
 
 const props = defineProps<{
   fromData: formDataType;
-  submitButtonLabel: string;
-  modalTitle: string;
+  submitButtonLabel: string | undefined;
+  modalTitle: string | undefined;
   fetchCategories: {
     id: number;
     categoryName: string;

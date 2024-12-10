@@ -64,7 +64,6 @@
             </span>
           </div>
           <ErrorMessage name="password" class="text-red-600 text-sm mt-1" />
-          <!-- <input type="password" v-model="form.password" minlength="8" required /> -->
         </div>
       </div>
 
@@ -177,6 +176,10 @@
       </div>
 
       <button type="submit" class="submit-btn">Register</button>
+      <p class="note">
+        Having Already Account, please
+        <NuxtLink to="/userlogin">sign In</NuxtLink>
+      </p>
     </Form>
   </div>
 </template>
@@ -184,21 +187,9 @@
 <script setup lang="ts">
 import { Field, Form, ErrorMessage } from "vee-validate";
 import "../assests/css/style.css";
-
-interface Country {
-  countryId: number;
-  countryName: string;
-}
-
-interface State {
-  stateId: number;
-  stateName: string;
-}
-
-interface City {
-  cityId: number;
-  cityName: string;
-}
+import type { Country } from "~/types/Country";
+import type { State } from "~/types/State";
+import type { City } from "~/types/City";
 
 interface Role {
   id: number;
@@ -287,7 +278,7 @@ const fetchCities = async () => {
 
 const registerUser = async () => {
   try {
-    const data = <string>await useCustomFetch("/auth/user/create", {
+    const data = await useCustomFetch<string>("/auth/user/create", {
       method: "POST",
       body: form,
     });
@@ -326,10 +317,9 @@ const registerUser = async () => {
 };
 
 // Fetch Role Api
-
 const fetchRoles = async () => {
   try {
-    const data: any = await useCustomFetch("/role/all");
+    const data = await useCustomFetch<Role[]>("/role/all");
     roles.value = data;
   } catch (error) {
     console.log("Error In fetching Roles", error);

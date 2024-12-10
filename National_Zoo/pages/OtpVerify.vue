@@ -60,10 +60,6 @@ const route = useRoute();
 const router = useRouter();
 const email = route.query.email as string;
 
-onMounted(() => {
-  form.value.email = email;
-});
-
 const submitOtp = async () => {
   form.value.otp = otpArray.value.join("");
 
@@ -75,7 +71,6 @@ const submitOtp = async () => {
       },
       body: JSON.stringify(form.value),
     });
-    console.log("Rresponse is", response);
 
     if (response.message === "OTP verified successfully") {
       const resetUrl = response.url;
@@ -102,4 +97,8 @@ const submitOtp = async () => {
     isToastVisible.value = true;
   }
 };
+
+onMounted(() => {
+  form.value.email = email;
+});
 </script>
