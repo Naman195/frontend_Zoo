@@ -42,7 +42,7 @@
       </h1>
     </div>
     <div
-      v-if="animals?.length === 0 && currentPage === 0 && !isSearching"
+      v-if="!isLoading && animals?.length === 0 && currentPage === 0 && !isSearching"
       class="flex justify-items-center justify-around mt-5"
       :class="['justify-around', isAdmin]"
     >
@@ -184,6 +184,7 @@ const openAddAnimalHandler = () => {
   fetchCategoriesApi();
 };
 
+const isLoading = ref(true);
 const selectedAnimal = ref<AnimalPartial>({});
 const route = useRoute();
 const zooId = route.query.zooId;
@@ -246,12 +247,22 @@ const fetchAnimals = async (
   page: number = currentPage.value,
   size: number = pageSize.value
 ): Promise<void> => {
-  const data = await useCustomFetch<PaginatedResponse<Animal>>(
+
+  try {
+    const data = await useCustomFetch<PaginatedResponse<Animal>>(
     `/animal/ZooAnimalsByZooId/${zooId}?page=${page}&size=${size}`
   );
   animals.value = data.content;
   totalPages.value = data.totalPages;
   isSearching.value = false;
+  } catch (error: any) {
+    console.log("Errors Occur", error);
+    
+  } finally{
+    isLoading.value = false;
+  }
+
+
 };
 
 const deleteAnimal = async () => {

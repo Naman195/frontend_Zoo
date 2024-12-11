@@ -52,7 +52,7 @@
     </div>
 
     <div
-      v-if="filteredZoos?.length === 0 && currentPage === 0 && !isSearching"
+      v-if="!isLoading && filteredZoos?.length === 0 && currentPage === 0 && !isSearching"
       class="flex justify-items-center justify-around mt-5"
     >
       <h1 class="text-bold">
@@ -151,6 +151,7 @@ const opendeleteModal = ref(false);
 const openModal = ref(false);
 const openUpdateModal = ref(false);
 const token = useCookie("auth");
+const isLoading = ref(true);
 const updatedformData = ref({
   zooName: "",
   address: {
@@ -210,6 +211,7 @@ function updateZoo(zoo) {
 
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
   try {
+    isLoading.value = true; 
     const data = await useCustomFetch(`/zoo/allZoo?page=${page}&size=${size}`);
     Zoos.value = data.content;
     filteredZoos.value = [...Zoos.value];
@@ -217,6 +219,8 @@ const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
     isSearching.value = false;
   } catch (error) {
     console.error("Error fetching zoos:", error);
+  } finally {
+    isLoading.value = false; 
   }
 };
 
