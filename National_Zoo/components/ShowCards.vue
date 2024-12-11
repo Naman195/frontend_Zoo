@@ -61,12 +61,12 @@
         <i
           v-if="entityData.zooId"
           @click="emit('delete', entityData.zooId)"
-          class="fas fa-trash text-xl cursor-pointer text-slate-800 hover:text-red-700 text-red-500"
+          class="fas fa-trash text-xl cursor-pointer text-red-600 hover:text-red-700 text-red-500"
         ></i>
         <i
           v-else
           @click="emit('delete')"
-          class="fas fa-trash text-xl cursor-pointer text-slate-800 hover:text-red-700 text-red-500"
+          class="fas fa-trash text-xl cursor-pointer text-red-600 hover:text-red-700 text-red-500"
         ></i>
       </div>
 
@@ -93,7 +93,7 @@ import type { Zoo } from "~/types/Zoo";
 library.add(faEye, faTrash, faEdit, faExchangeAlt);
 
 interface Entity {
-  animalId?: number;
+  animalId?: string;
   animalName?: string;
   animalType?: string;
   zoo?: Zoo;

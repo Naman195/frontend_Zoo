@@ -1,24 +1,28 @@
 <template>
-  <div class="flex items-center space-x-2">
+  <label
+    class="mx-auto relative bg-white min-w-sm max-w-2xl flex flex-col md:flex-row items-center justify-center border py-2 px-2 rounded-2xl gap-2 shadow-2xl focus-within:border-gray-300"
+    for="search-bar"
+  >
     <input
+      id="search-bar"
+      placeholder="your keyword here"
       v-model="searchQuery"
-      type="text"
-      class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      class="px-6 py-2 w-full rounded-md flex-1 outline-none bg-white"
     />
     <button
       @click="emit('search', searchQuery)"
-      class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 transition duration-200"
+      class="w-full md:w-auto px-6 py-3 bg-black border-black text-white fill-white active:scale-95 duration-100 border will-change-transform overflow-hidden relative rounded-xl transition-all disabled:opacity-70"
     >
       Search
     </button>
     <button
       v-if="searchQuery"
       @click="clearSearch"
-      class="px-4 py-2 text-white bg-gray-500 rounded-md hover:bg-gray-600 transition duration-200"
+      class="w-full md:w-auto px-6 py-3 bg-gray border-black text-black fill-white active:scale-95 duration-100 border will-change-transform overflow-hidden relative rounded-xl transition-all disabled:opacity-70"
     >
       Clear
     </button>
-  </div>
+  </label>
 </template>
 
 <script setup lang="ts">

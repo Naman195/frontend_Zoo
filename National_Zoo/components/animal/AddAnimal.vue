@@ -84,7 +84,7 @@
                 <option value="" selected disabled>Select Animal Type</option>
                 <option
                   v-for="category in props.fetchCategories"
-                  :key="category.id"
+                  :key="category.categoryId"
                   :value="category.categoryName"
                 >
                   {{ category.categoryName }}
@@ -112,21 +112,18 @@
 
 <script setup lang="ts">
 import { Field, Form, ErrorMessage } from "vee-validate";
+import type { AnimalHistory } from "~/types/AnimalHistory";
+import type { AnimalPartial } from "~/types/AnimalPartial";
 import type { Zoo } from "~/types/Zoo";
 
 const emit = defineEmits(["close", "save"]);
 
-type formDataType = {
-  animalName: string | undefined;
-  animalType: string | undefined;
-};
-
 const props = defineProps<{
-  fromData: formDataType;
+  fromData: AnimalPartial;
   submitButtonLabel: string | undefined;
   modalTitle: string | undefined;
   fetchCategories: {
-    id: number;
+    categoryId: number;
     categoryName: string;
   }[];
 }>();

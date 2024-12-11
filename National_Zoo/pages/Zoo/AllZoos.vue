@@ -1,106 +1,127 @@
 <template>
-  <div class="flex flex-col items-center h-screen bg-red-100">
-    <div class="absolute top-0 end-0">
-      <ShowAlert
-        :alert-message="toastMessage"
-        :is-visible="isToastVisible"
-        @close-modal="closeToast"
+  <!-- <div class="flex flex-col items-center h-screen bg-red-100"> -->
+  <div class="absolute top-0 end-0">
+    <ShowAlert
+      :alert-message="toastMessage"
+      :is-visible="isToastVisible"
+      @close-modal="closeToast"
+    />
+  </div>
+  <!-- <div class="flex justify-between items-center w-full mt-6">
+    <h1 class="flex-grow text-center font-semibold">All Zoo</h1>
+
+    <button
+      v-if="isAdmin && Zoos?.length > 0"
+      class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
+      type="button"
+      @click="openModal = true"
+    >
+      Add Zoo
+    </button>
+  </div> -->
+  <!-- ........................... heading Section ............................. -->
+  <div class="max-w-full mx-auto text-center pt-7 relative">
+    <h1
+      class="text-4xl font-bold text-gray-900 leading-tight mb-2 pb-4 relative center"
+    >
+      <span
+        class="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500"
+        >List Of All Zoo</span
+      >
+      <span
+        class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"
+      ></span>
+    </h1>
+    <button
+      v-if="isAdmin && Zoos?.length > 0"
+      class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 absolute top-7 right-7"
+      type="button"
+      @click="openModal = true"
+    >
+      Add Zoo
+    </button>
+  </div>
+
+  <div class="h-screen mx-auto pt-8 bg-gray-100">
+    <SearchBar @search="performSearch" @clear="resetSearch" />
+
+    <div v-if="isSearching">
+      <h1 v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
+        <p class="font-bold">No Result Found!</p>
+      </h1>
+    </div>
+
+    <div
+      v-if="filteredZoos?.length === 0 && currentPage === 0 && !isSearching"
+      class="flex justify-items-center justify-around mt-5"
+    >
+      <h1 class="text-bold">
+        <p class="font-bold">No Zoo Found! Please Add Zoo</p>
+      </h1>
+      <div>
+        <button
+          v-if="isAdmin"
+          class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
+          type="button"
+          @click="openModal = true"
+        >
+          Add Zoo
+        </button>
+      </div>
+    </div>
+
+    <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
+      <Modal
+        :message="'Zoo'"
+        @delete-user="deleteZoo"
+        @close-modal="opendeleteModal = false"
       />
     </div>
-    <div class="flex justify-between items-center w-full mb-6">
-      <h1 class="flex-grow text-center font-semibold">All Zoo</h1>
 
-      <button
-        v-if="isAdmin && Zoos?.length > 0"
-        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
-        type="button"
-        @click="openModal = true"
-      >
-        Add Zoo
-      </button>
+    <div v-if="openModal" class="z-50 absolute top-1/2">
+      <AddZoo
+        :modal-title="'Add Zoo'"
+        :submit-button-label="'Add Zoo'"
+        :from-data="updatedformData"
+        :update-click="false"
+        @save="addZoo"
+        @close="
+          openModal = false;
+          intiliazeFormData();
+        "
+      />
     </div>
 
-    <div class="w-full max-w-6xl px-4">
-      <SearchBar @search="performSearch" @clear="resetSearch" />
-
-      <div v-if="isSearching">
-        <h1 v-if="filteredZoos.length === 0" class="text-gray-500 text-center">
-          <p class="font-bold">No Result Found!</p>
-        </h1>
-      </div>
-
-      <div
-        v-if="Zoos?.length === 0 && currentPage === 0 && !isSearching"
-        class="flex justify-items-center justify-around mt-5"
-      >
-        <h1 class="text-bold">
-          <p class="font-bold">No Zoo Found! Please Add Zoo</p>
-        </h1>
-        <div>
-          <button
-            v-if="isAdmin"
-            class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
-            type="button"
-            @click="openModal = true"
-          >
-            Add Zoo
-          </button>
-        </div>
-      </div>
-
-      <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
-        <Modal
-          :message="'Zoo'"
-          @delete-user="deleteZoo"
-          @close-modal="opendeleteModal = false"
-        />
-      </div>
-
-      <div v-if="openModal" class="z-50 absolute top-1/2">
-        <AddZoo
-          :modal-title="'Add Zoo'"
-          :submit-button-label="'Add Zoo'"
-          :from-data="updatedformData"
-          :update-click="false"
-          @save="addZoo"
-          @close="
-            openModal = false;
-            intiliazeFormData();
-          "
-        />
-      </div>
-
-      <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
-        <AddZoo
-          :modal-title="'Update Zoo'"
-          :submit-button-label="'Update Zoo'"
-          :from-data="selectedZoo"
-          :update-click="false"
-          @save="updateZooHandler"
-          @close="
-            openUpdateModal = false;
-            intiliazeFormData();
-          "
-        />
-      </div>
-
-      <!-- Display All Zoos -->
-
-      <div class="flex flex-wrap justify-center">
-        <li v-for="(zoo, id) in filteredZoos" :key="id" class="m-4 list-none">
-          <!-- w-full sm:w-[48%] lg:w-[30%]-->
-          <ShowCards
-            :entity-data="zoo"
-            cardName="animal"
-            @delete="deleteZooHandler"
-            @update="updateZoo(zoo)"
-            delete-button-label="Delete Zoo"
-            update-button-label="Update Zoo"
-            view-button-label="view Zoo"
-          />
-        </li>
-      </div>
+    <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
+      <AddZoo
+        :modal-title="'Update Zoo'"
+        :submit-button-label="'Update Zoo'"
+        :from-data="selectedZoo"
+        :update-click="false"
+        @save="updateZooHandler"
+        @close="
+          openUpdateModal = false;
+          intiliazeFormData();
+        "
+      />
     </div>
+
+    <!-- Display All Zoos -->
+    <div class="flex flex-wrap justify-center">
+      <li v-for="(zoo, id) in filteredZoos" :key="id" class="m-4 list-none">
+        <!-- w-full sm:w-[48%] lg:w-[30%]-->
+        <ShowCards
+          :entity-data="zoo"
+          cardName="animal"
+          @delete="deleteZooHandler"
+          @update="updateZoo(zoo)"
+          delete-button-label="Delete Zoo"
+          update-button-label="Update Zoo"
+          view-button-label="view Zoo"
+        />
+      </li>
+    </div>
+
     <div v-if="!isSearching && filteredZoos.length !== 0">
       <Pagination
         :currentPage="currentPage"
@@ -111,6 +132,7 @@
       />
     </div>
   </div>
+  <!-- </div> -->
 </template>
 
 <script setup>
