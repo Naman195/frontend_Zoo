@@ -22,7 +22,7 @@
     </h1>
 
     <button
-      v-if="isAdmin && animals.length !== 0"
+      v-if="useAuth().isAdmin && animals.length !== 0"
       class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 absolute top-7 right-7"
       type="button"
       @click="openAddAnimalHandler()"
@@ -31,91 +31,107 @@
     </button>
   </div>
 
-  <div class="h-screen mx-auto pt-8 bg-gray-100">
-    <SearchBar @search="performSearch" @clear="resetSearch" />
-    <!-- <p v-if="animals.length === 0" class="text-gray-500 text-center">
-        No Results Found
-      </p> -->
-    <div v-if="isSearching">
-      <h1 v-if="animals.length === 0" class="text-gray-500 text-center">
-        <p class="font-bold">No Result Found!</p>
-      </h1>
-    </div>
-    <div
-      v-if="!isLoading && animals?.length === 0 && currentPage === 0 && !isSearching"
-      class="flex justify-items-center justify-around mt-5"
-      :class="['justify-around', isAdmin]"
-    >
-      <h1 class="text-bold"><p class="font-bold">No Animal Found!</p></h1>
-      <div v-if="isAdmin">
-        <button
-          class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
-          type="button"
-          @click="openAddAnimalHandler()"
-        >
-          Add Animal
-        </button>
+  <div class="flex flex-col items-center mx-auto pt-8">
+    <div class="w-30">
+      <SearchBar
+        v-if="!isLoading"
+        @search="performSearch"
+        @clear="resetSearch"
+      />
+      <div v-if="isSearching">
+        <h1 v-if="animals.length === 0" class="text-gray-500 text-center">
+          <p class="font-bold">No Result Found!</p>
+        </h1>
       </div>
-    </div>
-
-    <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
-      <AddAnimal
-        :from-data="formData"
-        :modal-title="'Add'"
-        :submit-button-label="'Add Animal'"
-        :fetch-categories="fetchCategories"
-        @close="
-          openAddAnimalModal = false;
-          intiliazeFormData();
+      <div
+        v-if="
+          !isLoading &&
+          animals?.length === 0 &&
+          currentPage === 0 &&
+          !isSearching
         "
-        @save="addAnimal()"
-      />
-    </div>
-
-    <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
-      <AddAnimal
-        :from-data="selectedAnimal"
-        :modal-title="'Update'"
-        :submit-button-label="'Update Animal'"
-        :fetch-categories="fetchCategories"
-        @close="(openUpdateModal = false), intiliazeFormData()"
-        @save="updateAnimalHandler"
-      />
-    </div>
-    <div v-if="openTransferModal" class="z-50 absolute top-1/2">
-      <TransferAnimal
-        :fetch-zoo-list="zooList"
-        @close="openTransferModal = false"
-        @save="handleTransferAnimal"
-      />
-    </div>
-
-    <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
-      <Modal
-        :message="'Animal'"
-        @delete-user="deleteAnimal"
-        @close-modal="opendeleteModal = false"
-      />
-    </div>
-
-    <!-- Display All Animals -->
-    <div class="flex flex-wrap justify-center">
-      <li
-        v-for="animal in animals"
-        :key="animal.animalId"
-        class="m-4 list-none"
+        class="flex justify-items-center justify-around mt-5"
+        :class="['justify-around', useAuth().isAdmin]"
       >
-        <!-- {{ animal }} -->
-        <ShowCards
-          :entity-data="animal"
-          @delete="deleteAnimalHandler(animal)"
-          @update="updateAnimal(animal)"
-          @transfer="onTransferButtonClick(animal)"
-          delete-button-label="Delete Animal"
-          update-button-label="Update Animal"
-          view-button-label="view Animal"
+        <h1 class="text-bold"><p class="font-bold">No Animal Found!</p></h1>
+        <div v-if="useAuth().isAdmin">
+          <button
+            class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mb-2 mr-6"
+            type="button"
+            @click="openAddAnimalHandler()"
+          >
+            Add Animal
+          </button>
+        </div>
+      </div>
+
+      <div v-if="openAddAnimalModal" class="z-50 absolute top-1/2">
+        <AddAnimal
+          :from-data="formData"
+          :modal-title="'Add'"
+          :submit-button-label="'Add Animal'"
+          :fetch-categories="fetchCategories"
+          @close="
+            openAddAnimalModal = false;
+            intiliazeFormData();
+          "
+          @save="addAnimal()"
         />
-      </li>
+      </div>
+
+      <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
+        <AddAnimal
+          :from-data="selectedAnimal"
+          :modal-title="'Update'"
+          :submit-button-label="'Update Animal'"
+          :fetch-categories="fetchCategories"
+          @close="(openUpdateModal = false), intiliazeFormData()"
+          @save="updateAnimalHandler"
+        />
+      </div>
+      <div v-if="openTransferModal" class="z-50 absolute top-1/2">
+        <TransferAnimal
+          :fetch-zoo-list="zooList"
+          @close="openTransferModal = false"
+          @save="handleTransferAnimal"
+        />
+      </div>
+
+      <div v-if="opendeleteModal" class="z-50 absolute top-1/2">
+        <Modal
+          :message="'Animal'"
+          @delete-user="deleteAnimal"
+          @close-modal="opendeleteModal = false"
+        />
+      </div>
+
+      <!-- ................Loading........................ -->
+
+      <div class="flex flex-col justify-center items-center">
+        <img
+          v-if="isLoading"
+          src="../../assests/gif/loader.gif"
+          alt="Loading"
+        />
+      </div>
+
+      <!-- ....................Loading End........................ -->
+
+      <!-- Display All Animals -->
+      <div class="flex flex-wrap justify-center">
+        <li
+          v-for="animal in animals"
+          :key="animal.animalId"
+          class="m-4 list-none"
+        >
+          <AnimalCard
+            :entity-data="animal"
+            @delete="deleteAnimalHandler(animal)"
+            @update="updateAnimal(animal)"
+            @transfer="onTransferButtonClick(animal)"
+          />
+        </li>
+      </div>
     </div>
 
     <div v-if="!isSearching && animals.length !== 0">
@@ -185,7 +201,7 @@ const openAddAnimalHandler = () => {
 };
 
 const isLoading = ref(true);
-const selectedAnimal = ref<AnimalPartial>({});
+const selectedAnimal = ref<AnimalPartial>();
 const route = useRoute();
 const zooId = route.query.zooId;
 const selectedZoo = ref<Zoo | null>(null);
@@ -196,23 +212,9 @@ const opendeleteModal = ref(false);
 const animalId = ref<string>("");
 const openUpdateModal = ref<boolean>(false);
 const fetchCategories = ref<Category[]>([]);
-const isAdmin = ref(false);
 const isSearching = ref(false);
 const openTransferModal = ref(false);
 const selectedTransferredAnimalId = ref<string>("");
-
-const decodeJWT = (token: string | undefined): DecodedToken | null => {
-  if (!token) return null;
-  const payload = token.split(".")[1];
-  const decodedPayload = JSON.parse(atob(payload));
-
-  return decodedPayload;
-};
-
-const decodedToken = decodeJWT(token?.value ?? undefined);
-if (decodedToken && decodedToken.role === "admin") {
-  isAdmin.value = true;
-}
 
 const deleteAnimalHandler = (animal: Animal) => {
   animalId.value = animal.animalId;
@@ -247,22 +249,18 @@ const fetchAnimals = async (
   page: number = currentPage.value,
   size: number = pageSize.value
 ): Promise<void> => {
-
   try {
     const data = await useCustomFetch<PaginatedResponse<Animal>>(
-    `/animal/ZooAnimalsByZooId/${zooId}?page=${page}&size=${size}`
-  );
-  animals.value = data.content;
-  totalPages.value = data.totalPages;
-  isSearching.value = false;
+      `/animal/ZooAnimalsByZooId/${zooId}?page=${page}&size=${size}`
+    );
+    animals.value = data.content;
+    totalPages.value = data.totalPages;
+    isSearching.value = false;
   } catch (error: any) {
     console.log("Errors Occur", error);
-    
-  } finally{
+  } finally {
     isLoading.value = false;
   }
-
-
 };
 
 const deleteAnimal = async () => {

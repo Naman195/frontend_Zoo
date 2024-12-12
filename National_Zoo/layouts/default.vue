@@ -2,7 +2,13 @@
   <nav class="bg-gray-800 p-4">
     <div class="container mx-auto flex justify-between items-center">
       <div class="text-white text-lg font-semibold">
-        <NuxtLink to="/" class="hover:text-gray-300">National - Zoo</NuxtLink>
+        <NuxtLink to="/" class="hover:text-gray-300">
+          <img
+            src="../assests/images/zooicon.png"
+            alt="Profile"
+            class="h-10 w-10 rounded-full"
+          />
+        </NuxtLink>
       </div>
       <ul class="flex items-center space-x-6 text-white">
         <li><NuxtLink to="/" class="hover:text-gray-300">Home</NuxtLink></li>
@@ -26,7 +32,7 @@
         <template v-else>
           <li>
             <NuxtLink to="/zoo/allzoos" class="hover:text-gray-300"
-              >Zoo's</NuxtLink
+              >All Zoo</NuxtLink
             >
           </li>
           <!-- <li>
@@ -46,13 +52,13 @@
     </div>
 
     <div
-      v-if="isProfileVisible && userProfile"
+      v-if="isProfileVisible"
       class="absolute right-0 mt-2 w-64 bg-white shadow-md p-4 rounded-lg z-50"
     >
       <h2 class="font-bold text-lg">User Profile</h2>
       <p>
-        <strong>Name:</strong> {{ userProfile.fullName }}
-        {{ userProfile.lastName }}
+        <strong>Name:</strong> {{ userProfile ? userProfile.fullName : "user" }}
+        {{ userProfile ? userProfile.lastName : "vh" }}
       </p>
       <p><strong>City:</strong> {{ userProfile.address.city.cityName }}</p>
 
