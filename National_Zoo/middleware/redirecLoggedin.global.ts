@@ -4,6 +4,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   const token = useCookie("auth")
 const userId =   useCookie("userId")
+const userCookie = useCookie('user')
 const userLoggedIn = useCookie<string | null | boolean>('isLoggedIn');
 
 if(token.value){
@@ -28,6 +29,8 @@ if(token.value){
     }else{
         userLoggedIn.value = false;
         userId.value = null;
+        userCookie.value = null;
+
         // if(to.path === "/zoo/allzoos" || to.path === "/animal/allanimals?zooId=" || to.path === "/animalprofile?id="){
         //      return navigateTo("/");
         //    }

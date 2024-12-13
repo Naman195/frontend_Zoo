@@ -1,5 +1,4 @@
 <template>
-  <!-- <div class="flex flex-col items-center h-screen bg-red-100"> -->
   <div class="absolute top-0 end-0">
     <ShowAlert
       :alert-message="toastMessage"
@@ -14,7 +13,7 @@
     >
       <span
         class="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500"
-        >All Animals in Zoo - {{ selectedZoo?.zooName }}</span
+        >All Animals in Zoo - {{ selectedZoo }}</span
       >
       <span
         class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"
@@ -144,7 +143,6 @@
       />
     </div>
   </div>
-  <!-- </div> -->
 </template>
 
 <script lang="ts" setup>
@@ -154,10 +152,6 @@ import type { AnimalPartial } from "~/types/AnimalPartial";
 import type { Category } from "~/types/Category";
 import type { PaginatedResponse } from "~/types/PaginationResponse";
 import type { Zoo } from "~/types/Zoo";
-
-interface DecodedToken {
-  role?: string;
-}
 
 const closeToast = () => {
   isToastVisible.value = false;
@@ -201,10 +195,11 @@ const openAddAnimalHandler = () => {
 };
 
 const isLoading = ref(true);
-const selectedAnimal = ref<AnimalPartial>();
+const selectedAnimal = ref<AnimalPartial | undefined>();
 const route = useRoute();
 const zooId = route.query.zooId;
-const selectedZoo = ref<Zoo | null>(null);
+const zooName = route.query.zooName;
+const selectedZoo = route.query.zooName;
 const animals = ref<Animal[]>([]);
 const token = useCookie("auth") || undefined;
 const openAddAnimalModal = ref(false);
@@ -235,16 +230,6 @@ function onTransferButtonClick(animal: Animal) {
   FetchZooList();
 }
 
-const fetchZooById = async () => {
-  try {
-    const response = await useCustomFetch<Zoo>(`/zoo/id/${zooId}`);
-    selectedZoo.value = response;
-  } catch (error) {
-    console.error("Failed to fetch zoo:", error);
-    selectedZoo.value = null;
-  }
-};
-
 const fetchAnimals = async (
   page: number = currentPage.value,
   size: number = pageSize.value
@@ -253,6 +238,7 @@ const fetchAnimals = async (
     const data = await useCustomFetch<PaginatedResponse<Animal>>(
       `/animal/ZooAnimalsByZooId/${zooId}?page=${page}&size=${size}`
     );
+
     animals.value = data.content;
     totalPages.value = data.totalPages;
     isSearching.value = false;
@@ -398,7 +384,6 @@ const performSearch = async (searchQuery: string) => {
 };
 
 onMounted(() => {
-  fetchZooById();
   fetchAnimals(currentPage.value, pageSize.value);
 });
 </script>

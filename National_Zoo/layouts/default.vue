@@ -56,11 +56,11 @@
       class="absolute right-0 mt-2 w-64 bg-white shadow-md p-4 rounded-lg z-50"
     >
       <h2 class="font-bold text-lg">User Profile</h2>
+      <p><strong>Name:</strong> {{ userProfile.fullName }}</p>
       <p>
-        <strong>Name:</strong> {{ userProfile ? userProfile.fullName : "user" }}
-        {{ userProfile ? userProfile.lastName : "vh" }}
+        <strong>City:</strong>
+        {{ userProfile.address.city.cityName }}
       </p>
-      <p><strong>City:</strong> {{ userProfile.address.city.cityName }}</p>
 
       <!-- Buttons container -->
       <div class="flex justify-between mt-4">
@@ -94,13 +94,6 @@
       />
     </div>
   </nav>
-
-  <div v-if="updateAlert" class="absolute top-30 end-0">
-    <ShowAlert
-      :alert-message="'User Updated  Successfully'"
-      @close-modal="closeUpdateAlert"
-    />
-  </div>
   <div>
     <slot />
   </div>
@@ -111,17 +104,19 @@
 import { ErrorMessage, Field, Form } from "vee-validate";
 import "../assests/css/style.css";
 import { useAuth } from "~/composables/useAuth";
-import { useUserProfile } from "~/composables/useUserProfile";
+import { useUserStore } from "~/store/user";
 
 const router = useRouter();
 const { logOut } = useAuth();
-const { userProfile, setUser, getUser } = useUserProfile();
+// const { userProfile, setUser, getUser } = useUserProfile();
 const userToken = useCookie("isLoggedIn");
 const isProfileVisible = ref(false);
 const isUpdateModalVisible = ref(false);
-const updateAlert = ref(false);
+const userStore = useUserStore();
+const userProfile = useCookie("user");
 
 const logoutUser = () => {
+  userStore.removeUser();
   logOut();
   router.push("/userlogin");
   isProfileVisible.value = false;
@@ -143,17 +138,11 @@ const handleProfileModal = () => {
 // Fetch User Profile
 const userId = useCookie("userId");
 
-onMounted(() => {
-  if (userToken.value == true) {
-    fetchProfile();
-  }
-});
-
 const fetchProfile = async () => {
   try {
     const fetchedUser = await useCustomFetch(`/auth/user/${userId.value}`);
     userProfile.value = fetchedUser;
-    setUser(fetchedUser);
+    // setUser(fetchedUser);
   } catch (error) {
     console.error("Error fetching User:", error);
   }
@@ -177,11 +166,11 @@ const updateUser = async (formData) => {
   };
 
   try {
-    await useCustomFetch(`/auth/update/${userId.value}`, {
+    const data = await useCustomFetch(`/auth/update/${userId.value}`, {
       method: "PATCH",
       body: resBody,
     });
-    setUser(formData);
+    userProfile.value = data;
     isUpdateModalVisible.value = false;
   } catch (err) {
     console.error("Error updating user:", err);

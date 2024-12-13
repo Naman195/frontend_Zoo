@@ -135,7 +135,6 @@
         :totalPages="totalPages"
         :pageSize="pageSize"
         @update:currentPage="changePage"
-        @fetch-data="fetchZoo"
       />
     </div>
   </div>
@@ -181,7 +180,9 @@ const closeToast = () => {
 };
 
 const changePage = (page) => {
-  console.log("Change Page Called:", page);
+  if (currentPage.value == page) {
+    return;
+  }
   if (page >= 0 && page < totalPages.value) {
     currentPage.value = page;
     fetchZoo(currentPage.value, pageSize.value);
@@ -216,7 +217,6 @@ function updateZoo(zoo) {
 }
 
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
-  console.log("Fetch Zoo Called:", page, size);
   try {
     isLoading.value = true;
     const data = await useCustomFetch(`/zoo/allZoo?page=${page}&size=${size}`);

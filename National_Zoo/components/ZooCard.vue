@@ -15,7 +15,7 @@
       <nuxt-link
         :to="{
           path: `/animal/allanimals`,
-          query: { zooId: entityData.zooId },
+          query: { zooId: entityData.zooId, zooName: entityData.zooName },
         }"
         class="text-slate-800 hover:text-slate-600"
       >

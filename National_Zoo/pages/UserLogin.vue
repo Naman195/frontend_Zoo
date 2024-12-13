@@ -57,6 +57,7 @@ import "../assests/css/LoginStyle.css";
 import { useAuth } from "@/composables/useAuth";
 import { useRouter } from "vue-router";
 import type { userLogin } from "~/types/userLogin";
+import { useUserStore } from "~/store/user";
 
 const toastMessage: Ref<string> = ref("");
 const isToastVisible = ref(false);
@@ -68,6 +69,8 @@ const form = reactive({
   username: "",
   password: "",
 });
+
+const userStore = useUserStore();
 
 const closeToast = () => {
   isToastVisible.value = false;
@@ -86,7 +89,7 @@ const loginUser = async () => {
 
     token.value = data.token;
     logIn(data.userId);
-
+    userStore.setUser(data.user);
     toastMessage.value = data.message;
     isToastVisible.value = true;
     setTimeout(() => {
