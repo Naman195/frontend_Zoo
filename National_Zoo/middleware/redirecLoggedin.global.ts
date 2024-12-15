@@ -31,9 +31,10 @@ if(token.value){
         userId.value = null;
         userCookie.value = null;
 
-        // if(to.path === "/zoo/allzoos" || to.path === "/animal/allanimals?zooId=" || to.path === "/animalprofile?id="){
-        //      return navigateTo("/");
-        //    }
+        if (to.path === "/zoo/allzoos" || to.path.startsWith("/animal/allanimals") || to.path.startsWith("/animalprofile")) {
+          return navigateTo("/");
+        }
+
     }
     
 

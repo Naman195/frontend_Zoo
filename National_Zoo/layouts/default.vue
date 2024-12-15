@@ -170,7 +170,11 @@ const updateUser = async (formData) => {
       method: "PATCH",
       body: resBody,
     });
-    userProfile.value = data;
+    
+    userStore.setUser(data);
+    const userCookie = useCookie('user');
+    userCookie.value = JSON.stringify(data);
+
     isUpdateModalVisible.value = false;
   } catch (err) {
     console.error("Error updating user:", err);

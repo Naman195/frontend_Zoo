@@ -195,7 +195,7 @@ const openAddAnimalHandler = () => {
 };
 
 const isLoading = ref(true);
-const selectedAnimal = ref<AnimalPartial | undefined>();
+const selectedAnimal = ref<AnimalPartial>();
 const route = useRoute();
 const zooId = route.query.zooId;
 const zooName = route.query.zooName;
