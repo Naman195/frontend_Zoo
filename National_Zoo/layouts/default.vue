@@ -1,4 +1,5 @@
 <template>
+  <!-- sticky top-0 z-50 -->
   <nav class="bg-gray-800 p-4">
     <div class="container mx-auto flex justify-between items-center">
       <div class="text-white text-lg font-semibold">
@@ -100,7 +101,6 @@
 </template>
 
 <script setup>
-// import "../assests/css/Navbar.css";
 import { ErrorMessage, Field, Form } from "vee-validate";
 import "../assests/css/style.css";
 import { useAuth } from "~/composables/useAuth";
@@ -138,19 +138,7 @@ const handleProfileModal = () => {
 // Fetch User Profile
 const userId = useCookie("userId");
 
-const fetchProfile = async () => {
-  try {
-    const fetchedUser = await useCustomFetch(`/auth/user/${userId.value}`);
-    userProfile.value = fetchedUser;
-    // setUser(fetchedUser);
-  } catch (error) {
-    console.error("Error fetching User:", error);
-  }
-};
-
 const updateUser = async (formData) => {
-  console.log("Form Data is", formData.fullName);
-  console.log("Compare User Profile Data", compareUserProfileData);
   if (JSON.stringify(formData) == JSON.stringify(compareUserProfileData)) {
     return;
   }
@@ -170,9 +158,9 @@ const updateUser = async (formData) => {
       method: "PATCH",
       body: resBody,
     });
-    
+
     userStore.setUser(data);
-    const userCookie = useCookie('user');
+    const userCookie = useCookie("user");
     userCookie.value = JSON.stringify(data);
 
     isUpdateModalVisible.value = false;

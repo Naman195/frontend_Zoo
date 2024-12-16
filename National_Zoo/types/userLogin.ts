@@ -4,5 +4,6 @@ export interface userLogin{
         token: string | null;
         userId: number | null;
         username: string | null;
+        user: Object | null; 
       
 }

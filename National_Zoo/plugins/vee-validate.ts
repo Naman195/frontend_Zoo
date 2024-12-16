@@ -11,8 +11,8 @@ export default defineNuxtPlugin(() => {
       generateMessage : localize("en", {
         messages: {
           required: '{field} is required',
-          min: '{field} length  must be greater then 0:{min}!!',
-          digits: '{field} must be of 0:{digits} digits'
+          min: '{field} length  must be greater then equalTo 0:{min}!!',
+          digits: '{field} must be of 0:{digits} Numbers'
 
             
         }

@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute top-0 right-0">
+  <div class="absolute top-12 start-1/2 -translate-x-1/2">
     <ShowAlert
       :alert-message="toastMessage"
       :is-visible="isToastVisible"
@@ -7,7 +7,7 @@
     />
   </div>
   <div class="login-container">
-    <h1>User Login Page</h1>
+    <h1>Login Page</h1>
 
     <Form @submit="loginUser" class="login-form">
       <div class="form-group">
@@ -45,7 +45,7 @@
         If new user, please <NuxtLink to="/userregisteration">sign up</NuxtLink>
       </p>
       <p class="note">
-        Forgot Pass, <NuxtLink to="/forgotpass">forgot pass</NuxtLink>
+        Forgot Password, <NuxtLink to="/forgotpass">forgot password</NuxtLink>
       </p>
     </Form>
   </div>

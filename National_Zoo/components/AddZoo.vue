@@ -217,7 +217,7 @@
   </div>
 </template>
 
-<script setup lang="ts" >
+<script setup lang="ts">
 import { ErrorMessage, Field, Form } from "vee-validate";
 import type { City } from "~/types/City";
 import type { Country } from "~/types/Country";

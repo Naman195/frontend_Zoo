@@ -1,6 +1,6 @@
 <template>
   <div
-    class="cursor-pointer group relative flex flex-col bg-white shadow-sm border border-slate-200 rounded-lg w-80 hover:shadow-lg transition-shadow duration-300 max-h-[600px] overflow-hidden"
+    class="group relative flex flex-col bg-white shadow-sm border border-slate-200 rounded-lg w-80 hover:shadow-lg transition-shadow duration-300 max-h-[600px] overflow-hidden"
   >
     <div class="relative h-50 m-2.5 overflow-hidden text-white rounded-md">
       <img

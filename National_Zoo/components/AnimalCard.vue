@@ -15,7 +15,7 @@
         :to="{ path: `/animalprofile`, query: { id: entityData.animalId } }"
         class="text-slate-800 hover:text-slate-600"
       >
-        <i class="fas fa-eye text-xl"></i>
+        <i class="fas fa-eye text-xl" title="View History"></i>
       </nuxt-link>
 
       <!-- Transfer -->
@@ -23,6 +23,7 @@
         v-if="useAuth().isAdmin"
         @click="emit('transfer')"
         class="fas fa-exchange-alt text-xl cursor-pointer text-blue-500 hover:text-blue-700"
+        title="Transfer Animal"
       ></i>
       <!-- Delete -->
 
@@ -30,6 +31,7 @@
         v-if="useAuth().isAdmin"
         @click="emit('delete')"
         class="fas fa-trash text-xl cursor-pointer text-red-600 hover:text-red-700"
+        title="Delete Animal"
       ></i>
 
       <!-- Update -->
@@ -37,6 +39,7 @@
         v-if="useAuth().isAdmin"
         @click="emit('update')"
         class="fas fa-edit text-xl cursor-pointer text-slate-800 hover:text-slate-600"
+        title="Update Animal"
       ></i>
     </template>
   </ShowCards>

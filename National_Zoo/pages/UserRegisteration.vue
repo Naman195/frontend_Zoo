@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute top-0 right-0">
+  <div class="absolute top-12 start-1/2 -translate-x-1/2">
     <ShowAlert
       :alert-message="toastMessage"
       :is-visible="isToastVisible"
@@ -7,7 +7,7 @@
     />
   </div>
   <div class="register-container">
-    <h1>User Registration Page</h1>
+    <h1>Registration Page</h1>
     <!-- :key="formkey" -->
     <Form @submit="registerUser" class="register-form" :key="formkey">
       <div class="register-pair">
@@ -44,7 +44,7 @@
             label="User Name"
             type="text"
             v-model="form.userName"
-            rules="required|alpha"
+            rules="required|alpha_num"
           />
           <ErrorMessage name="username" class="text-red-600 text-sm mt-1" />
         </div>

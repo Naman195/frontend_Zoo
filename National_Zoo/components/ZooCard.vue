@@ -19,7 +19,7 @@
         }"
         class="text-slate-800 hover:text-slate-600"
       >
-        <i class="fas fa-eye text-xl"></i>
+        <i class="fas fa-eye text-xl" title="View Zoo"></i>
       </nuxt-link>
 
       <!-- Delete -->
@@ -28,6 +28,7 @@
         v-if="useAuth().isAdmin"
         @click="emit('delete', entityData.zooId)"
         class="fas fa-trash text-xl cursor-pointer text-red-600 hover:text-red-700"
+        title="Delete Zoo"
       ></i>
 
       <!-- Update -->
@@ -35,6 +36,7 @@
         v-if="useAuth().isAdmin"
         @click="emit('update')"
         class="fas fa-edit text-xl cursor-pointer text-slate-800 hover:text-slate-600"
+        title="Update Zoo"
       ></i>
     </template>
   </ShowCards>

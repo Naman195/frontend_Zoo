@@ -1,6 +1,6 @@
 <template>
   <!-- ..................Show Alert............................. -->
-  <div class="absolute top-0 end-0">
+  <div class="absolute top-12 start-1/2 -translate-x-1/2">
     <ShowAlert
       :alert-message="toastMessage"
       :is-visible="isToastVisible"
@@ -52,7 +52,7 @@
           currentPage === 0 &&
           !isSearching
         "
-        class="flex justify-items-center justify-around mt-5"
+        class="flex flex-col justify-items-center items-center mt-5"
       >
         <h1 class="text-bold">
           <p class="font-bold">No Zoo Found! Please Add Zoo</p>

@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute top-0 end-0">
+  <div class="absolute top-12 start-1/2 -translate-x-1/2">
     <ShowAlert
       :alert-message="toastMessage"
       :is-visible="isToastVisible"
@@ -13,7 +13,7 @@
     >
       <span
         class="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500"
-        >All Animals in Zoo - {{ selectedZoo }}</span
+        >All Animals in Zoo - {{ selectedZooName }}</span
       >
       <span
         class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"
@@ -49,8 +49,7 @@
           currentPage === 0 &&
           !isSearching
         "
-        class="flex justify-items-center justify-around mt-5"
-        :class="['justify-around', useAuth().isAdmin]"
+        class="flex flex-col justify-items-center items-center mt-5"
       >
         <h1 class="text-bold"><p class="font-bold">No Animal Found!</p></h1>
         <div v-if="useAuth().isAdmin">
@@ -198,8 +197,7 @@ const isLoading = ref(true);
 const selectedAnimal = ref<AnimalPartial>();
 const route = useRoute();
 const zooId = route.query.zooId;
-const zooName = route.query.zooName;
-const selectedZoo = route.query.zooName;
+const selectedZooName = route.query.zooName;
 const animals = ref<Animal[]>([]);
 const token = useCookie("auth") || undefined;
 const openAddAnimalModal = ref(false);
