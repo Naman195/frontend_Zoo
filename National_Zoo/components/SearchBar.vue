@@ -5,7 +5,6 @@
   >
     <input
       id="search-bar"
-      placeholder="your keyword here"
       v-model="searchQuery"
       class="px-6 py-2 w-full rounded-md flex-1 outline-none bg-white"
     />

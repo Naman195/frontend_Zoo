@@ -258,7 +258,7 @@ onMounted(() => {
 });
 
 const fetchCountries = async () => {
-  const data = await $fetch<Country[]>(`http://localhost:8080/api/countries`);
+  const data = await $fetch<Country[]>(`http://localhost:8080/country/all`);
   countries.value = data;
 };
 
@@ -273,7 +273,7 @@ const handleCountryChange = () => selectedCountry.value && fetchStates();
 const fetchStates = async () => {
   if (selectedCountry.value) {
     const data = await $fetch<State[]>(
-      `http://localhost:8080/api/state/${selectedCountry.value}`
+      `http://localhost:8080/state/${selectedCountry.value}`
     );
     states.value = data;
   }
@@ -283,7 +283,7 @@ const handleStateChange = () => selectedState.value && fetchCities();
 const fetchCities = async () => {
   if (selectedState.value) {
     const data = await $fetch<City[]>(
-      `http://localhost:8080/api/cities/${selectedState.value}`
+      `http://localhost:8080/city/${selectedState.value}`
     );
     cities.value = data;
   }

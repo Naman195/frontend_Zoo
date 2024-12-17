@@ -9,7 +9,7 @@ export function useCustomFetch<T>(
     const token = route.query.token;
 
     const defaults: UseFetchOptions<T> = {
-        baseURL: "http://localhost:8080/api",
+        baseURL: "http://localhost:8080",
         headers: useCookie("auth").value ?
             {
                 Authorization: `Bearer ${useCookie("auth").value}`

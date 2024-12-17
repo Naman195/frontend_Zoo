@@ -219,7 +219,9 @@ function updateZoo(zoo) {
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
   try {
     isLoading.value = true;
-    const data = await useCustomFetch(`/zoo/allZoo?page=${page}&size=${size}`);
+    const data = await useCustomFetch(
+      `/zoo/fetchall?page=${page}&size=${size}`
+    );
     Zoos.value = data.content;
     filteredZoos.value = [...Zoos.value];
     totalPages.value = data.totalPages;
@@ -233,19 +235,27 @@ const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
 
 const deleteZoo = async () => {
   try {
-    const data = await useCustomFetch(`/zoo/deleleZoo/${zooId.value}`, {
+    const data = await useCustomFetch(`/zoo/delete/${zooId.value}`, {
       method: "PATCH",
     });
-    Zoos.value = Zoos.value.filter((zoo) => zoo.zooId !== zooId.value);
-    filteredZoos.value = Zoos.value;
+    // Zoos.value = Zoos.value.filter((zoo) => zoo.zooId !== zooId.value);
+    // filteredZoos.value = Zoos.value;
+    console.log(currentPage.value);
+    if (filteredZoos.value.length == 1 && currentPage.value > 0) {
+      console.log(currentPage.value);
+      currentPage.value -= 1;
+      fetchZoo(currentPage.value, pageSize.value);
+    } else {
+      fetchZoo(currentPage.value, pageSize.value);
+    }
     opendeleteModal.value = false;
     toastMessage.value = data;
     isToastVisible.value = true;
 
-    if (filteredZoos.value.length === 0 && currentPage.value > 0) {
-      currentPage.value -= 1;
-      fetchZoo(currentPage.value, pageSize.value);
-    }
+    // if (filteredZoos.value.length === 0 && currentPage.value > 0) {
+    //   currentPage.value -= 1;
+    //   fetchZoo(currentPage.value, pageSize.value);
+    // }
   } catch (error) {
     toastMessage.value = error;
     isToastVisible.value = true;
@@ -265,7 +275,7 @@ const addZoo = async () => {
   };
 
   try {
-    const response = await useCustomFetch(`/zoo/create`, {
+    const response = await useCustomFetch(`/zoo/add`, {
       method: "POST",
       body: resbody,
     });
@@ -296,7 +306,7 @@ const updateZooHandler = async (formData) => {
   };
 
   try {
-    const response = await useCustomFetch(`/zoo/updateZoo/${zooId.value}`, {
+    const response = await useCustomFetch(`/zoo/update/${zooId.value}`, {
       method: "PATCH",
       body: resBody,
     });

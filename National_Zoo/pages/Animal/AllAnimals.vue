@@ -234,7 +234,7 @@ const fetchAnimals = async (
 ): Promise<void> => {
   try {
     const data = await useCustomFetch<PaginatedResponse<Animal>>(
-      `/animal/ZooAnimalsByZooId/${zooId}?page=${page}&size=${size}`
+      `/animal/all/${zooId}?page=${page}&size=${size}`
     );
 
     animals.value = data.content;
@@ -250,23 +250,24 @@ const fetchAnimals = async (
 const deleteAnimal = async () => {
   try {
     const data = await useCustomFetch<string>(
-      `/animal/deleteAnimalById/${animalId.value}`,
+      `/animal/delete/${animalId.value}`,
       {
         method: "PATCH",
       }
     );
 
-    animals.value = animals.value.filter(
-      (animal) => animal.animalId !== animalId.value
-    );
+    // animals.value = animals.value.filter(
+    //   (animal) => animal.animalId !== animalId.value
+    // );
+    if (animals.value.length === 1 && currentPage.value > 0) {
+      currentPage.value -= 1;
+      fetchAnimals(currentPage.value, pageSize.value);
+    } else {
+      fetchAnimals(currentPage.value, pageSize.value);
+    }
     opendeleteModal.value = false;
     toastMessage.value = data || "Animal deleted successfully.";
     isToastVisible.value = true;
-
-    if (animals.value.length === 0 && currentPage.value > 0) {
-      currentPage.value -= 1;
-      fetchAnimals(currentPage.value, pageSize.value);
-    }
   } catch (error: any) {
     toastMessage.value = error;
     isToastVisible.value = true;
@@ -275,7 +276,7 @@ const deleteAnimal = async () => {
 
 const addAnimal = async () => {
   try {
-    const res = await useCustomFetch(`/animal/addAnimal`, {
+    const res = await useCustomFetch(`/animal/add`, {
       method: "POST",
       body: {
         ...formData.value,
@@ -311,7 +312,7 @@ const updateAnimalHandler = async (
     },
   };
   try {
-    const res = await useCustomFetch(`/animal/updateAnimal/${animalId.value}`, {
+    const res = await useCustomFetch(`/animal/update/${animalId.value}`, {
       headers: {
         Authorization: `Bearer ${token.value}`,
         "Content-Type": "application/json",
@@ -342,14 +343,14 @@ const fetchCategoriesApi = async () => {
 const zooList = ref<Zoo[]>([]);
 
 const FetchZooList = async () => {
-  const data = await useCustomFetch<Zoo[]>(`/animal/zooListByZooId/${zooId}`);
+  const data = await useCustomFetch<Zoo[]>(`/animal/getzoolist/${zooId}`);
   zooList.value = data;
 };
 
 const handleTransferAnimal = async (newZooId: number) => {
   try {
     const res = await useCustomFetch(
-      `/animal/transferAnimal/${selectedTransferredAnimalId.value}/to/${newZooId}`,
+      `/animal/transfer/${selectedTransferredAnimalId.value}/to/${newZooId}`,
       {
         method: "patch",
       }

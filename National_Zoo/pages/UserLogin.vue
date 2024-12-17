@@ -82,7 +82,7 @@ const togglePasswordVisibility = () => {
 
 const loginUser = async () => {
   try {
-    const data = await useCustomFetch<userLogin>("/auth/user/login", {
+    const data = await useCustomFetch<userLogin>("/auth/login", {
       method: "POST",
       body: form,
     });

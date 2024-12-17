@@ -234,7 +234,7 @@ const togglePasswordVisibility = () => {
 
 const fetchCountries = async () => {
   try {
-    const data = await $fetch<Country[]>(`http://localhost:8080/api/countries`);
+    const data = await $fetch<Country[]>(`http://localhost:8080/country/all`);
     countries.value = data;
   } catch (error) {
     console.error("Error fetching countries:", error);
@@ -251,7 +251,7 @@ const fetchStates = async () => {
   if (!selectedCountry) return;
   try {
     const data = await $fetch<State[]>(
-      `http://localhost:8080/api/state/${selectedCountry.value}`
+      `http://localhost:8080/state/${selectedCountry.value}`
     );
     states.value = data;
   } catch (error) {
@@ -268,7 +268,7 @@ const handleStateChange = () => {
 const fetchCities = async () => {
   try {
     const data = await $fetch<City[]>(
-      `http://localhost:8080/api/cities/${selectedState.value}`
+      `http://localhost:8080/city/${selectedState.value}`
     );
     cities.value = data;
   } catch (error) {
@@ -278,7 +278,7 @@ const fetchCities = async () => {
 
 const registerUser = async () => {
   try {
-    const data = await useCustomFetch<string>("/auth/user/create", {
+    const data = await useCustomFetch<string>("/auth/create", {
       method: "POST",
       body: form,
     });

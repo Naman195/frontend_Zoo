@@ -6,8 +6,8 @@
   </div>
 
   <!-- ....................Loading End........................ -->
-  <div v-if="!isLoading">
-    <div v-if="animalHistory.length == 0">
+  <div v-if="!isLoading" class="flex flex-col items-center">
+    <div v-if="animalHistory.length == 0" class="flex flex-col items-center">
       <h1 class="text-lg font-bold">No History Found for this Animal</h1>
     </div>
     <div v-else class="flex flex-col items-center">
