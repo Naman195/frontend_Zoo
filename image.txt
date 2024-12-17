@@ -196,3 +196,95 @@ public class ZooController {
         return "Zoo created successfully: " + zoo.getImageUrl();
     }
 }
+
+
+
+
+
+
+
+
+
+
+<template>
+  <!-- Toast Notification -->
+  <div
+    class="fixed top-5 right-5 z-50 flex items-center max-w-sm p-4 text-gray-700 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700"
+    role="alert"
+  >
+    <!-- Toast Message -->
+    <div class="flex-1 text-sm font-medium">
+      {{ message }}
+    </div>
+
+    <!-- Close Button -->
+    <button
+      @click="emit('close')"
+      type="button"
+      class="inline-flex items-center justify-center w-6 h-6 ml-4 text-gray-400 rounded-full hover:bg-gray-100 hover:text-gray-700 focus:outline-none dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+      aria-label="Close"
+    >
+      <span class="sr-only">Close</span>
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        ></path>
+      </svg>
+    </button>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { onMounted, defineEmits } from "vue";
+
+defineProps({
+  message: {
+    type: String,
+    required: true,
+  },
+  duration: {
+    type: Number,
+    default: 3000, // Default duration of 3 seconds
+  },
+});
+
+const emit = defineEmits(["close"]);
+
+const closeToast = () => {
+  emit("close"); // Emit the close event
+};
+
+onMounted(() => {
+  // Automatically close the toast after the specified duration
+  setTimeout(() => {
+    closeToast();
+  }, 3000);
+});
+</script>
+
+<style scoped>
+/* Toast Animation */
+@keyframes slide-in {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+div[role="alert"] {
+  animation: slide-in 0.5s ease-out;
+}
+</style>
