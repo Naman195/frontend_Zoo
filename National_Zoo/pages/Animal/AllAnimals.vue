@@ -1,12 +1,4 @@
 <template>
-  <div class="absolute top-12 start-1/2 -translate-x-1/2">
-    <ShowAlert
-      :alert-message="toastMessage"
-      :is-visible="isToastVisible"
-      @close-modal="closeToast"
-    />
-  </div>
-
   <div class="max-w-full mx-auto text-center pt-7 relative">
     <h1
       class="text-4xl font-bold text-gray-900 leading-tight mb-2 pb-4 relative center"
@@ -29,6 +21,12 @@
       Add Animal
     </button>
   </div>
+
+  <ShowAlert
+    :alert-message="toastMessage"
+    :is-visible="isToastVisible"
+    @close-modal="closeToast"
+  />
 
   <div class="flex flex-col items-center mx-auto pt-8">
     <div class="w-30">

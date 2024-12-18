@@ -14,4 +14,6 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ShowAlert from "~/components/showAlert.vue";
+</script>

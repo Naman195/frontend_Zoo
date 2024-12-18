@@ -1,12 +1,8 @@
 <template>
   <!-- ..................Show Alert............................. -->
-  <div class="absolute top-12 start-1/2 -translate-x-1/2">
-    <ShowAlert
-      :alert-message="toastMessage"
-      :is-visible="isToastVisible"
-      @close-modal="closeToast"
-    />
-  </div>
+  <!-- <div class="absolute top-12 start-1/2 -translate-x-1/2"> -->
+
+  <!-- </div> -->
 
   <!-- ........................... heading Section ............................. -->
   <div class="max-w-full mx-auto text-center pt-7 relative">
@@ -30,11 +26,16 @@
       Add Zoo
     </button>
   </div>
+  <ShowAlert
+    :alert-message="toastMessage"
+    :is-visible="isToastVisible"
+    @close-modal="closeToast"
+  />
 
   <div class="flex flex-col items-center mx-auto pt-8">
     <div class="w-30">
       <SearchBar
-        v-if="!isLoading"
+        v-if="!isLoading && filteredZoos.length !== 0"
         @search="performSearch"
         @clear="resetSearch"
       />
