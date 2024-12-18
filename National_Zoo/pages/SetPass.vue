@@ -1,11 +1,4 @@
 <template>
-  <div>
-    <ShowAlert
-      :alert-message="toastMessage"
-      :is-visible="isToastVisible"
-      @close-modal="closeToast"
-    />
-  </div>
   <div class="login-container">
     <h1>Set new Password</h1>
 
@@ -21,7 +14,7 @@
         />
       </div>
       <div class="form-group">
-        <label for="username">Password</label>
+        <label for="newPassword">Password</label>
         <input
           type="password"
           v-model="newPassword"
@@ -30,24 +23,19 @@
         />
       </div>
 
-      <button type="submit" class="submit-btn">Set Pass</button>
+      <button type="submit" class="submit-btn">Set Password</button>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import "../assests/css/LoginStyle.css";
+import { useToastNotify } from "~/composables/useToastNotify";
 
+const { showToast } = useToastNotify();
 const newPassword = ref("");
 const oldPassword = ref("");
-const toastMessage: Ref<string> = ref("");
-const isToastVisible = ref(false);
 const router = useRouter();
 const isLoggedIn = useCookie("isLoggedIn");
-
-const closeToast = () => {
-  isToastVisible.value = false;
-};
 
 const handleSetPassword = async () => {
   try {
@@ -64,15 +52,15 @@ const handleSetPassword = async () => {
       body: requestBody,
     });
 
-    toastMessage.value = response;
-    isToastVisible.value = true;
+    // Success toast
+    showToast(response, "green");
 
     setTimeout(() => {
       router.push("/userlogin");
-    }, 1000);
+    }, 3000);
   } catch (error: any) {
-    toastMessage.value = error.data;
-    isToastVisible.value = true;
+    // Error toast
+    showToast(error.data || "An error occurred.", "red");
   }
 };
 </script>
