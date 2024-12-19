@@ -122,7 +122,7 @@
 
       <!-- Display All Zoos -->
       <div class="flex flex-wrap justify-center">
-        <li v-for="(zoo, id) in filteredZoos" :key="id" class="m-4 list-none">
+        <li v-for="(zoo, id) in filteredZoos" :key="id + zoo.image" class="m-4 list-none">
           <ZooCard
             :entity-data="zoo"
             @delete="deleteZooHandler"
@@ -337,6 +337,8 @@ const updateZooHandler = async (formData) => {
       method: "PATCH",
       body: formDataNew,
     });
+    console.log("REsponse is", response);
+    
     openUpdateModal.value = false;
     intiliazeFormData();
     showToast("Zoo Update SuccessFully", "green");

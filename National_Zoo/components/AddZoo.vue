@@ -264,7 +264,7 @@ const props = defineProps({
   },
 });
 
-console.log("From Data", props.fromData.image);
+// console.log("From Data", props.fromData.image);
 
 const countries = ref<Country[]>([]);
 const states = ref<State[]>([]);

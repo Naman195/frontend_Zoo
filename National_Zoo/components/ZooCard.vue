@@ -1,11 +1,14 @@
 <template>
   <ShowCards>
     <template #card-image>
-      <div id="myDiv">
+      <div class="relative w-full h-[200px] overflow-hidden">
         <img
           class="transition-transform duration-500 ease-[cubic-bezier(0.25, 1, 0.5, 1)] transform group-hover:scale-110 w-full h-full object-cover"
-          :src="imageUrl"
+         
+          :src="`${imageUrl}?t=${Date.now()}`"
           alt="Zoo Image"
+
+           
         />
       </div>
     </template>
@@ -72,7 +75,7 @@ const emit = defineEmits<{
   (e: "delete", zooId?: number): void;
 }>();
 
-var imageUrl = `http://192.168.0.153:8081/${props.entityData.image}`;
+var imageUrl = `http://192.168.90.166:8081/${props.entityData.image}`;
 console.log("Image Url", imageUrl);
 console.log("Props Image", props.entityData.image);
 </script>
