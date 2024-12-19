@@ -22,11 +22,11 @@
     </button>
   </div>
 
-  <ShowAlert
+  <!-- <ShowAlert
     :alert-message="toastMessage"
     :is-visible="isToastVisible"
     @close-modal="closeToast"
-  />
+  /> -->
 
   <div class="flex flex-col items-center mx-auto pt-8">
     <div class="w-30">
@@ -149,6 +149,9 @@ import type { AnimalPartial } from "~/types/AnimalPartial";
 import type { Category } from "~/types/Category";
 import type { PaginatedResponse } from "~/types/PaginationResponse";
 import type { Zoo } from "~/types/Zoo";
+import { useToastNotify } from "~/composables/useToastNotify";
+
+const { showToast } = useToastNotify();
 
 const closeToast = () => {
   isToastVisible.value = false;
@@ -264,11 +267,13 @@ const deleteAnimal = async () => {
       fetchAnimals(currentPage.value, pageSize.value);
     }
     opendeleteModal.value = false;
-    toastMessage.value = data || "Animal deleted successfully.";
-    isToastVisible.value = true;
+    showToast(data || "Animal deleted successfully.", "green");
+    // toastMessage.value = data || "Animal deleted successfully.";
+    // isToastVisible.value = true;
   } catch (error: any) {
-    toastMessage.value = error;
-    isToastVisible.value = true;
+    showToast(error || "Error occured in deleting animal", "red");
+    // toastMessage.value = error;
+    // isToastVisible.value = true;
   }
 };
 
@@ -286,12 +291,14 @@ const addAnimal = async () => {
 
     openAddAnimalModal.value = false;
     intiliazeFormData();
-    toastMessage.value = "Added Successfully";
-    isToastVisible.value = true;
+    showToast("Added Successfully", "green");
+    // toastMessage.value = "Added Successfully";
+    // isToastVisible.value = true;
     fetchAnimals(currentPage.value, pageSize.value);
   } catch (error: any) {
-    toastMessage.value = error.response._data;
-    isToastVisible.value = true;
+    showToast(error || "Error Occured in add animals", "red");
+    // toastMessage.value = error.response._data;
+    // isToastVisible.value = true;
   }
 };
 
@@ -321,13 +328,15 @@ const updateAnimalHandler = async (
     openUpdateModal.value = false;
     intiliazeFormData();
 
-    toastMessage.value = "Update Successfully";
-    isToastVisible.value = true;
+    showToast("Update Successfully", "green");
+    // toastMessage.value = "Update Successfully";
+    // isToastVisible.value = true;
 
     fetchAnimals(currentPage.value, pageSize.value);
   } catch (error: any) {
-    toastMessage.value = error;
-    isToastVisible.value = true;
+    // toastMessage.value = error;
+    // isToastVisible.value = true;
+    showToast(error || "Error occured while updating animal", "red");
   }
 };
 
@@ -355,12 +364,13 @@ const handleTransferAnimal = async (newZooId: number) => {
     );
     openTransferModal.value = false;
     fetchAnimals(currentPage.value, pageSize.value);
-
-    toastMessage.value = "Animal Transferred Successfully";
-    isToastVisible.value = true;
+    showToast("Animal Transferred Successfully", "green");
+    // toastMessage.value = "Animal Transferred Successfully";
+    // isToastVisible.value = true;
   } catch (error: any) {
-    toastMessage.value = error;
-    isToastVisible.value = true;
+    showToast(error || "Error occured while transferring animal", "red");
+    // toastMessage.value = error;
+    // isToastVisible.value = true;
   }
 };
 

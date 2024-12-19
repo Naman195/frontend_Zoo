@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <!-- <div>
     <ShowAlert
       :alert-message="toastMessage"
       :is-visible="isToastVisible"
       @close-modal="closeToast"
     />
-  </div>
+  </div> -->
   <div class="login-container">
     <h1>Login Page</h1>
 
@@ -58,6 +58,9 @@ import { useAuth } from "@/composables/useAuth";
 import { useRouter } from "vue-router";
 import type { userLogin } from "~/types/userLogin";
 import { useUserStore } from "~/store/user";
+import { useToastNotify } from "~/composables/useToastNotify";
+
+const { showToast } = useToastNotify();
 
 const toastMessage: Ref<string> = ref("");
 const isToastVisible = ref(false);
@@ -90,14 +93,17 @@ const loginUser = async () => {
     token.value = data.token;
     logIn(data.userId);
     userStore.setUser(data.user);
-    toastMessage.value = data.message;
-    isToastVisible.value = true;
+    // Success toast
+    showToast(data.message, "green");
+    // toastMessage.value = data.message;
+    // isToastVisible.value = true;
     setTimeout(() => {
       router.push("/");
     }, 1000);
   } catch (err: any) {
-    toastMessage.value = err.response._data.message;
-    isToastVisible.value = true;
+    // toastMessage.value = err.response._data.message;
+    // isToastVisible.value = true;
+    showToast(err.response._data.message, "red");
   }
 };
 </script>

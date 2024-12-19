@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <!-- <div>
     <ShowAlert
       :alert-message="toastMessage"
       :is-visible="isToastVisible"
       @close-modal="closeToast"
     />
-  </div>
+  </div> -->
   <div class="register-container">
     <h1>Registration Page</h1>
     <!-- :key="formkey" -->
@@ -190,6 +190,9 @@ import "../assests/css/style.css";
 import type { Country } from "~/types/Country";
 import type { State } from "~/types/State";
 import type { City } from "~/types/City";
+import { useToastNotify } from "~/composables/useToastNotify";
+
+const { showToast } = useToastNotify();
 
 interface Role {
   id: number;
@@ -282,8 +285,9 @@ const registerUser = async () => {
       method: "POST",
       body: form,
     });
-    toastMessage.value = data;
-    isToastVisible.value = true;
+    showToast(data, "green");
+    // toastMessage.value = data;
+    // isToastVisible.value = true;
 
     if (data === "User successfully created") {
       form.fullName = "";
@@ -305,14 +309,15 @@ const registerUser = async () => {
       }, 3000);
       formkey = Math.random();
     } else {
-      toastMessage.value = "Error during SignUp Please Try Again";
-      isToastVisible.value = true;
+      showToast("Error during SignUp Please Try Again", "red");
+      // toastMessage.value = "Error during SignUp Please Try Again";
+      // isToastVisible.value = true;
     }
   } catch (err: any) {
     console.log("Exception", err.response._data);
-
-    toastMessage.value = err.response._data;
-    isToastVisible.value = true;
+    showToast(err.response._data, "red");
+    // toastMessage.value = err.response._data;
+    // isToastVisible.value = true;
   }
 };
 

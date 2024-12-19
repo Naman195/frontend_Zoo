@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <!-- <div>
     <ShowAlert
       :alert-message="toastMessage"
       :is-visible="isToastVisible"
       @close-modal="closeToast"
     />
-  </div>
+  </div> -->
   <div class="login-container">
     <h1>Forgot Password</h1>
 
@@ -27,6 +27,9 @@
 
 <script setup lang="ts">
 import "../assests/css/LoginStyle.css";
+import { useToastNotify } from "~/composables/useToastNotify";
+
+const { showToast } = useToastNotify();
 
 interface obj {
   email: string;
@@ -56,8 +59,11 @@ const handleForgotPassword = async (): Promise<void> => {
       },
       body: JSON.stringify(form.value),
     });
-    toastMessage.value = response.message;
-    isToastVisible.value = true;
+
+    showToast(response.message, "green");
+
+    // toastMessage.value = response.message;
+    // isToastVisible.value = true;
 
     const email = response.email;
     setTimeout(() => {
@@ -65,8 +71,9 @@ const handleForgotPassword = async (): Promise<void> => {
     }, 1000);
   } catch (error: any) {
     loader.value = false;
-    toastMessage.value = error.response._data.message;
-    isToastVisible.value = true;
+    // toastMessage.value = error.response._data.message;
+    // isToastVisible.value = true;
+    showToast(error.response._data.message, "red");
   }
 };
 </script>

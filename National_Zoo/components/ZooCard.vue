@@ -1,5 +1,14 @@
 <template>
   <ShowCards>
+    <template #card-image>
+      <div id="myDiv">
+        <img
+          class="transition-transform duration-500 ease-[cubic-bezier(0.25, 1, 0.5, 1)] transform group-hover:scale-110 w-full h-full object-cover"
+          :src="imageUrl"
+          alt="Zoo Image"
+        />
+      </div>
+    </template>
     <template #card-title>
       <h2 class="mb-2 text-slate-800 text-xl font-bold">
         {{ props.entityData.zooName }}
@@ -48,6 +57,7 @@ import type { Address } from "~/types/Address";
 
 interface Entity {
   zoo?: Zoo;
+  image?: string;
   address?: Address;
   zooId?: number;
   zooName?: string;
@@ -61,4 +71,8 @@ const emit = defineEmits<{
   (e: "update"): void;
   (e: "delete", zooId?: number): void;
 }>();
+
+var imageUrl = `http://192.168.0.153:8081/${props.entityData.image}`;
+console.log("Image Url", imageUrl);
+console.log("Props Image", props.entityData.image);
 </script>

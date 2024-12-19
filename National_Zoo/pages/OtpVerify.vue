@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <!-- <div>
     <ShowAlert
       :alert-message="toastMessage"
       :is-visible="isToastVisible"
       @close-modal="closeToast"
     />
-  </div>
+  </div> -->
   <div class="otp-container">
     <h1>Enter OTP</h1>
     <form @submit.prevent="submitOtp">
@@ -27,6 +27,9 @@
 
 <script setup lang="ts">
 import "../assests/css/Otpverify.css";
+import { useToastNotify } from "~/composables/useToastNotify";
+
+const { showToast } = useToastNotify();
 
 interface resObj {
   message: string;
@@ -78,8 +81,9 @@ const submitOtp = async () => {
       const url = new URL(resetUrl);
       const path = url.pathname;
       const query = url.search;
-      toastMessage.value = "OTP verified successfully";
-      isToastVisible.value = true;
+      showToast("OTP verified successfully", "blue");
+      // toastMessage.value = "OTP verified successfully";
+      // isToastVisible.value = true;
       setTimeout(() => {
         router.push({
           path,
@@ -87,14 +91,19 @@ const submitOtp = async () => {
         });
       }, 1000);
     } else {
-      toastMessage.value =
-        response.message || "Verification failed. Please try again.";
-      isToastVisible.value = true;
+      showToast(
+        response.message || "Verification failed. Please try again.",
+        "red"
+      );
+      // toastMessage.value =
+      //   response.message || "Verification failed. Please try again.";
+      // isToastVisible.value = true;
     }
   } catch (error: any) {
-    toastMessage.value =
-      error.response._data.message || "Verification failed. Please try again.";
-    isToastVisible.value = true;
+    showToast(
+      error.response._data.message || "Verification failed. Please try again.",
+      "red"
+    );
   }
 };
 

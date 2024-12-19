@@ -26,11 +26,11 @@
       Add Zoo
     </button>
   </div>
-  <ShowAlert
+  <!-- <ShowAlert
     :alert-message="toastMessage"
     :is-visible="isToastVisible"
     @close-modal="closeToast"
-  />
+  /> -->
 
   <div class="flex flex-col items-center mx-auto pt-8">
     <div class="w-30">
@@ -101,6 +101,7 @@
             openModal = false;
             intiliazeFormData();
           "
+          @handle-image-upload="handleFileUpload"
         />
       </div>
 
@@ -115,6 +116,7 @@
             openUpdateModal = false;
             intiliazeFormData();
           "
+          @handle-image-upload="handleFileUpload"
         />
       </div>
 
@@ -142,6 +144,10 @@
 </template>
 
 <script setup>
+import { useToastNotify } from "~/composables/useToastNotify";
+
+const { showToast } = useToastNotify();
+
 const toastMessage = ref("");
 const isToastVisible = ref(false);
 const selectedZoo = ref({});
@@ -172,7 +178,15 @@ const updatedformData = ref({
       },
     },
   },
+  image: null,
 });
+
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    updatedformData.value.image = file;
+  }
+};
 
 let compareUpdatedformData = {};
 
@@ -207,6 +221,7 @@ function intiliazeFormData() {
     (updatedformData.value.address.city.cityId = ""),
     (updatedformData.value.address.city.state.stateId = ""),
     (updatedformData.value.address.city.state.country.countryId = "");
+  updatedformData.value.image = null;
 }
 
 function updateZoo(zoo) {
@@ -239,86 +254,99 @@ const deleteZoo = async () => {
     const data = await useCustomFetch(`/zoo/delete/${zooId.value}`, {
       method: "PATCH",
     });
-    // Zoos.value = Zoos.value.filter((zoo) => zoo.zooId !== zooId.value);
-    // filteredZoos.value = Zoos.value;
-    console.log(currentPage.value);
+
     if (filteredZoos.value.length == 1 && currentPage.value > 0) {
-      console.log(currentPage.value);
       currentPage.value -= 1;
       fetchZoo(currentPage.value, pageSize.value);
     } else {
       fetchZoo(currentPage.value, pageSize.value);
     }
     opendeleteModal.value = false;
-    toastMessage.value = data;
-    isToastVisible.value = true;
-
-    // if (filteredZoos.value.length === 0 && currentPage.value > 0) {
-    //   currentPage.value -= 1;
-    //   fetchZoo(currentPage.value, pageSize.value);
-    // }
+    showToast(data, "green");
+    // toastMessage.value = data;
+    // isToastVisible.value = true;
   } catch (error) {
-    toastMessage.value = error;
-    isToastVisible.value = true;
+    showToast(error | "Error Occur in delete Zoo", "red");
+    // toastMessage.value = error;
+    // isToastVisible.value = true;
   }
 };
 
 const addZoo = async () => {
-  const resbody = {
-    zooName: updatedformData.value.zooName,
-    address: {
-      street: updatedformData.value.address.street,
-      zipCode: updatedformData.value.address.zipCode,
-      city: {
-        cityId: updatedformData.value.address.city.cityId,
-      },
-    },
-  };
-
   try {
+    const formData = new FormData();
+    formData.append(
+      "zoo",
+      JSON.stringify({
+        zooName: updatedformData.value.zooName,
+        address: {
+          street: updatedformData.value.address.street,
+          zipCode: updatedformData.value.address.zipCode,
+          city: {
+            cityId: updatedformData.value.address.city.cityId,
+          },
+        },
+      })
+    );
+    if (updatedformData.value.image) {
+      formData.append("file", updatedformData.value.image);
+    }
+
     const response = await useCustomFetch(`/zoo/add`, {
       method: "POST",
-      body: resbody,
+      body: formData,
     });
+
     openModal.value = false;
     intiliazeFormData();
-    toastMessage.value = response;
-    isToastVisible.value = true;
+    showToast(response, "green");
+    // toastMessage.value = response;
+    // isToastVisible.value = true;
     fetchZoo(currentPage.value, pageSize.value);
   } catch (error) {
-    toastMessage.value = error;
-    isToastVisible.value = true;
+    showToast(error | "Error occured in adding zoo", "red");
+    // toastMessage.value = error;
+    // isToastVisible.value = true;
   }
 };
 
 const updateZooHandler = async (formData) => {
-  if (JSON.stringify(formData) == JSON.stringify(compareUpdatedformData)) {
-    return;
-  }
-  const resBody = {
-    zooName: formData.zooName,
-    address: {
-      street: formData.address.street,
-      zipCode: formData.address.zipCode,
-      city: {
-        cityId: formData.address.city.cityId,
-      },
-    },
-  };
-
+  // if (JSON.stringify(formData) == JSON.stringify(compareUpdatedformData)) {
+  //   return;
+  // }
   try {
+    const formDataNew = new FormData();
+    formDataNew.append(
+      "zoo",
+      JSON.stringify({
+        zooName: formData.zooName,
+        address: {
+          street: formData.address.street,
+          zipCode: formData.address.zipCode,
+          city: {
+            cityId: formData.address.city.cityId,
+          },
+        },
+      })
+    );
+    if (formData.image) {
+      formDataNew.append("file", formData.image);
+    }
+
     const response = await useCustomFetch(`/zoo/update/${zooId.value}`, {
       method: "PATCH",
-      body: resBody,
+      body: formDataNew,
     });
     openUpdateModal.value = false;
     intiliazeFormData();
-    toastMessage.value = "Zoo Update SuccessFully";
-    isToastVisible.value = true;
+    showToast("Zoo Update SuccessFully", "green");
+    // toastMessage.value = "Zoo Update SuccessFully";
+    // isToastVisible.value = true;
     fetchZoo(currentPage.value, pageSize.value);
   } catch (error) {
-    toastMessage.value = error;
-    isToastVisible.value = true;
+    showToast(error | "Error Occur in Updating Zoo", "red");
+    // toastMessage.value = error;
+    // isToastVisible.value = true;
   }
 };
 
@@ -345,3 +373,6 @@ onMounted(() => {
   fetchZoo(currentPage.value, pageSize.value);
 });
 </script>
+
+<!-- { "zooName": "New Zoo with Image", "address": { "street": "new Street with
+Image", "zipCode": "256987", "city": { "cityId": 1 } } } -->

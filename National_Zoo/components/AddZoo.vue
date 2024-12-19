@@ -187,22 +187,43 @@
             </div>
 
             <!-- Zip Code Input -->
-            <div>
-              <label
-                for="street"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Street</label
-              >
-              <Field
-                name="street"
-                rules="required|alpha_spaces"
-                v-model="props.fromData.address.street"
-                type="text"
-                id="street"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-              />
-              <ErrorMessage name="street" class="text-red-600 text-sm mt-1" />
+            <div class="register-pair">
+              <div>
+                <label
+                  for="street"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Street</label
+                >
+                <Field
+                  name="street"
+                  rules="required|alpha_spaces"
+                  v-model="props.fromData.address.street"
+                  type="text"
+                  id="street"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                />
+                <ErrorMessage name="street" class="text-red-600 text-sm mt-1" />
+              </div>
+
+              <div>
+                <label
+                  for="image"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Upload Image</label
+                >
+                <Field
+                  name="image"
+                  rules="required"
+                  v-model="props.fromData.image"
+                  type="file"
+                  id="image"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                  onselect="emit('handleImageUpload')"
+                />
+                <ErrorMessage name="image" class="text-red-600 text-sm mt-1" />
+              </div>
             </div>
+
             <!-- Buttons -->
             <button
               type="submit"
@@ -223,7 +244,7 @@ import type { City } from "~/types/City";
 import type { Country } from "~/types/Country";
 import type { State } from "~/types/State";
 
-const emit = defineEmits(["close", "save", "updateData"]);
+const emit = defineEmits(["close", "save", "updateData", "handleImageUpload"]);
 const props = defineProps({
   fromData: {
     type: Object,
@@ -243,7 +264,7 @@ const props = defineProps({
   },
 });
 
-// console.log("From Data", props.fromData);
+console.log("From Data", props.fromData.image);
 
 const countries = ref<Country[]>([]);
 const states = ref<State[]>([]);
