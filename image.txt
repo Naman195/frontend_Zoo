@@ -1,290 +1,179 @@
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
-public class Image {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String url;
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-}
-
-
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface ImageRepository extends JpaRepository<Image, Long> {
-}
-
-
-
-
-
-
-
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-
-@RestController
-@RequestMapping("/api/images")
-public class ImageController {
-
-    @Autowired
-    private ImageRepository imageRepository;
-
-    @PostMapping("/upload")
-    public String uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        String filePath = "uploads/" + fileName; // Ensure this directory exists
-
-        // Save the file to the server
-        file.transferTo(new File(filePath));
-
-        // Save the image URL to the database
-        Image image = new Image();
-        image.setUrl("http://localhost:8080/" + filePath);
-        imageRepository.save(image);
-
-        return "Image uploaded successfully: " + image.getUrl();
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-<template>
-  <div>
-    <h1>Upload Image</h1>
-    <form @submit.prevent="uploadImage">
-      <input type="file" @change="onFileChange" accept="image/*" required />
-      <button type="submit">Upload</button>
-    </form>
-    <p v-if="message">{{ message }}</p>
-  </div>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      file: null,
-      message: ''
-    };
-  },
-  methods: {
-    onFileChange(event) {
-      this.file = event.target.files[0];
+const zooformData = ref({ 
+  zooName: "",
+  address: {
+    street: "",
+    zipCode: "",
+    city: {
+      cityId: null,
+      state: {
+        stateId: null,
+        country: {
+          countryId: null,
+        },
+      },
     },
-    async uploadImage() {
-      const formData = new FormData();
-      formData.append('image', this.file);
-
-      try {
-        const response = await this.$axios.post('http://localhost:8080/api/images/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        this.message = response.data;
-      } catch (error) {
-        this.message = 'Error uploading image';
-      }
-    }
-  }
-};
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-
-@RestController
-@RequestMapping("/api/zoos")
-public class ZooController {
-
-    @Autowired
-    private ZooRepository zooRepository;
-
-    @PostMapping("/create")
-    public String createZoo(@RequestParam("name") String name,
-                             @RequestParam("location") String location,
-                             @RequestParam("image") MultipartFile file) throws IOException {
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        String filePath = "uploads/" + fileName; // Ensure this directory exists
-
-        // Save the file to the server
-        file.transferTo(new File(filePath));
-
-        // Create a new Zoo object and set its properties
-        Zoo zoo = new Zoo();
-        zoo.setName(name);
-        zoo.setLocation(location);
-        zoo.setImageUrl("http://localhost:8080/" + filePath); // Set the image URL
-
-        // Save the zoo to the database
-        zooRepository.save(zoo);
-
-        return "Zoo created successfully: " + zoo.getImageUrl();
-    }
-}
-
-
-
-
-
-
-
-
-
-
-<template>
-  <!-- Toast Notification -->
-  <div
-    class="fixed top-5 right-5 z-50 flex items-center max-w-sm p-4 text-gray-700 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700"
-    role="alert"
-  >
-    <!-- Toast Message -->
-    <div class="flex-1 text-sm font-medium">
-      {{ message }}
-    </div>
-
-    <!-- Close Button -->
-    <button
-      @click="emit('close')"
-      type="button"
-      class="inline-flex items-center justify-center w-6 h-6 ml-4 text-gray-400 rounded-full hover:bg-gray-100 hover:text-gray-700 focus:outline-none dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
-      aria-label="Close"
-    >
-      <span class="sr-only">Close</span>
-      <svg
-        class="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"
-        ></path>
-      </svg>
-    </button>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { onMounted, defineEmits } from "vue";
-
-defineProps({
-  message: {
-    type: String,
-    required: true,
   },
-  duration: {
-    type: Number,
-    default: 3000, // Default duration of 3 seconds
-  },
+  image: null, // For the image file
 });
 
-const emit = defineEmits(["close"]);
 
-const closeToast = () => {
-  emit("close"); // Emit the close event
+<form @submit.prevent="addZoo">
+  <!-- Zoo Name Input -->
+  <input v-model="zooformData.zooName" placeholder="Zoo Name" />
+
+  <!-- Street Address -->
+  <input v-model="zooformData.address.street" placeholder="Street" />
+
+  <!-- Zip Code -->
+  <input v-model="zooformData.address.zipCode" placeholder="Zip Code" />
+
+  <!-- City Selection -->
+  <input v-model="zooformData.address.city.cityId" placeholder="City ID" />
+
+  <!-- Image Upload -->
+  <input type="file" @change="handleFileUpload" />
+
+  <button type="submit">Add Zoo</button>
+</form>
+
+
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    zooformData.value.image = file;
+  }
 };
 
-onMounted(() => {
-  // Automatically close the toast after the specified duration
-  setTimeout(() => {
-    closeToast();
-  }, 3000);
-});
-</script>
 
-<style scoped>
-/* Toast Animation */
-@keyframes slide-in {
-  0% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
 
-div[role="alert"] {
-  animation: slide-in 0.5s ease-out;
+
+const addZoo = async () => {
+  try {
+    const formData = new FormData();
+
+    // Append JSON fields to FormData
+    formData.append(
+      "zoo",
+      JSON.stringify({
+        zooName: zooformData.value.zooName,
+        address: {
+          street: zooformData.value.address.street,
+          zipCode: zooformData.value.address.zipCode,
+          city: {
+            cityId: zooformData.value.address.city.cityId,
+          },
+        },
+      })
+    );
+
+    // Append the image file
+    if (zooformData.value.image) {
+      formData.append("file", zooformData.value.image);
+    }
+
+    // Make the API call
+    const response = await useCustomFetch(`/zoo/add`, {
+      method: "POST",
+      body: formData, // Send FormData
+      headers: {
+        "Content-Type": "multipart/form-data", // Explicitly required in some setups
+      },
+    });
+
+    // Reset form and show toast
+    openModal.value = false;
+    intiliazeFormData();
+    toastMessage.value = response;
+    isToastVisible.value = true;
+    fetchZoo(currentPage.value, pageSize.value);
+  } catch (error) {
+    console.error("Error while adding zoo:", error);
+    toastMessage.value = error;
+    isToastVisible.value = true;
+  }
+};
+
+
+
+
+const addZoo = async () => {
+  const formData = new FormData();
+
+  formData.append("zooName", updatedformData.value.zooName);
+  formData.append("address.street", updatedformData.value.address.street);
+  formData.append("address.zipCode", updatedformData.value.address.zipCode);
+  formData.append("address.city.cityId", updatedformData.value.address.city.cityId);
+  
+  if (updatedformData.value.image) {
+    formData.append("image", updatedformData.value.image); // Append the image
+  }
+
+  try {
+    const response = await useCustomFetch(`/zoo/add`, {
+      method: "POST",
+      body: formData,
+    });
+    openModal.value = false;
+    intiliazeFormData();
+    toastMessage.value = response;
+    isToastVisible.value = true;
+    fetchZoo(currentPage.value, pageSize.value);
+  } catch (error) {
+    toastMessage.value = error;
+    isToastVisible.value = true;
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+try {
+  const formData = new FormData();
+
+  // Append JSON fields to FormData
+  formData.append(
+    "zoo",
+    JSON.stringify({
+      zooName: zooformData.value.zooName,
+      address: {
+        street: zooformData.value.address.street,
+        zipCode: zooformData.value.address.zipCode,
+        city: {
+          cityId: zooformData.value.address.city.cityId,
+        },
+      },
+    })
+  );
+
+  // Append the image file if it exists
+  if (zooformData.value.image) {
+    formData.append("file", zooformData.value.image);
+  }
+
+  // Make the API call
+  const response = await useCustomFetch(`/zoo/add`, {
+    method: "POST",
+    body: formData, // Send FormData
+    // No need to set the Content-Type manually; it will be set automatically
+  });
+
+  // Reset form and show success message
+  openModal.value = false;
+  intiliazeFormData(); // Reset the form
+  toastMessage.value = response; // Show success toast
+  isToastVisible.value = true;
+
+  // Fetch updated list of zoos
+  fetchZoo(currentPage.value, pageSize.value);
+} catch (error) {
+  console.error("Error while adding zoo:", error);
+  toastMessage.value = error.message || "An error occurred";
+  isToastVisible.value = true;
 }
-</style>
