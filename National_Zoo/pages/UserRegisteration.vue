@@ -1,11 +1,4 @@
 <template>
-  <!-- <div>
-    <ShowAlert
-      :alert-message="toastMessage"
-      :is-visible="isToastVisible"
-      @close-modal="closeToast"
-    />
-  </div> -->
   <div class="register-container">
     <h1>Registration Page</h1>
     <!-- :key="formkey" -->
@@ -207,8 +200,6 @@ const cities = ref<City[]>([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
 const roles = ref<Role[]>([]);
-const toastMessage: Ref<string> = ref("");
-const isToastVisible = ref(false);
 
 var formkey = Math.random();
 
@@ -226,10 +217,6 @@ const form = reactive({
     },
   },
 });
-
-const closeToast = () => {
-  isToastVisible.value = false;
-};
 
 const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
@@ -286,8 +273,6 @@ const registerUser = async () => {
       body: form,
     });
     showToast(data, "green");
-    // toastMessage.value = data;
-    // isToastVisible.value = true;
 
     if (data === "User successfully created") {
       form.fullName = "";
@@ -310,14 +295,10 @@ const registerUser = async () => {
       formkey = Math.random();
     } else {
       showToast("Error during SignUp Please Try Again", "red");
-      // toastMessage.value = "Error during SignUp Please Try Again";
-      // isToastVisible.value = true;
     }
   } catch (err: any) {
     console.log("Exception", err.response._data);
     showToast(err.response._data, "red");
-    // toastMessage.value = err.response._data;
-    // isToastVisible.value = true;
   }
 };
 

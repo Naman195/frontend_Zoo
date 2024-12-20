@@ -36,11 +36,6 @@
               >All Zoo</NuxtLink
             >
           </li>
-          <!-- <li>
-            <NuxtLink to="/allusers" class="hover:text-gray-300"
-              >All users</NuxtLink
-            >
-          </li> -->
           <li class="cursor-pointer" @click="toggleProfile">
             <img
               src="../assests/images/user.png"
@@ -101,14 +96,15 @@
 </template>
 
 <script setup>
-import { ErrorMessage, Field, Form } from "vee-validate";
+import { useToastNotify } from "~/composables/useToastNotify";
+
 import "../assests/css/style.css";
 import { useAuth } from "~/composables/useAuth";
 import { useUserStore } from "~/store/user";
 
+const { showToast } = useToastNotify();
 const router = useRouter();
 const { logOut } = useAuth();
-// const { userProfile, setUser, getUser } = useUserProfile();
 const userToken = useCookie("isLoggedIn");
 const isProfileVisible = ref(false);
 const isUpdateModalVisible = ref(false);

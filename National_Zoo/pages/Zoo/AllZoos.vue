@@ -1,9 +1,4 @@
 <template>
-  <!-- ..................Show Alert............................. -->
-  <!-- <div class="absolute top-12 start-1/2 -translate-x-1/2"> -->
-
-  <!-- </div> -->
-
   <!-- ........................... heading Section ............................. -->
   <div class="max-w-full mx-auto text-center pt-7 relative">
     <h1
@@ -26,11 +21,6 @@
       Add Zoo
     </button>
   </div>
-  <!-- <ShowAlert
-    :alert-message="toastMessage"
-    :is-visible="isToastVisible"
-    @close-modal="closeToast"
-  /> -->
 
   <div class="flex flex-col items-center mx-auto pt-8">
     <div class="w-30">
@@ -122,7 +112,11 @@
 
       <!-- Display All Zoos -->
       <div class="flex flex-wrap justify-center">
-        <li v-for="(zoo, id) in filteredZoos" :key="id + zoo.image" class="m-4 list-none">
+        <li
+          v-for="(zoo, id) in filteredZoos"
+          :key="id + zoo.image"
+          class="m-4 list-none"
+        >
           <ZooCard
             :entity-data="zoo"
             @delete="deleteZooHandler"
@@ -148,8 +142,6 @@ import { useToastNotify } from "~/composables/useToastNotify";
 
 const { showToast } = useToastNotify();
 
-const toastMessage = ref("");
-const isToastVisible = ref(false);
 const selectedZoo = ref({});
 const Zoos = ref();
 const filteredZoos = ref([]);
@@ -159,9 +151,8 @@ const currentPage = ref(0);
 const totalPages = ref(0);
 const pageSize = ref(3);
 const opendeleteModal = ref(false);
-const openModal = ref(false);
 const openUpdateModal = ref(false);
-const token = useCookie("auth");
+const openModal = ref(false);
 const isLoading = ref(true);
 const updatedformData = ref({
   zooName: "",
@@ -189,10 +180,6 @@ const handleFileUpload = (event) => {
 };
 
 let compareUpdatedformData = {};
-
-const closeToast = () => {
-  isToastVisible.value = false;
-};
 
 const changePage = (page) => {
   if (currentPage.value == page) {
@@ -263,12 +250,8 @@ const deleteZoo = async () => {
     }
     opendeleteModal.value = false;
     showToast(data, "green");
-    // toastMessage.value = data;
-    // isToastVisible.value = true;
   } catch (error) {
     showToast(error | "Error Occur in delete Zoo", "red");
-    // toastMessage.value = error;
-    // isToastVisible.value = true;
   }
 };
 
@@ -300,20 +283,16 @@ const addZoo = async () => {
     openModal.value = false;
     intiliazeFormData();
     showToast(response, "green");
-    // toastMessage.value = response;
-    // isToastVisible.value = true;
     fetchZoo(currentPage.value, pageSize.value);
   } catch (error) {
     showToast(error | "Error occured in adding zoo", "red");
-    // toastMessage.value = error;
-    // isToastVisible.value = true;
   }
 };
 
 const updateZooHandler = async (formData) => {
-  // if (JSON.stringify(formData) == JSON.stringify(compareUpdatedformData)) {
-  //   return;
-  // }
+  if (JSON.stringify(formData) == JSON.stringify(compareUpdatedformData)) {
+    return;
+  }
   try {
     const formDataNew = new FormData();
     formDataNew.append(
@@ -338,17 +317,13 @@ const updateZooHandler = async (formData) => {
       body: formDataNew,
     });
     console.log("REsponse is", response);
-    
+
     openUpdateModal.value = false;
     intiliazeFormData();
     showToast("Zoo Update SuccessFully", "green");
-    // toastMessage.value = "Zoo Update SuccessFully";
-    // isToastVisible.value = true;
     fetchZoo(currentPage.value, pageSize.value);
   } catch (error) {
     showToast(error | "Error Occur in Updating Zoo", "red");
-    // toastMessage.value = error;
-    // isToastVisible.value = true;
   }
 };
 
@@ -363,7 +338,6 @@ const performSearch = async (searchQuery) => {
   }
   try {
     const data = await useCustomFetch(`/zoo/search?searchItem=${trimmedQuery}`);
-
     filteredZoos.value = data;
     isSearching.value = true;
   } catch (error) {
@@ -375,6 +349,3 @@ onMounted(() => {
   fetchZoo(currentPage.value, pageSize.value);
 });
 </script>
-
-<!-- { "zooName": "New Zoo with Image", "address": { "street": "new Street with
-Image", "zipCode": "256987", "city": { "cityId": 1 } } } -->

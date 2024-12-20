@@ -1,11 +1,4 @@
 <template>
-  <!-- <div>
-    <ShowAlert
-      :alert-message="toastMessage"
-      :is-visible="isToastVisible"
-      @close-modal="closeToast"
-    />
-  </div> -->
   <div class="otp-container">
     <h1>Enter OTP</h1>
     <form @submit.prevent="submitOtp">
@@ -36,9 +29,6 @@ interface resObj {
   url: string;
 }
 
-const toastMessage: Ref<string> = ref("");
-const isToastVisible = ref(false);
-
 const form = ref<{ email: string; otp: string }>({
   email: "",
   otp: "",
@@ -46,10 +36,6 @@ const form = ref<{ email: string; otp: string }>({
 
 const otpArray = ref<string[]>(new Array(5).fill(""));
 const isDisabled = computed(() => otpArray.value.some((digit) => digit === ""));
-
-const closeToast = () => {
-  isToastVisible.value = false;
-};
 
 const moveFocus = (index: number, event: Event): void => {
   const input = event.target as HTMLInputElement;
@@ -82,8 +68,7 @@ const submitOtp = async () => {
       const path = url.pathname;
       const query = url.search;
       showToast("OTP verified successfully", "blue");
-      // toastMessage.value = "OTP verified successfully";
-      // isToastVisible.value = true;
+
       setTimeout(() => {
         router.push({
           path,
@@ -95,9 +80,6 @@ const submitOtp = async () => {
         response.message || "Verification failed. Please try again.",
         "red"
       );
-      // toastMessage.value =
-      //   response.message || "Verification failed. Please try again.";
-      // isToastVisible.value = true;
     }
   } catch (error: any) {
     showToast(

@@ -82,7 +82,6 @@ const emit = defineEmits(["update:currentPage", "fetch-data"]);
 const changePage = (page: number) => {
   if (page >= 0 && page < props.totalPages) {
     emit("update:currentPage", page);
-    // emit("fetch-data", page, props.pageSize);
   }
 };
 </script>

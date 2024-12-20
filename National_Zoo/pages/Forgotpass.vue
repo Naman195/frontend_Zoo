@@ -1,11 +1,4 @@
 <template>
-  <!-- <div>
-    <ShowAlert
-      :alert-message="toastMessage"
-      :is-visible="isToastVisible"
-      @close-modal="closeToast"
-    />
-  </div> -->
   <div class="login-container">
     <h1>Forgot Password</h1>
 
@@ -40,14 +33,8 @@ const form = ref<{ email: string }>({
   email: "",
 });
 
-const toastMessage: Ref<string> = ref("");
-const isToastVisible = ref(false);
 const loader = ref(false);
 const router = useRouter();
-
-const closeToast = () => {
-  isToastVisible.value = false;
-};
 
 const handleForgotPassword = async (): Promise<void> => {
   loader.value = true;
@@ -62,17 +49,12 @@ const handleForgotPassword = async (): Promise<void> => {
 
     showToast(response.message, "green");
 
-    // toastMessage.value = response.message;
-    // isToastVisible.value = true;
-
     const email = response.email;
     setTimeout(() => {
       router.push({ path: "/otpverify", query: { email } });
     }, 1000);
   } catch (error: any) {
     loader.value = false;
-    // toastMessage.value = error.response._data.message;
-    // isToastVisible.value = true;
     showToast(error.response._data.message, "red");
   }
 };

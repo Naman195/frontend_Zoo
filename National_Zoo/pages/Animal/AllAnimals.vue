@@ -22,12 +22,6 @@
     </button>
   </div>
 
-  <!-- <ShowAlert
-    :alert-message="toastMessage"
-    :is-visible="isToastVisible"
-    @close-modal="closeToast"
-  /> -->
-
   <div class="flex flex-col items-center mx-auto pt-8">
     <div class="w-30">
       <SearchBar
@@ -72,6 +66,7 @@
             intiliazeFormData();
           "
           @save="addAnimal()"
+          @handle-image-upload="handleFileUpload"
         />
       </div>
 
@@ -83,6 +78,7 @@
           :fetch-categories="fetchCategories"
           @close="(openUpdateModal = false), intiliazeFormData()"
           @save="updateAnimalHandler"
+          @handle-image-upload="handleFileUpload"
         />
       </div>
       <div v-if="openTransferModal" class="z-50 absolute top-1/2">
@@ -117,7 +113,7 @@
       <div class="flex flex-wrap justify-center">
         <li
           v-for="animal in animals"
-          :key="animal.animalId"
+          :key="animal.animalId + animal.image"
           class="m-4 list-none"
         >
           <AnimalCard
@@ -153,29 +149,33 @@ import { useToastNotify } from "~/composables/useToastNotify";
 
 const { showToast } = useToastNotify();
 
-const closeToast = () => {
-  isToastVisible.value = false;
+const handleFileUpload = (event: any) => {
+  const file = event.target.files[0];
+  if (file) {
+    formData.value.image = file;
+  }
 };
 
 const resetSearch = () => {
   fetchAnimals(currentPage.value, pageSize.value);
 };
 
-const toastMessage = ref<string>("");
-const isToastVisible = ref<boolean>(false);
-
 const formData = ref<AnimalPartial>({
   animalName: "",
   animalType: "",
+  image: null,
 });
 
-const compareFormdata = ref<Partial<Animal>>({
+const compareFormdata = ref<AnimalPartial>({
   animalName: "",
   animalType: "",
+  image: null,
 });
 
 function intiliazeFormData() {
-  (formData.value.animalName = ""), (formData.value.animalType = "");
+  (formData.value.animalName = ""),
+    (formData.value.animalType = ""),
+    (formData.value.image = null);
 }
 
 const currentPage = ref(0);
@@ -278,15 +278,28 @@ const deleteAnimal = async () => {
 };
 
 const addAnimal = async () => {
+  console.log("Added Animal Data", formData.value);
   try {
-    const res = await useCustomFetch(`/animal/add`, {
-      method: "POST",
-      body: {
-        ...formData.value,
+    const formBodyData = new FormData();
+
+    formBodyData.append(
+      "animal",
+      JSON.stringify({
+        animalName: formData.value.animalName,
+        animalType: formData.value.animalType,
         zoo: {
           zooId: zooId,
         },
-      },
+      })
+    );
+
+    if (formData.value.image) {
+      formBodyData.append("file", formData.value.image);
+    }
+
+    const res = await useCustomFetch(`/animal/add`, {
+      method: "POST",
+      body: formBodyData,
     });
 
     openAddAnimalModal.value = false;
@@ -302,42 +315,70 @@ const addAnimal = async () => {
   }
 };
 
-const updateAnimalHandler = async (
-  fromdata: Partial<Animal>
-): Promise<void> => {
+const updateAnimalHandler = async (fromdata: AnimalPartial): Promise<void> => {
   if (!(JSON.stringify(fromdata) !== JSON.stringify(compareFormdata.value))) {
     return;
   }
-
-  const resBody = {
-    animalName: fromdata.animalName,
-    animalType: fromdata.animalType,
-    zoo: {
-      zooId: fromdata.zoo?.zooId,
-    },
-  };
   try {
+    const formBodyData = new FormData();
+    formBodyData.append(
+      "animal",
+      JSON.stringify({
+        animalName: fromdata.animalName,
+        animalType: fromdata.animalType,
+        zoo: {
+          zooId: fromdata.zoo.zooId,
+        },
+      })
+    );
+
+    if (fromdata.image != null) {
+      formBodyData.append("file", fromdata.image);
+    }
+
     const res = await useCustomFetch(`/animal/update/${animalId.value}`, {
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-        "Content-Type": "application/json",
-      },
       method: "PATCH",
-      body: resBody,
+      body: formBodyData,
     });
+
     openUpdateModal.value = false;
     intiliazeFormData();
 
     showToast("Update Successfully", "green");
-    // toastMessage.value = "Update Successfully";
-    // isToastVisible.value = true;
-
     fetchAnimals(currentPage.value, pageSize.value);
   } catch (error: any) {
-    // toastMessage.value = error;
-    // isToastVisible.value = true;
     showToast(error || "Error occured while updating animal", "red");
   }
+
+  // const resBody = {
+  //   animalName: fromdata.animalName,
+  //   animalType: fromdata.animalType,
+  //   zoo: {
+  //     zooId: fromdata.zoo?.zooId,
+  //   },
+  // };
+  // try {
+  //   const res = await useCustomFetch(`/animal/update/${animalId.value}`, {
+  //     headers: {
+  //       Authorization: `Bearer ${token.value}`,
+  //       "Content-Type": "application/json",
+  //     },
+  //     method: "PATCH",
+  //     body: resBody,
+  //   });
+  //   openUpdateModal.value = false;
+  //   intiliazeFormData();
+
+  //   showToast("Update Successfully", "green");
+  //   // toastMessage.value = "Update Successfully";
+  //   // isToastVisible.value = true;
+
+  //   fetchAnimals(currentPage.value, pageSize.value);
+  // } catch (error: any) {
+  //   // toastMessage.value = error;
+  //   // isToastVisible.value = true;
+  //   showToast(error || "Error occured while updating animal", "red");
+  // }
 };
 
 const fetchCategoriesApi = async () => {

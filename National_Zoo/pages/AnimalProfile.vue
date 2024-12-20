@@ -6,6 +6,7 @@
   </div>
 
   <!-- ....................Loading End........................ -->
+
   <div v-if="!isLoading" class="flex flex-col items-center">
     <div v-if="animalHistory.length == 0" class="flex flex-col items-center">
       <h1 class="text-lg font-bold">No History Found for this Animal</h1>
@@ -30,7 +31,6 @@
           {{ selectedAnimal?.animalName }}
         </h1>
       </div>
-      <!-- </div> -->
 
       <div class="flex flex-col items-center w-full mt-6 space-y-4">
         <div

@@ -51,15 +51,11 @@ const handleSetPassword = async () => {
       method: "POST",
       body: requestBody,
     });
-
-    // Success toast
     showToast(response, "green");
-
     setTimeout(() => {
       router.push("/userlogin");
     }, 3000);
   } catch (error: any) {
-    // Error toast
     showToast(error.data || "An error occurred.", "red");
   }
 };
