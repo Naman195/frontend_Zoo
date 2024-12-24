@@ -39,7 +39,16 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 max-h-[60vh] overflow-y-auto">
-          <Form @submit="emit('save', props.fromData)" class="space-y-4">
+          <Form
+            @submit="
+              () => {
+                console.log('----------------------------->');
+                console.log(props.fromData);
+                emit('save', props.fromData);
+              }
+            "
+            class="space-y-4"
+          >
             <!-- First Name Field -->
 
             <div v-if="!props.updateClick">
@@ -213,13 +222,16 @@
                 >
                 <Field
                   name="image"
-                  rules="required"
                   v-model="props.fromData.image"
                   type="file"
                   id="image"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                  onselect="emit('handleImageUpload')"
-                  accept="image/*"
+                  @change="
+                    (e) => {
+                      console.log(e.target.files[0].name);
+                      console.log(props.fromData.image);
+                    }
+                  "
                 />
                 <ErrorMessage name="image" class="text-red-600 text-sm mt-1" />
               </div>
@@ -265,7 +277,7 @@ const props = defineProps({
   },
 });
 
-// console.log("From Data", props.fromData.image);
+console.log("From Data", props.fromData);
 
 const countries = ref<Country[]>([]);
 const states = ref<State[]>([]);
@@ -273,6 +285,8 @@ const cities = ref<City[]>([]);
 const selectedCountry = ref(null);
 const selectedState = ref(null);
 const formData = ref({ ...props.fromData });
+
+console.log("From Data2", formData.value);
 
 onMounted(() => {
   fetchCountries();

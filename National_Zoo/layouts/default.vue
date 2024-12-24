@@ -81,7 +81,7 @@
     <!-- Use Modal for Update Profile -->
     <div v-if="isUpdateModalVisible">
       <AddZoo
-        :from-data="userProfile"
+        :from-data="updatedformData"
         :update-click="true"
         :modal-title="'User Profile'"
         :submit-button-label="'Update Profile'"
@@ -95,12 +95,13 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { useToastNotify } from "~/composables/useToastNotify";
 
 import "../assests/css/style.css";
 import { useAuth } from "~/composables/useAuth";
 import { useUserStore } from "~/store/user";
+import type { User } from "~/types/User";
 
 const { showToast } = useToastNotify();
 const router = useRouter();
@@ -109,7 +110,26 @@ const userToken = useCookie("isLoggedIn");
 const isProfileVisible = ref(false);
 const isUpdateModalVisible = ref(false);
 const userStore = useUserStore();
-const userProfile = useCookie("user");
+var userProfile = ref<User | undefined>();
+userProfile = useCookie("user");
+
+var updatedformData = ref({
+  fullName: "",
+  address: {
+    street: "",
+    zipCode: "",
+    city: {
+      cityId: null,
+      state: {
+        stateId: null,
+        country: {
+          countryId: null,
+        },
+      },
+    },
+  },
+  image: null,
+});
 
 const logoutUser = () => {
   userStore.removeUser();
@@ -127,6 +147,7 @@ let compareUserProfileData = {};
 const handleProfileModal = () => {
   isUpdateModalVisible.value = true;
   isProfileVisible.value = false;
+  updatedformData = { ...userProfile.value };
   compareUserProfileData = { ...userProfile.value };
   compareUserProfileData = JSON.parse(JSON.stringify(compareUserProfileData));
 };
@@ -134,25 +155,34 @@ const handleProfileModal = () => {
 // Fetch User Profile
 const userId = useCookie("userId");
 
-const updateUser = async (formData) => {
+const updateUser = async (formData: User) => {
   if (JSON.stringify(formData) == JSON.stringify(compareUserProfileData)) {
     return;
   }
-  const resBody = {
-    fullName: formData.fullName,
-    address: {
-      street: formData.address.street,
-      zipCode: formData.address.zipCode,
-      city: {
-        cityId: formData.address.city.cityId,
-      },
-    },
-  };
 
   try {
+    const formDataNew = new FormData();
+
+    formDataNew.append(
+      "userUpdate",
+      JSON.stringify({
+        fullName: formData.fullName,
+        address: {
+          street: formData.address.street,
+          zipCode: formData.address.zipCode,
+          city: {
+            cityId: formData.address.city.cityId,
+          },
+        },
+      })
+    );
+    if (formData.image) {
+      formDataNew.append("file", formData.image);
+    }
+
     const data = await useCustomFetch(`/auth/update/${userId.value}`, {
       method: "PATCH",
-      body: resBody,
+      body: formDataNew,
     });
 
     userStore.setUser(data);
@@ -160,8 +190,8 @@ const updateUser = async (formData) => {
     userCookie.value = JSON.stringify(data);
 
     isUpdateModalVisible.value = false;
-  } catch (err) {
-    console.error("Error updating user:", err);
+  } catch (error) {
+    console.error("Error updating user:", error);
   }
 };
 </script>

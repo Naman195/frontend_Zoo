@@ -78,6 +78,8 @@ const loginUser = async () => {
       body: form,
     });
 
+    console.log("Logeedin User Data", data);
+
     token.value = data.token;
     logIn(data.userId);
     userStore.setUser(data.user);

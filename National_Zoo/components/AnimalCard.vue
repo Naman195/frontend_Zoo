@@ -69,5 +69,3 @@ const emit = defineEmits<{
 
 var imageUrl = `http://192.168.0.153:8081/${props.entityData.image}`;
 </script>
-
-<style></style>

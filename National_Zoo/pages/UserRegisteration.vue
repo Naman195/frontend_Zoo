@@ -168,6 +168,18 @@
         </div>
       </div>
 
+      <div class="form-group">
+        <label for="image">Profile Image</label>
+        <Field
+          label="ProfilePic"
+          name="profilepic"
+          type="file"
+          v-model="form.image"
+          onselect="handleFileUpload"
+        />
+        <ErrorMessage name="Prfile Pic" class="text-red-600 text-sm mt-1" />
+      </div>
+
       <button type="submit" class="submit-btn">Register</button>
       <p class="note">
         Having Already Account, please
@@ -184,6 +196,7 @@ import type { Country } from "~/types/Country";
 import type { State } from "~/types/State";
 import type { City } from "~/types/City";
 import { useToastNotify } from "~/composables/useToastNotify";
+import { email } from "@vee-validate/rules";
 
 const { showToast } = useToastNotify();
 
@@ -209,6 +222,7 @@ const form = reactive({
   userName: "",
   password: "",
   roleId: "",
+  image: null,
   address: {
     street: "",
     zipCode: "",
@@ -267,10 +281,35 @@ const fetchCities = async () => {
 };
 
 const registerUser = async () => {
+  console.log("Updated Image", form.image);
+
   try {
+    const formDataNew = new FormData();
+
+    formDataNew.append(
+      "user",
+      JSON.stringify({
+        fullName: form.fullName,
+        email: form.email,
+        userName: form.userName,
+        password: form.password,
+        roleId: form.roleId,
+        address: {
+          street: form.address.street,
+          zipCode: form.address.zipCode,
+          city: {
+            cityId: form.address.city.cityId,
+          },
+        },
+      })
+    );
+    if (form.image) {
+      formDataNew.append("file", form.image);
+    }
+
     const data = await useCustomFetch<string>("/auth/create", {
       method: "POST",
-      body: form,
+      body: formDataNew,
     });
     showToast(data, "green");
 

@@ -174,6 +174,7 @@ const updatedformData = ref({
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
+  console.log("Image Upload in Zoo", file);
   if (file) {
     updatedformData.value.image = file;
   }
@@ -215,6 +216,7 @@ function updateZoo(zoo) {
   openUpdateModal.value = true;
   zooId.value = zoo.zooId;
   selectedZoo.value = zoo;
+
   compareUpdatedformData = { ...zoo };
   compareUpdatedformData = JSON.parse(JSON.stringify(compareUpdatedformData));
 }
@@ -290,6 +292,8 @@ const addZoo = async () => {
 };
 
 const updateZooHandler = async (formData) => {
+  console.log("Updated Inmage", formData);
+
   if (JSON.stringify(formData) == JSON.stringify(compareUpdatedformData)) {
     return;
   }

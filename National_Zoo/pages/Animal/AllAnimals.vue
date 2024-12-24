@@ -257,9 +257,6 @@ const deleteAnimal = async () => {
       }
     );
 
-    // animals.value = animals.value.filter(
-    //   (animal) => animal.animalId !== animalId.value
-    // );
     if (animals.value.length === 1 && currentPage.value > 0) {
       currentPage.value -= 1;
       fetchAnimals(currentPage.value, pageSize.value);
@@ -268,12 +265,8 @@ const deleteAnimal = async () => {
     }
     opendeleteModal.value = false;
     showToast(data || "Animal deleted successfully.", "green");
-    // toastMessage.value = data || "Animal deleted successfully.";
-    // isToastVisible.value = true;
   } catch (error: any) {
     showToast(error || "Error occured in deleting animal", "red");
-    // toastMessage.value = error;
-    // isToastVisible.value = true;
   }
 };
 
@@ -305,13 +298,10 @@ const addAnimal = async () => {
     openAddAnimalModal.value = false;
     intiliazeFormData();
     showToast("Added Successfully", "green");
-    // toastMessage.value = "Added Successfully";
-    // isToastVisible.value = true;
+
     fetchAnimals(currentPage.value, pageSize.value);
   } catch (error: any) {
     showToast(error || "Error Occured in add animals", "red");
-    // toastMessage.value = error.response._data;
-    // isToastVisible.value = true;
   }
 };
 
@@ -349,36 +339,6 @@ const updateAnimalHandler = async (fromdata: AnimalPartial): Promise<void> => {
   } catch (error: any) {
     showToast(error || "Error occured while updating animal", "red");
   }
-
-  // const resBody = {
-  //   animalName: fromdata.animalName,
-  //   animalType: fromdata.animalType,
-  //   zoo: {
-  //     zooId: fromdata.zoo?.zooId,
-  //   },
-  // };
-  // try {
-  //   const res = await useCustomFetch(`/animal/update/${animalId.value}`, {
-  //     headers: {
-  //       Authorization: `Bearer ${token.value}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //     method: "PATCH",
-  //     body: resBody,
-  //   });
-  //   openUpdateModal.value = false;
-  //   intiliazeFormData();
-
-  //   showToast("Update Successfully", "green");
-  //   // toastMessage.value = "Update Successfully";
-  //   // isToastVisible.value = true;
-
-  //   fetchAnimals(currentPage.value, pageSize.value);
-  // } catch (error: any) {
-  //   // toastMessage.value = error;
-  //   // isToastVisible.value = true;
-  //   showToast(error || "Error occured while updating animal", "red");
-  // }
 };
 
 const fetchCategoriesApi = async () => {
@@ -406,12 +366,8 @@ const handleTransferAnimal = async (newZooId: number) => {
     openTransferModal.value = false;
     fetchAnimals(currentPage.value, pageSize.value);
     showToast("Animal Transferred Successfully", "green");
-    // toastMessage.value = "Animal Transferred Successfully";
-    // isToastVisible.value = true;
   } catch (error: any) {
     showToast(error || "Error occured while transferring animal", "red");
-    // toastMessage.value = error;
-    // isToastVisible.value = true;
   }
 };
 
