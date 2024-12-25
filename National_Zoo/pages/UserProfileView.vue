@@ -1,32 +1,38 @@
 <template>
-  <h1>UserProfile</h1>
-  <section class="container mx-auto p-10 md:p-20 antialiased">
+  <h1 class="text-4xl font-bold text-center my-6 text-gray-800">User Profile</h1>
+  <section class="container mx-auto p-6 md:p-12 antialiased">
     <article
-      class="flex flex-wrap md:flex-nowrap shadow-lg mx-auto max-w-3xl group cursor-pointer transform duration-500 hover:-translate-y-1"
+      class="flex flex-wrap md:flex-nowrap shadow-lg mx-auto max-w-4xl bg-blue-100 rounded-lg overflow-hidden group cursor-pointer transform duration-300 hover:shadow-xl"
     >
       <img
-        class="w-full max-h-[400px] object-cover md:w-80"
+        class="w-full max-h-[400px] object-cover md:w-1/3"
         :src="imageUrl"
-        alt=""
+        alt="User Image"
       />
-      <div class="">
-        <div class="p-5 pb-10">
-          <h1 class="text-2xl font-semibold text-gray-800 mt-4">User Info</h1>
-
-          <div>
-            <h2>
-              <b>Name: {{ userProfile.fullName }}</b>
-            </h2>
-            <h2>
-              <b>Email: {{ userProfile.email }}</b>
-            </h2>
-            <h2>
-              <b>Username: {{ userProfile.username }}</b>
-            </h2>
-            <h2>
-              <b>Street: {{ userProfile.address.street }}</b>
-            </h2>
-          </div>
+      <div class="flex-1 p-6 md:p-10">
+        <h2 class="text-3xl font-semibold text-gray-700 mb-6">User Info</h2>
+        <div class="space-y-4 text-gray-600">
+          <p class="text-lg">
+            <span class="font-bold">Name:</span> {{ userProfile.fullName }}
+          </p>
+          <p class="text-lg">
+            <span class="font-bold">Email:</span> {{ userProfile.email }}
+          </p>
+          <p class="text-lg">
+            <span class="font-bold">Username:</span> {{ userProfile.username }}
+          </p>
+          <p class="text-lg">
+            <span class="font-bold">Street:</span> {{ userProfile.address.street }}
+          </p>
+        </div>
+        <!-- Update Profile Button -->
+        <div class="mt-8">
+          <button
+            class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+            @click=""
+          >
+            Update Profile
+          </button>
         </div>
       </div>
     </article>
@@ -36,7 +42,11 @@
 <script setup lang="ts">
 import type { User } from '~/types/User';
 
-const userProfile = useCookie<User>("user");
-console.log("UserProfile is ", userProfile.value);
-var imageUrl = `http://127.0.0.1:8081/${userProfile.value.image}`;
+const userProfile = useCookie<User>('user');
+console.log('UserProfile is ', userProfile.value);
+const imageUrl = `http://127.0.0.1:8081/${userProfile.value.image}`;
 </script>
+
+<style scoped>
+/* Add custom styles if needed */
+</style>
