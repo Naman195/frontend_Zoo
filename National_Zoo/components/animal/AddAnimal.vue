@@ -128,12 +128,13 @@
 
 <script setup lang="ts">
 import { Field, Form, ErrorMessage } from "vee-validate";
+import type { Animal } from "~/types/Animal";
 import type { AnimalPartial } from "~/types/AnimalPartial";
 
 const emit = defineEmits(["close", "save", "handleImageUpload"]);
 
 const props = defineProps<{
-  fromData: AnimalPartial;
+  fromData: Animal;
   submitButtonLabel: string | undefined;
   modalTitle: string | undefined;
   fetchCategories: {
@@ -141,4 +142,7 @@ const props = defineProps<{
     categoryName: string;
   }[];
 }>();
+
+console.log("Form Animal data", props.fromData);
+
 </script>

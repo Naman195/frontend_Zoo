@@ -256,11 +256,15 @@ import { ErrorMessage, Field, Form } from "vee-validate";
 import type { City } from "~/types/City";
 import type { Country } from "~/types/Country";
 import type { State } from "~/types/State";
+import type { Zoo } from "~/types/Zoo";
 
 const emit = defineEmits(["close", "save", "updateData", "handleImageUpload"]);
+
+
+
 const props = defineProps({
   fromData: {
-    type: Object,
+  type: Object as PropType<Zoo>,
     required: true,
   },
   submitButtonLabel: {
@@ -282,8 +286,8 @@ console.log("From Data", props.fromData);
 const countries = ref<Country[]>([]);
 const states = ref<State[]>([]);
 const cities = ref<City[]>([]);
-const selectedCountry = ref(null);
-const selectedState = ref(null);
+  const selectedCountry = ref<number | null>(null);
+    const selectedState = ref<number | null>(null);
 const formData = ref({ ...props.fromData });
 
 console.log("From Data2", formData.value);

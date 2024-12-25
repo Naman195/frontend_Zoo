@@ -196,7 +196,6 @@ import type { Country } from "~/types/Country";
 import type { State } from "~/types/State";
 import type { City } from "~/types/City";
 import { useToastNotify } from "~/composables/useToastNotify";
-import { email } from "@vee-validate/rules";
 
 const { showToast } = useToastNotify();
 

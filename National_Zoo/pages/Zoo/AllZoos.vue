@@ -91,7 +91,7 @@
             openModal = false;
             intiliazeFormData();
           "
-          @handle-image-upload="handleFileUpload"
+          
         />
       </div>
 
@@ -106,7 +106,7 @@
             openUpdateModal = false;
             intiliazeFormData();
           "
-          @handle-image-upload="handleFileUpload"
+         
         />
       </div>
 
@@ -137,16 +137,18 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { useToastNotify } from "~/composables/useToastNotify";
+import type { PaginatedResponse } from "~/types/PaginationResponse";
+import type { Zoo } from "~/types/Zoo";
 
 const { showToast } = useToastNotify();
 
-const selectedZoo = ref({});
-const Zoos = ref();
-const filteredZoos = ref([]);
+const selectedZoo = ref<Zoo | null>(null);
+const Zoos = ref<Zoo[]>([]);
+const filteredZoos = ref<Zoo[]>([]);
 const isSearching = ref(false);
-const zooId = ref(null);
+const zooId = ref<number | null>(null);
 const currentPage = ref(0);
 const totalPages = ref(0);
 const pageSize = ref(3);
@@ -172,17 +174,17 @@ const updatedformData = ref({
   image: null,
 });
 
-const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  console.log("Image Upload in Zoo", file);
-  if (file) {
-    updatedformData.value.image = file;
-  }
-};
+// const handleFileUpload = (event) => {
+//   const file = event.target.files[0];
+//   console.log("Image Upload in Zoo", file);
+//   if (file) {
+//     updatedformData.value.image = file;
+//   }
+// };
 
 let compareUpdatedformData = {};
 
-const changePage = (page) => {
+const changePage = (page: number) => {
   if (currentPage.value == page) {
     return;
   }
@@ -192,11 +194,11 @@ const changePage = (page) => {
   }
 };
 
-const getZooId = (id) => {
+const getZooId = (id: number) => {
   zooId.value = id;
 };
 
-const deleteZooHandler = (id) => {
+const deleteZooHandler = (id: number) => {
   getZooId(id);
 
   opendeleteModal.value = true;
@@ -206,13 +208,13 @@ function intiliazeFormData() {
   (updatedformData.value.zooName = ""),
     (updatedformData.value.address.street = ""),
     (updatedformData.value.address.zipCode = ""),
-    (updatedformData.value.address.city.cityId = ""),
-    (updatedformData.value.address.city.state.stateId = ""),
-    (updatedformData.value.address.city.state.country.countryId = "");
+    (updatedformData.value.address.city.cityId = null),
+    (updatedformData.value.address.city.state.stateId = null),
+    (updatedformData.value.address.city.state.country.countryId = null);
   updatedformData.value.image = null;
 }
 
-function updateZoo(zoo) {
+function updateZoo(zoo:  Zoo) {
   openUpdateModal.value = true;
   zooId.value = zoo.zooId;
   selectedZoo.value = zoo;
@@ -224,7 +226,7 @@ function updateZoo(zoo) {
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
   try {
     isLoading.value = true;
-    const data = await useCustomFetch(
+    const data = await useCustomFetch<PaginatedResponse<Zoo>>(
       `/zoo/fetchall?page=${page}&size=${size}`
     );
     Zoos.value = data.content;
@@ -240,7 +242,7 @@ const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
 
 const deleteZoo = async () => {
   try {
-    const data = await useCustomFetch(`/zoo/delete/${zooId.value}`, {
+    const data = await useCustomFetch<string>(`/zoo/delete/${zooId.value}`, {
       method: "PATCH",
     });
 
@@ -252,8 +254,8 @@ const deleteZoo = async () => {
     }
     opendeleteModal.value = false;
     showToast(data, "green");
-  } catch (error) {
-    showToast(error | "Error Occur in delete Zoo", "red");
+  } catch (error: any) {
+    showToast("Error Occur in delete Zoo", "red");
   }
 };
 
@@ -277,7 +279,7 @@ const addZoo = async () => {
       formData.append("file", updatedformData.value.image);
     }
 
-    const response = await useCustomFetch(`/zoo/add`, {
+    const response = await useCustomFetch<string>(`/zoo/add`, {
       method: "POST",
       body: formData,
     });
@@ -286,12 +288,12 @@ const addZoo = async () => {
     intiliazeFormData();
     showToast(response, "green");
     fetchZoo(currentPage.value, pageSize.value);
-  } catch (error) {
-    showToast(error | "Error occured in adding zoo", "red");
+  } catch (error: any) {
+    showToast("Error occured in adding zoo", "red");
   }
 };
 
-const updateZooHandler = async (formData) => {
+const updateZooHandler = async (formData: Zoo) => {
   console.log("Updated Inmage", formData);
 
   if (JSON.stringify(formData) == JSON.stringify(compareUpdatedformData)) {
@@ -327,7 +329,7 @@ const updateZooHandler = async (formData) => {
     showToast("Zoo Update SuccessFully", "green");
     fetchZoo(currentPage.value, pageSize.value);
   } catch (error) {
-    showToast(error | "Error Occur in Updating Zoo", "red");
+    showToast("Error Occur in Updating Zoo", "red");
   }
 };
 
@@ -335,13 +337,13 @@ const resetSearch = () => {
   fetchZoo(currentPage.value, pageSize.value);
 };
 
-const performSearch = async (searchQuery) => {
+const performSearch = async (searchQuery: string) => {
   const trimmedQuery = searchQuery.trim();
   if (!trimmedQuery) {
     return;
   }
   try {
-    const data = await useCustomFetch(`/zoo/search?searchItem=${trimmedQuery}`);
+    const data = await useCustomFetch<Zoo[]>(`/zoo/search?searchItem=${trimmedQuery}`);
     filteredZoos.value = data;
     isSearching.value = true;
   } catch (error) {

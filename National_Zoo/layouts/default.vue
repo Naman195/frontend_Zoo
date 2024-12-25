@@ -110,8 +110,7 @@ const userToken = useCookie("isLoggedIn");
 const isProfileVisible = ref(false);
 const isUpdateModalVisible = ref(false);
 const userStore = useUserStore();
-var userProfile = ref<User | undefined>();
-userProfile = useCookie("user");
+const userProfile = useCookie<User>("user");
 
 var updatedformData = ref({
   fullName: "",
@@ -147,7 +146,7 @@ let compareUserProfileData = {};
 const handleProfileModal = () => {
   isUpdateModalVisible.value = true;
   isProfileVisible.value = false;
-  updatedformData = { ...userProfile.value };
+  updatedformData.value = { ...userProfile.value };
   compareUserProfileData = { ...userProfile.value };
   compareUserProfileData = JSON.parse(JSON.stringify(compareUserProfileData));
 };
@@ -180,7 +179,7 @@ const updateUser = async (formData: User) => {
       formDataNew.append("file", formData.image);
     }
 
-    const data = await useCustomFetch(`/auth/update/${userId.value}`, {
+    const data = await useCustomFetch<User>(`/auth/update/${userId.value}`, {
       method: "PATCH",
       body: formDataNew,
     });

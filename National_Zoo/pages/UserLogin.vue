@@ -52,10 +52,9 @@ import { useRouter } from "vue-router";
 import type { userLogin } from "~/types/userLogin";
 import { useUserStore } from "~/store/user";
 import { useToastNotify } from "~/composables/useToastNotify";
+import type { User } from "~/types/User";
 
 const { showToast } = useToastNotify();
-
-const isToastVisible = ref(false);
 const { logIn } = useAuth();
 const passwordVisible = ref(false);
 const token = useCookie("auth", { maxAge: 3600 });
@@ -82,7 +81,12 @@ const loginUser = async () => {
 
     token.value = data.token;
     logIn(data.userId);
-    userStore.setUser(data.user);
+    if (data.user) {
+      const user: User = data.user;
+      userStore.setUser(user);
+    } else {
+      throw new Error("User data is null");
+    }
     showToast(data.message, "green");
     setTimeout(() => {
       router.push("/");

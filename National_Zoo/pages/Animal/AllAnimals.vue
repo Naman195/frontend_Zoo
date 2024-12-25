@@ -195,7 +195,7 @@ const openAddAnimalHandler = () => {
 };
 
 const isLoading = ref(true);
-const selectedAnimal = ref<AnimalPartial>();
+const selectedAnimal = ref<Animal>();
 const route = useRoute();
 const zooId = route.query.zooId;
 const selectedZooName = route.query.zooName;
@@ -305,7 +305,7 @@ const addAnimal = async () => {
   }
 };
 
-const updateAnimalHandler = async (fromdata: AnimalPartial): Promise<void> => {
+const updateAnimalHandler = async (fromdata: Animal): Promise<void> => {
   if (!(JSON.stringify(fromdata) !== JSON.stringify(compareFormdata.value))) {
     return;
   }

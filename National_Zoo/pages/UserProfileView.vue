@@ -33,8 +33,10 @@
   </section>
 </template>
 
-<script setup>
-const userProfile = useCookie("user");
+<script setup lang="ts">
+import type { User } from '~/types/User';
+
+const userProfile = useCookie<User>("user");
 console.log("UserProfile is ", userProfile.value);
-var imageUrl = `http://192.168.0.153:8081/${userProfile.value.image}`;
+var imageUrl = `http://127.0.0.1:8081/${userProfile.value.image}`;
 </script>
