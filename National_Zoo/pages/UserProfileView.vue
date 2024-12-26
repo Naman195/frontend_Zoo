@@ -1,5 +1,7 @@
 <template>
-  <h1 class="text-4xl font-bold text-center my-6 text-gray-800">User Profile</h1>
+  <h1 class="text-4xl font-bold text-center my-6 text-gray-800">
+    User Profile
+  </h1>
   <section class="container mx-auto p-6 md:p-12 antialiased">
     <article
       class="flex flex-wrap md:flex-nowrap shadow-lg mx-auto max-w-4xl bg-blue-100 rounded-lg overflow-hidden group cursor-pointer transform duration-300 hover:shadow-xl"
@@ -22,29 +24,30 @@
             <span class="font-bold">Username:</span> {{ userProfile.username }}
           </p>
           <p class="text-lg">
-            <span class="font-bold">Street:</span> {{ userProfile.address.street }}
+            <span class="font-bold">Street:</span>
+            {{ userProfile.address.street }}
           </p>
         </div>
-        <!-- Update Profile Button -->
-        <div class="mt-8">
+
+        <!-- <div class="mt-8">
           <button
             class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
             @click=""
           >
             Update Profile
           </button>
-        </div>
+        </div> -->
       </div>
     </article>
   </section>
 </template>
 
 <script setup lang="ts">
-import type { User } from '~/types/User';
+import type { User } from "~/types/User";
 
-const userProfile = useCookie<User>('user');
-console.log('UserProfile is ', userProfile.value);
-const imageUrl = `http://127.0.0.1:8081/${userProfile.value.image}`;
+const userProfile = useCookie<User>("user");
+console.log("UserProfile is ", userProfile.value);
+const imageUrl = `http://192.168.0.153:8081/${userProfile.value.image}`;
 </script>
 
 <style scoped>

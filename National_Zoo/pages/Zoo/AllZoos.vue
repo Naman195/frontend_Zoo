@@ -80,7 +80,7 @@
         />
       </div>
 
-      <div v-if="openModal" class="z-50 absolute top-1/2">
+      <div v-if="updatedformData && openModal" class="z-50 absolute top-1/2">
         <AddZoo
           :modal-title="'Add Zoo'"
           :submit-button-label="'Add Zoo'"
@@ -91,11 +91,10 @@
             openModal = false;
             intiliazeFormData();
           "
-          
         />
       </div>
 
-      <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
+      <div v-if="selectedZoo && openUpdateModal" class="z-50 absolute top-1/2">
         <AddZoo
           :modal-title="'Update Zoo'"
           :submit-button-label="'Update Zoo'"
@@ -106,7 +105,6 @@
             openUpdateModal = false;
             intiliazeFormData();
           "
-         
         />
       </div>
 
@@ -138,7 +136,6 @@
 </template>
 
 <script lang="ts" setup>
-import { useToastNotify } from "~/composables/useToastNotify";
 import type { PaginatedResponse } from "~/types/PaginationResponse";
 import type { Zoo } from "~/types/Zoo";
 
@@ -214,7 +211,7 @@ function intiliazeFormData() {
   updatedformData.value.image = null;
 }
 
-function updateZoo(zoo:  Zoo) {
+function updateZoo(zoo: Zoo) {
   openUpdateModal.value = true;
   zooId.value = zoo.zooId;
   selectedZoo.value = zoo;
@@ -278,7 +275,6 @@ const addZoo = async () => {
     if (updatedformData.value.image) {
       formData.append("file", updatedformData.value.image);
     }
-
     const response = await useCustomFetch<string>(`/zoo/add`, {
       method: "POST",
       body: formData,
@@ -343,7 +339,9 @@ const performSearch = async (searchQuery: string) => {
     return;
   }
   try {
-    const data = await useCustomFetch<Zoo[]>(`/zoo/search?searchItem=${trimmedQuery}`);
+    const data = await useCustomFetch<Zoo[]>(
+      `/zoo/search?searchItem=${trimmedQuery}`
+    );
     filteredZoos.value = data;
     isSearching.value = true;
   } catch (error) {

@@ -1,6 +1,6 @@
 <template>
-  <!-- sticky top-0 z-50 -->
-  <nav class="bg-gray-800 p-4">
+  <!--  -->
+  <nav class="bg-gray-800 p-4 sticky top-0 z-50">
     <div class="container mx-auto flex justify-between items-center">
       <div class="text-white text-lg font-semibold">
         <NuxtLink to="/" class="hover:text-gray-300">
@@ -34,6 +34,12 @@
           <li>
             <NuxtLink to="/zoo/allzoos" class="hover:text-gray-300"
               >All Zoo</NuxtLink
+            >
+          </li>
+
+          <li>
+            <NuxtLink to="/UserProfileView" class="hover:text-gray-300"
+              >User Profile</NuxtLink
             >
           </li>
           <li class="cursor-pointer" @click="toggleProfile">

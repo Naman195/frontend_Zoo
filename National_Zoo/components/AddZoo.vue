@@ -51,7 +51,7 @@
           >
             <!-- First Name Field -->
 
-            <div v-if="!props.updateClick">
+            <div v-if="props.fromData.zooName">
               <label
                 for="ZooName"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -68,7 +68,7 @@
               <ErrorMessage name="zooName" class="text-red-600 text-sm mt-1" />
             </div>
 
-            <div v-else>
+            <div v-if="props.fromData.fullName">
               <label
                 for="fullName"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -260,34 +260,20 @@ import type { Zoo } from "~/types/Zoo";
 
 const emit = defineEmits(["close", "save", "updateData", "handleImageUpload"]);
 
-
-
-const props = defineProps({
-  fromData: {
-  type: Object as PropType<Zoo>,
-    required: true,
-  },
-  submitButtonLabel: {
-    type: String,
-    required: true,
-  },
-  modalTitle: {
-    type: String,
-    required: true,
-  },
-  updateClick: {
-    type: Boolean,
-    required: true,
-  },
-});
+const props = defineProps<{
+  fromData: Zoo;
+  submitButtonLabel: string;
+  modalTitle: string;
+  updateClick: boolean;
+}>();
 
 console.log("From Data", props.fromData);
 
 const countries = ref<Country[]>([]);
 const states = ref<State[]>([]);
 const cities = ref<City[]>([]);
-  const selectedCountry = ref<number | null>(null);
-    const selectedState = ref<number | null>(null);
+const selectedCountry = ref<number | null>(null);
+const selectedState = ref<number | null>(null);
 const formData = ref({ ...props.fromData });
 
 console.log("From Data2", formData.value);

@@ -1,6 +1,4 @@
-export type AnimalPartial = {
-    animalName: string | undefined;
-    animalType: string | undefined;
-    image: string | null;
-  };
+import type { Animal } from "./Animal";
+
+export type AnimalPartial = Pick<Animal, "animalName" | "animalType" | "image">
   
