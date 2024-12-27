@@ -84,11 +84,9 @@
 
 <script setup lang="ts">
 import { Field, Form, ErrorMessage } from "vee-validate";
+import type { Zoo } from "~/types/Zoo";
 const emit = defineEmits(["close", "save"]);
 const props = defineProps<{
-  fetchZooList: Array<{
-    zooId: number;
-    zooName: string;
-  }>;
+  fetchZooList: Zoo[];
 }>();
 </script>

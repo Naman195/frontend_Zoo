@@ -77,8 +77,6 @@ const loginUser = async () => {
       body: form,
     });
 
-    console.log("Logeedin User Data", data);
-
     token.value = data.token;
     logIn(data.userId);
     if (data.user) {

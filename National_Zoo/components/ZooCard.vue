@@ -57,7 +57,7 @@ import type { Address } from "~/types/Address";
 
 interface Entity {
   zoo?: Zoo;
-  image?: string;
+  image?: null;
   address?: Address;
   zooId?: number;
   zooName?: string;

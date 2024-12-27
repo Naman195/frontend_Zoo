@@ -51,7 +51,7 @@
           >
             <!-- First Name Field -->
 
-            <div v-if="props.fromData.zooName">
+            <div v-if="!props.updateClick">
               <label
                 for="ZooName"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -68,7 +68,7 @@
               <ErrorMessage name="zooName" class="text-red-600 text-sm mt-1" />
             </div>
 
-            <div v-if="props.fromData.fullName">
+            <div v-else>
               <label
                 for="fullName"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -104,7 +104,7 @@
                   ><option value="" disabled>Select Country</option>
                   <option
                     v-for="country in countries"
-                    :key="country.countryId"
+                    :key="country.countryId!"
                     :value="country.countryId"
                   >
                     {{ country.countryName }}
@@ -135,7 +135,7 @@
                   <option value="" disabled>Select State</option>
                   <option
                     v-for="state in states"
-                    :key="state.stateId"
+                    :key="state.stateId!"
                     :value="state.stateId"
                   >
                     {{ state.stateName }}
@@ -164,7 +164,7 @@
                   <option value="" disabled>Select City</option>
                   <option
                     v-for="city in cities"
-                    :key="city.cityId"
+                    :key="city.cityId!"
                     :value="city.cityId"
                   >
                     {{ city.cityName }}
@@ -267,16 +267,12 @@ const props = defineProps<{
   updateClick: boolean;
 }>();
 
-console.log("From Data", props.fromData);
-
 const countries = ref<Country[]>([]);
 const states = ref<State[]>([]);
 const cities = ref<City[]>([]);
 const selectedCountry = ref<number | null>(null);
 const selectedState = ref<number | null>(null);
 const formData = ref({ ...props.fromData });
-
-console.log("From Data2", formData.value);
 
 onMounted(() => {
   fetchCountries();

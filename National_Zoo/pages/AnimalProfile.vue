@@ -99,6 +99,10 @@ const handleAnimalHistory = async () => {
       `/animal/history/${animalId}`
     );
 
+    console.log("Animal History", data);
+
+    console.log("transferData", data.transferData);
+
     animalHistory.value = data.transferData;
     selectedAnimal.value = data.animalData;
   } catch (error: any) {

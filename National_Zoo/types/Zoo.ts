@@ -1,7 +1,7 @@
 import type { Address } from "./Address";
 
 export interface Zoo {
-    zooId: number;
+    zooId?: number;
     fullName?: string;
     zooName?: string;
     address: Address;

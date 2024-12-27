@@ -112,7 +112,7 @@
       <div class="flex flex-wrap justify-center">
         <li
           v-for="(zoo, id) in filteredZoos"
-          :key="id + zoo.image"
+          :key="id + zoo.image!"
           class="m-4 list-none"
         >
           <ZooCard
@@ -145,7 +145,7 @@ const selectedZoo = ref<Zoo | null>(null);
 const Zoos = ref<Zoo[]>([]);
 const filteredZoos = ref<Zoo[]>([]);
 const isSearching = ref(false);
-const zooId = ref<number | null>(null);
+const zooId = ref<number | undefined>(undefined);
 const currentPage = ref(0);
 const totalPages = ref(0);
 const pageSize = ref(3);
@@ -170,14 +170,6 @@ const updatedformData = ref({
   },
   image: null,
 });
-
-// const handleFileUpload = (event) => {
-//   const file = event.target.files[0];
-//   console.log("Image Upload in Zoo", file);
-//   if (file) {
-//     updatedformData.value.image = file;
-//   }
-// };
 
 let compareUpdatedformData = {};
 

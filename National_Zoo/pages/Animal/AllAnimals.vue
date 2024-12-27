@@ -72,7 +72,7 @@
 
       <div v-if="openUpdateModal" class="z-50 absolute top-1/2">
         <AddAnimal
-          :from-data="selectedAnimal"
+          :from-data="selectedAnimal!"
           :modal-title="'Update'"
           :submit-button-label="'Update Animal'"
           :fetch-categories="fetchCategories"
@@ -203,12 +203,12 @@ const animals = ref<Animal[]>([]);
 const token = useCookie("auth") || undefined;
 const openAddAnimalModal = ref(false);
 const opendeleteModal = ref(false);
-const animalId = ref<string>("");
+const animalId = ref<string | undefined>(undefined);
 const openUpdateModal = ref<boolean>(false);
 const fetchCategories = ref<Category[]>([]);
 const isSearching = ref(false);
 const openTransferModal = ref(false);
-const selectedTransferredAnimalId = ref<string>("");
+const selectedTransferredAnimalId = ref<string | undefined>(undefined);
 
 const deleteAnimalHandler = (animal: Animal) => {
   animalId.value = animal.animalId;
@@ -317,7 +317,7 @@ const updateAnimalHandler = async (fromdata: Animal): Promise<void> => {
         animalName: fromdata.animalName,
         animalType: fromdata.animalType,
         zoo: {
-          zooId: fromdata.zoo.zooId,
+          zooId: fromdata.zoo?.zooId,
         },
       })
     );
