@@ -124,16 +124,16 @@ var updatedformData = ref({
     street: "",
     zipCode: "",
     city: {
-      cityId: null,
+      cityId: null as number | null,
       state: {
-        stateId: null,
+        stateId: null as number | null,
         country: {
-          countryId: null,
+          countryId: null as number | null,
         },
       },
     },
   },
-  image: null,
+  image: null as File | null,
 });
 
 const logoutUser = () => {

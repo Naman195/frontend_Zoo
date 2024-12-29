@@ -1,8 +1,10 @@
+import type { User } from "~/types/User";
+
 const userProfile = ref(null);
 
 export const useUserProfile = () => {
 
-    const setUser = (userData) => {
+    const setUser = (userData:any) => {
         userProfile.value = userData;
     }
 

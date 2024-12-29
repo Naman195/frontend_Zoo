@@ -112,7 +112,7 @@
       <div class="flex flex-wrap justify-center">
         <li
           v-for="(zoo, id) in filteredZoos"
-          :key="id + zoo.image!"
+          :key="`${zoo.zooId}-${zoo.image}`"
           class="m-4 list-none"
         >
           <ZooCard
@@ -145,7 +145,7 @@ const selectedZoo = ref<Zoo | null>(null);
 const Zoos = ref<Zoo[]>([]);
 const filteredZoos = ref<Zoo[]>([]);
 const isSearching = ref(false);
-const zooId = ref<number | undefined>(undefined);
+const zooId = ref<number>();
 const currentPage = ref(0);
 const totalPages = ref(0);
 const pageSize = ref(3);
@@ -183,11 +183,11 @@ const changePage = (page: number) => {
   }
 };
 
-const getZooId = (id: number) => {
+const getZooId = (id: number | undefined) => {
   zooId.value = id;
 };
 
-const deleteZooHandler = (id: number) => {
+const deleteZooHandler = (id: number | undefined) => {
   getZooId(id);
 
   opendeleteModal.value = true;

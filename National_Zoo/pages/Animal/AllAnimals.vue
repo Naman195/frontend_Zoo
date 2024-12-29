@@ -113,7 +113,7 @@
       <div class="flex flex-wrap justify-center">
         <li
           v-for="animal in animals"
-          :key="animal.animalId + animal.image"
+          :key="animal.animalId! + animal.image"
           class="m-4 list-none"
         >
           <AnimalCard

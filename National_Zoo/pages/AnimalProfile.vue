@@ -83,7 +83,7 @@ import type { AnimalHistory } from "~/types/AnimalHistory";
 
 interface transferredAnimalResponse {
   animalData: Animal;
-  transferData: AnimalHistory;
+  transferData: AnimalHistory[];
 }
 
 const route = useRoute();
@@ -101,7 +101,7 @@ const handleAnimalHistory = async () => {
 
     console.log("Animal History", data);
 
-    console.log("transferData", data.transferData);
+    console.log("transferData", typeof data.transferData);
 
     animalHistory.value = data.transferData;
     selectedAnimal.value = data.animalData;
