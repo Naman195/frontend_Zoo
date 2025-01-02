@@ -21,9 +21,10 @@
         <h5
           class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
         >
-          {{ selectedAnimal?.animalName }} -- {{ selectedAnimal?.zoo?.zooName }}
+          Animal Name: {{ selectedAnimal?.animalName }}
         </h5>
-        <p class="mb-3 font-bold text-gray-700 dark:text-gray-400">
+        <p class="mb-3 font-bold text-Blue-700">
+          Animal Category:
           {{ selectedAnimal?.animalType }}
         </p>
 

@@ -72,5 +72,5 @@ const emit = defineEmits<{
   (e: "delete", zooId?: number): void;
 }>();
 
-var imageUrl = `http://192.168.50.133:8081/${props.entityData.image}`;
+var imageUrl = `http://192.168.0.153:8081/${props.entityData.image}`;
 </script>

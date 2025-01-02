@@ -67,7 +67,7 @@
       <!-- Buttons container -->
       <div class="flex justify-between mt-4">
         <button
-          @click="logoutUser"
+          @click="logoutUser()"
           class="bg-red-500 text-white px-3 py-1 text-sm rounded hover:bg-red-600"
         >
           Logout
@@ -136,11 +136,16 @@ var updatedformData = ref({
   image: null as File | null,
 });
 
-const logoutUser = () => {
-  userStore.removeUser();
-  logOut();
-  router.push("/userlogin");
-  isProfileVisible.value = false;
+const logoutUser = async () => {
+  // userStore.removeUser();
+  // logOut();
+  // router.push("/userlogin");
+  // isProfileVisible.value = false;
+  console.log("Logout User");
+
+  const res = await useCustomFetch("/auth/logout", {
+    method: "POST",
+  });
 };
 
 const toggleProfile = () => {
