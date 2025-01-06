@@ -19,16 +19,12 @@ if(token.value){
         if (userLoggedIn.value === true && to.path === '/userlogin' || to.path === '/userregisteration') {
           return navigateTo('/'); 
         }
-        else if(userLoggedIn.value === true && to.path === "/forgotpass"){
+        else if(userLoggedIn.value === true && to.path === "/forgotpass" || to.path.startsWith("/UpdatePass")){
           return navigateTo("/setpass")
         }
         else{
           return
-          // if(to.path === "/zoo/allzoos" || to.path === "/zoo/allzoos"){
-          //   return navigateTo("/");
-          // }
-
-        
+         
         }
 
     }else{

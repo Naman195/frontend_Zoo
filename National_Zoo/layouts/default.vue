@@ -137,12 +137,19 @@ var updatedformData = ref({
 });
 
 const logoutUser = async () => {
+<<<<<<< HEAD
   
+=======
+>>>>>>> e5e5127c27378e7cb52721ccfbc4d7986613e626
   console.log("Logout User");
 
   const res = await useCustomFetch("/auth/logout", {
     method: "POST",
   });
+<<<<<<< HEAD
+=======
+
+>>>>>>> e5e5127c27378e7cb52721ccfbc4d7986613e626
   userStore.removeUser();
   logOut();
   router.push("/userlogin");
