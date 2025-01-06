@@ -58,6 +58,7 @@ const { showToast } = useToastNotify();
 const { logIn } = useAuth();
 const passwordVisible = ref(false);
 const token = useCookie("auth", { maxAge: 3600 });
+const refreshToken = useCookie("refreshToken");
 const router = useRouter();
 const form = reactive({
   username: "",
@@ -78,6 +79,9 @@ const loginUser = async () => {
     });
 
     token.value = data.token;
+    // const refreshToken = data.refreshtoken
+    // const
+    refreshToken.value = data.refreshToken;
     logIn(data.userId);
     if (data.user) {
       const user: User = data.user;

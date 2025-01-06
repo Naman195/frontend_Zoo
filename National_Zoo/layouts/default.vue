@@ -137,15 +137,16 @@ var updatedformData = ref({
 });
 
 const logoutUser = async () => {
-  // userStore.removeUser();
-  // logOut();
-  // router.push("/userlogin");
-  // isProfileVisible.value = false;
+  
   console.log("Logout User");
 
   const res = await useCustomFetch("/auth/logout", {
     method: "POST",
   });
+  userStore.removeUser();
+  logOut();
+  router.push("/userlogin");
+  isProfileVisible.value = false;
 };
 
 const toggleProfile = () => {

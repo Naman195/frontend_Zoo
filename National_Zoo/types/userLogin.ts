@@ -7,5 +7,6 @@ export interface userLogin{
         userId: number | null;
         username: string | null;
         user: User | null; 
+        refreshToken: string | null;
       
 }

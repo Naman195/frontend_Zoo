@@ -62,18 +62,18 @@ const submitOtp = async () => {
     });
 
     if (response.message === "OTP verified successfully") {
-      const resetUrl = response.url;
-
-      const url = new URL(resetUrl);
-      const path = url.pathname;
-      const query = url.search;
+      // const resetUrl = response.url;
+      const uniqueKey = response.key;
+      // const url = new URL(resetUrl);
+     // const path = url.pathname;
+     // const query = url.search;
       showToast("OTP verified successfully", "blue");
 
       setTimeout(() => {
         router.push({
-          path,
-          query: query ? Object.fromEntries(new URLSearchParams(query)) : {},
-        });
+        path: '/setpass',
+        query: { key: uniqueKey },
+      });
       }, 1000);
     } else {
       showToast(

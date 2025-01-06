@@ -1,7 +1,12 @@
 
+// import { checkAndRefreshToken } from '../composables/useAuth';
 
-export default defineNuxtRouteMiddleware((to, from) => {
+import { useAuth } from "../composables/useAuth";
+export default defineNuxtRouteMiddleware(async(to, from) => {
+  const { checkAndRefreshToken } = useAuth();
 
+
+  await checkAndRefreshToken();
   const token = useCookie("auth")
 const userId =   useCookie("userId")
 const userCookie = useCookie('user')

@@ -36,6 +36,8 @@ const newPassword = ref("");
 const oldPassword = ref("");
 const router = useRouter();
 const isLoggedIn = useCookie("isLoggedIn");
+const route = useRoute();
+const uniqueKey = route.query.key as string;
 
 const handleSetPassword = async () => {
   try {
@@ -49,6 +51,10 @@ const handleSetPassword = async () => {
 
     const response = await useCustomFetch<string>(`/auth/setpassword`, {
       method: "POST",
+      headers: {
+        "Authorization": uniqueKey, // Use the unique key as the token
+        "Content-Type": "application/json",
+      },
       body: requestBody,
     });
     showToast(response, "green");
