@@ -21,7 +21,6 @@ export default defineNuxtRouteMiddleware(async(to, from) => {
               }
               else{
                 return
-              
               }
 
           }else{
