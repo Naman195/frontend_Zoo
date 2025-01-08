@@ -98,3 +98,8 @@ const loginUser = async () => {
   }
 };
 </script>
+
+
+<!-- Map<String, String> response = new HashMap<>();
+	    response.put("jwt", jwtToken);
+	    response.put("refreshToken", refreshToken.getRefreshtoken()); -->

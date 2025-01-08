@@ -1,4 +1,5 @@
 import { useToastNotify } from "~/composables/useToastNotify";
+import type { Token } from "~/types/Token";
 export function useAuth() {
   const isLoggedIn = useState<boolean>("isLoggedIn", () => false);
   const userId = useState<number | null>("userId", () => null);
@@ -53,41 +54,50 @@ export function useAuth() {
   const checkAndRefreshToken = async () => {
     const token = useCookie("auth").value;
     const refreshToken = useCookie("refreshToken").value;
-
-    if (!token || !refreshToken) return;
-
-    const decodedToken = decodeJWT(token);
-
-    if (!decodedToken || !decodedToken.exp) {
-      console.log("Invalid or expired token");
-      showToast("Invalid or expired token", "red");
+  
+    if (!refreshToken) {
+      console.log("No refresh token available. Logging out.");
+      showToast("Session expired. Please log in again.", "red");
       logOut();
       return;
     }
-
-    const currentTime = Math.floor(Date.now() / 1000);
-
-    // if ((decodedToken.exp - currentTime) <= 360) {
-
-    console.log("Decode Token Expire Time", decodedToken.exp);
-    console.log("Currente Time", currentTime);
-    const time = decodedToken.exp - 360;
-
-    if (currentTime >= time) {
-      try {
-        const response = await useCustomFetch<string>("/auth/refresh", {
+  
+    try {
+      if (token) {
+        const decodedToken = decodeJWT(token);
+        const currentTime = Math.floor(Date.now() / 1000);
+  
+        // Check if the JWT is about to expire
+        if (decodedToken && decodedToken.exp && currentTime >= decodedToken.exp - 360) {
+          const response = await useCustomFetch<Token>("/auth/refresh", {
+            method: "POST",
+            body: { refreshtoken: refreshToken },
+          });
+  
+          // Set new JWT and refreshToken in cookies
+          useCookie("auth").value = response.jwt;
+          useCookie("refreshToken").value = response.refreshToken;
+          showToast("Token refreshed successfully.", "green");
+        }
+      } else {
+        console.log("JWT expired. Attempting refresh.");
+        const response = await useCustomFetch<Token>("/auth/refresh", {
           method: "POST",
           body: { refreshtoken: refreshToken },
         });
-
-        useCookie("auth").value = response;
-      } catch (error) {
-        console.error("Failed to refresh token", error);
-        showToast("Refresh Token Expired", "red");
-        logOut();
+  
+        // Set new JWT and refreshToken in cookies
+        useCookie("auth").value = response.jwt;
+        useCookie("refreshToken").value = response.refreshToken;
+        showToast("Token refreshed successfully.", "green");
       }
+    } catch (error) {
+      console.error("Failed to refresh token", error);
+      showToast("Session expired. Please log in again.", "red");
+      logOut();
     }
   };
+  
 
   return { isLoggedIn, logIn, logOut, userId, isAdmin, checkAndRefreshToken };
 }
