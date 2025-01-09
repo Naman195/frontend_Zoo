@@ -1,4 +1,5 @@
 import { useToastNotify } from "~/composables/useToastNotify";
+import { jwtDecode } from "jwt-decode";
 export function useAuth() {
   const isLoggedIn = useState<boolean>("isLoggedIn", () => false);
   const userId = useState<number | null>("userId", () => null);
@@ -50,44 +51,81 @@ export function useAuth() {
     }
   };
 
-  const checkAndRefreshToken = async () => {
+  const validatejwtToken = async () => {
     const token = useCookie("auth").value;
     const refreshToken = useCookie("refreshToken").value;
+    if (token) {
+      const decodeToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+      const tokenExpirationTime: any = decodeToken.exp;
 
-    if (!token || !refreshToken) return;
+      const timetaken = tokenExpirationTime - 300;
 
-    const decodedToken = decodeJWT(token);
+      const tokenValidationCheck = async () => {
+        try {
+          console.log("inside refresh Token APi", token);
+          console.log("Refresh Token", refreshToken);
 
-    if (!decodedToken || !decodedToken.exp) {
-      console.log("Invalid or expired token");
-      showToast("Invalid or expired token", "red");
-      logOut();
-      return;
-    }
+          const response = await $fetch<string>(
+            "http://localhost:8080/auth/refresh",
+            {
+              method: "POST",
+              body: { refreshtoken: refreshToken },
+            }
+          );
 
-    const currentTime = Math.floor(Date.now() / 1000);
-
-    // if ((decodedToken.exp - currentTime) <= 360) {
-
-    console.log("Decode Token Expire Time", decodedToken.exp);
-    console.log("Currente Time", currentTime);
-    const time = decodedToken.exp - 360;
-
-    if (currentTime >= time) {
-      try {
-        const response = await useCustomFetch<string>("/auth/refresh", {
-          method: "POST",
-          body: { refreshtoken: refreshToken },
-        });
-
-        useCookie("auth").value = response;
-      } catch (error) {
-        console.error("Failed to refresh token", error);
-        showToast("Refresh Token Expired", "red");
-        logOut();
+          useCookie("auth").value = response;
+        } catch (error) {
+          console.error("Failed to refresh token", error);
+          showToast("Refresh Token Expired", "red");
+          // logOut();
+        }
+      };
+      if (currentTime >= timetaken) {
+        await tokenValidationCheck();
+        return;
       }
     }
   };
 
-  return { isLoggedIn, logIn, logOut, userId, isAdmin, checkAndRefreshToken };
+  // const checkAndRefreshToken = async () => {
+  //   const token = useCookie("auth").value;
+  //   const refreshToken = useCookie("refreshToken").value;
+
+  //   if (!token || !refreshToken) return;
+
+  //   const decodedToken = decodeJWT(token);
+
+  //   if (!decodedToken || !decodedToken.exp) {
+  //     console.log("Invalid or expired token");
+  //     showToast("Invalid or expired token", "red");
+  //     logOut();
+  //     return;
+  //   }
+
+  //   const currentTime = Math.floor(Date.now() / 1000);
+
+  //   // if ((decodedToken.exp - currentTime) <= 360) {
+
+  //   console.log("Decode Token Expire Time", decodedToken.exp);
+  //   console.log("Currente Time", currentTime);
+  //   const time = decodedToken.exp - 360;
+
+  //   if (currentTime >= time) {
+  //     try {
+  //       const response = await useCustomFetch<string>("/auth/refresh", {
+  //         method: "POST",
+  //         body: { refreshtoken: refreshToken },
+  //       });
+
+  //       useCookie("auth").value = response;
+  //     } catch (error) {
+  //       console.error("Failed to refresh token", error);
+  //       showToast("Refresh Token Expired", "red");
+  //       logOut();
+  //     }
+  //   }
+  // };
+
+  return { isLoggedIn, logIn, logOut, userId, isAdmin, validatejwtToken };
 }

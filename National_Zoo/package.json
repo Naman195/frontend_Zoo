@@ -20,6 +20,7 @@
     "@primevue/themes": "^4.2.4",
     "@vee-validate/i18n": "^4.14.7",
     "@vee-validate/rules": "^4.14.7",
+    "jwt-decode": "^4.0.0",
     "nuxt": "^3.13.0",
     "pinia": "^2.3.0",
     "pinia-plugin-persistedstate": "^4.1.3",

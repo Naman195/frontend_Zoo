@@ -57,7 +57,7 @@ import type { User } from "~/types/User";
 const { showToast } = useToastNotify();
 const { logIn } = useAuth();
 const passwordVisible = ref(false);
-const token = useCookie("auth", { maxAge: 3600 });
+const token = useCookie("auth");
 const refreshToken = useCookie("refreshToken");
 const router = useRouter();
 const form = reactive({
