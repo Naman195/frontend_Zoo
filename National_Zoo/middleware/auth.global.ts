@@ -27,8 +27,5 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   ) {
     return navigateTo("/userlogin");
   } else {
-    // userLoggedIn.value = false;
-    // userId.value = null;
-    // userCookie.value = null;
   }
 });

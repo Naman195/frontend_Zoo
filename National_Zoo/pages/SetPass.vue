@@ -52,7 +52,7 @@ const handleSetPassword = async () => {
     const response = await useCustomFetch<string>(`/auth/setpassword`, {
       method: "POST",
       headers: {
-        "Authorization": uniqueKey, // Use the unique key as the token
+        Authorization: uniqueKey,
         "Content-Type": "application/json",
       },
       body: requestBody,

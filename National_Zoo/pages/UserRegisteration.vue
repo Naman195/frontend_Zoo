@@ -343,7 +343,9 @@ const registerUser = async () => {
 // Fetch Role Api
 const fetchRoles = async () => {
   try {
-    const data = await useCustomFetch<Role[]>("/role/all");
+    const data = await $fetch<Role[]>(`/api/fetch-role`, {
+      method: "GET",
+    });
     roles.value = data;
   } catch (error) {
     console.log("Error In fetching Roles", error);
