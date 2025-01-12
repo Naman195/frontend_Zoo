@@ -46,7 +46,7 @@
 import type { User } from "~/types/User";
 
 const userProfile = useCookie<User>("user");
-const imageUrl = `http://192.168.0.153:8081/${userProfile.value.image}`;
+const imageUrl = `http://192.168.1.33:8081/${userProfile.value.image}`;
 </script>
 
 <style scoped>

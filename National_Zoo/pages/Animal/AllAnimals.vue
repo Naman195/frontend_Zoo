@@ -377,8 +377,7 @@ const performSearch = async (searchQuery: string) => {
     return;
   }
   try {
-    const results = await useCustomFetch<Animal[]>(
-      `/animal/search?searchTerm=${trimmedQuery}&zooId=${route.query.zooId}`
+    const results = await $fetch<Animal[]>(`/api/animal/search?searchTerm=${encodeURIComponent(trimmedQuery)}&zooId=${encodeURIComponent(route.query.zooId as string)}`
     );
     animals.value = results;
     isSearching.value = true;
