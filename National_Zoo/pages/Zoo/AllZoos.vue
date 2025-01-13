@@ -215,9 +215,12 @@ function updateZoo(zoo: Zoo) {
 const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
   try {
     isLoading.value = true;
-    const data = await useCustomFetch<PaginatedResponse<Zoo>>(
-      `/zoo/fetchall?page=${page}&size=${size}`
-    );
+    const data = await $fetch<PaginatedResponse<Zoo>>(`/api/zoo/fetchZoo`, {
+      params: {
+        page: page,
+        size: size,
+      },
+    });
     Zoos.value = data.content;
     filteredZoos.value = [...Zoos.value];
     totalPages.value = data.totalPages;
@@ -231,8 +234,11 @@ const fetchZoo = async (page = currentPage.value, size = pageSize.value) => {
 
 const deleteZoo = async () => {
   try {
-    const data = await useCustomFetch<string>(`/zoo/delete/${zooId.value}`, {
+    const data = await $fetch<string>(`/api/zoo/deleteZoo`, {
       method: "PATCH",
+      params: {
+        zooId: zooId.value,
+      },
     });
 
     if (filteredZoos.value.length == 1 && currentPage.value > 0) {
@@ -265,12 +271,16 @@ const addZoo = async () => {
       })
     );
     if (updatedformData.value.image) {
+      console.log("Type of oimage Upload", updatedformData.value.image);
+
       formData.append("file", updatedformData.value.image);
     }
-    const response = await useCustomFetch<string>(`/zoo/add`, {
+    const response = await $fetch<string>(`/api/zoo/addZoo`, {
       method: "POST",
       body: formData,
     });
+
+    console.log("Add Zoo", response);
 
     openModal.value = false;
     intiliazeFormData();
@@ -331,9 +341,11 @@ const performSearch = async (searchQuery: string) => {
     return;
   }
   try {
-    const data = await useCustomFetch<Zoo[]>(
-      `/zoo/search?searchItem=${trimmedQuery}`
-    );
+    const data = await $fetch<Zoo[]>(`/api/zoo/search`, {
+      params: {
+        searchQuery: trimmedQuery,
+      },
+    });
     filteredZoos.value = data;
     isSearching.value = true;
   } catch (error) {

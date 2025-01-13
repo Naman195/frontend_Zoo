@@ -1,11 +1,11 @@
-import { useToastNotify } from "~/composables/useToastNotify";
+// import { useToastNotify } from "~/composables/useToastNotify";
 import { jwtDecode } from "jwt-decode";
 export function useAuth() {
   const isLoggedIn = useState<boolean>("isLoggedIn", () => false);
   const userId = useState<number | null>("userId", () => null);
   const isAdmin = useState<boolean>("isAdmin", () => false);
 
-  const { showToast } = useToastNotify();
+  // const { showToast } = useToastNotify();
 
   const logIn = async (id: number | null) => {
     const loginCookie = useCookie("isLoggedIn");
@@ -63,9 +63,6 @@ export function useAuth() {
 
       const tokenValidationCheck = async () => {
         try {
-          console.log("inside refresh Token APi", token);
-          console.log("Refresh Token", refreshToken);
-
           const response = await $fetch<string>(
             "http://localhost:8080/auth/refresh",
             {
@@ -77,7 +74,7 @@ export function useAuth() {
           useCookie("auth").value = response;
         } catch (error) {
           console.error("Failed to refresh token", error);
-          showToast("Refresh Token Expired", "red");
+          // showToast("Refresh Token Expired", "red");
           // logOut();
         }
       };

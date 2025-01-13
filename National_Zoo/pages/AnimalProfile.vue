@@ -96,8 +96,13 @@ const isLoading = ref(true);
 
 const handleAnimalHistory = async () => {
   try {
-    const data = await useCustomFetch<transferredAnimalResponse>(
-      `/animal/history/${animalId}`
+    const data = await $fetch<transferredAnimalResponse>(
+      `/api/animal/animalhistory`,
+      {
+        params: {
+          animalId: animalId,
+        },
+      }
     );
 
     console.log("Animal History", data);

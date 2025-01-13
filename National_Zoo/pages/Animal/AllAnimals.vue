@@ -234,8 +234,15 @@ const fetchAnimals = async (
   size: number = pageSize.value
 ): Promise<void> => {
   try {
-    const data = await useCustomFetch<PaginatedResponse<Animal>>(
-      `/animal/all/${zooId}?page=${page}&size=${size}`
+    const data = await $fetch<PaginatedResponse<Animal>>(
+      `/api/animal/fetchanimal`,
+      {
+        params: {
+          zooId: zooId,
+          page: page,
+          size: size,
+        },
+      }
     );
 
     animals.value = data.content;
@@ -250,12 +257,12 @@ const fetchAnimals = async (
 
 const deleteAnimal = async () => {
   try {
-    const data = await useCustomFetch<string>(
-      `/animal/delete/${animalId.value}`,
-      {
-        method: "PATCH",
-      }
-    );
+    const data = await $fetch<string>(`/api/animal/deleteanimal`, {
+      method: "PATCH",
+      params: {
+        animalId: animalId.value,
+      },
+    });
 
     if (animals.value.length === 1 && currentPage.value > 0) {
       currentPage.value -= 1;
@@ -343,7 +350,7 @@ const updateAnimalHandler = async (fromdata: Animal): Promise<void> => {
 
 const fetchCategoriesApi = async () => {
   try {
-    const data = await useCustomFetch<Category[]>("/category/all");
+    const data = await $fetch<Category[]>("/api/animal/fetchCategory");
     fetchCategories.value = data;
   } catch (error) {}
 };
@@ -351,18 +358,23 @@ const fetchCategoriesApi = async () => {
 const zooList = ref<Zoo[]>([]);
 
 const FetchZooList = async () => {
-  const data = await useCustomFetch<Zoo[]>(`/animal/getzoolist/${zooId}`);
+  const data = await $fetch<Zoo[]>(`/api/animal/fetchZooList`, {
+    params: {
+      zooId: zooId,
+    },
+  });
   zooList.value = data;
 };
 
 const handleTransferAnimal = async (newZooId: number) => {
   try {
-    const res = await useCustomFetch(
-      `/animal/transfer/${selectedTransferredAnimalId.value}/to/${newZooId}`,
-      {
-        method: "patch",
-      }
-    );
+    const res = await $fetch(`/api/animal/transferAnimal`, {
+      method: "patch",
+      params: {
+        animalId: selectedTransferredAnimalId.value,
+        newZooId: newZooId,
+      },
+    });
     openTransferModal.value = false;
     fetchAnimals(currentPage.value, pageSize.value);
     showToast("Animal Transferred Successfully", "green");
@@ -377,7 +389,10 @@ const performSearch = async (searchQuery: string) => {
     return;
   }
   try {
-    const results = await $fetch<Animal[]>(`/api/animal/search?searchTerm=${encodeURIComponent(trimmedQuery)}&zooId=${encodeURIComponent(route.query.zooId as string)}`
+    const results = await $fetch<Animal[]>(
+      `/api/animal/search?searchTerm=${encodeURIComponent(
+        trimmedQuery
+      )}&zooId=${encodeURIComponent(route.query.zooId as string)}`
     );
     animals.value = results;
     isSearching.value = true;

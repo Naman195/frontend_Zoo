@@ -1,8 +1,7 @@
-import { defineEventHandler, getQuery } from 'h3';
+import { defineEventHandler, getQuery } from "h3";
 
 export default defineEventHandler(async (event) => {
   try {
-    // Extract query parameters
     const query = getQuery(event);
     const searchTerm = query.searchTerm as string | undefined;
     const zooId = query.zooId as string | undefined;
@@ -23,7 +22,6 @@ export default defineEventHandler(async (event) => {
     });
 
     console.log("Session Retrieved:", session.data);
-    
 
     if (!session || !session.data.token) {
       throw createError({
@@ -32,9 +30,10 @@ export default defineEventHandler(async (event) => {
         message: "Invalid or missing session token.",
       });
     }
-    
 
-    const apiUrl = `http://localhost:8080/animal/search?searchTerm=${encodeURIComponent(searchTerm)}&zooId=${encodeURIComponent(zooId)}`;
+    const apiUrl = `http://localhost:8080/animal/search?searchTerm=${encodeURIComponent(
+      searchTerm
+    )}&zooId=${encodeURIComponent(zooId)}`;
     const results = await $fetch(apiUrl, {
       method: "GET",
       headers: {
@@ -53,55 +52,3 @@ export default defineEventHandler(async (event) => {
     });
   }
 });
-
-
-
-// ...........................................................................
-
-
-// import { defineEventHandler, readMultipartFormData, createError } from "h3";
-// // import { $fetch } from "ohmyfetch";
-
-// export default defineEventHandler(async (event) => {
-//   try {
-//     console.log("Start processing request");
-
-//     // Parse the incoming multipart form data
-//     const formData = await readMultipartFormData(event);
-//     console.log("formData Body", formData);
-//     console.log("Type of form data", typeof formData);
-    
-
-//     // Prepare the FormData to send to the Spring Boot backend
-//     const forwardFormData = new FormData();
-//     formData?.forEach((field) => {
-//       console.log(`Field: ${field.name}, Type: ${field.type}`);
-//       if (field.name === "user") {
-//         const userData = field.data.toString("utf-8");
-//         console.log("Parsed user data:", userData);
-//         forwardFormData.append("user", new Blob([userData], { type: "application/json" }));
-//       } else if (field.name === "file") {
-//         forwardFormData.append(
-//           "file",
-//           new Blob([field.data], { type: field.type }),
-//           field.filename
-//         );
-//       }
-//     });
-
-//     // Forward the request to the Spring Boot backend
-//     const response = await $fetch("http://localhost:8080/auth/create", {
-//       method: "POST",
-//       body: forwardFormData,
-//     });
-
-//     // Return the backend response
-//     return response;
-//   } catch (error: any) {
-//     console.error("Error forwarding request:", error);
-//     throw createError({
-//       statusCode: error.statusCode || 500,
-//       statusMessage: error.statusMessage || "Internal Server Error",
-//     });
-//   }
-// });
