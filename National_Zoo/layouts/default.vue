@@ -139,7 +139,7 @@ var updatedformData = ref({
 const logoutUser = async () => {
   console.log("Logout User");
 
-  const res = await useCustomFetch("/auth/logout", {
+  const res = await $fetch("/api/logout", {
     method: "POST",
   });
   userStore.removeUser();
@@ -162,7 +162,6 @@ const handleProfileModal = () => {
   compareUserProfileData = JSON.parse(JSON.stringify(compareUserProfileData));
 };
 
-// Fetch User Profile
 const userId = useCookie("userId");
 
 const updateUser = async (formData: User) => {
@@ -190,8 +189,11 @@ const updateUser = async (formData: User) => {
       formDataNew.append("file", formData.image);
     }
 
-    const data = await useCustomFetch<User>(`/auth/update/${userId.value}`, {
+    const data = await $fetch<User>(`/api/updateUser`, {
       method: "PATCH",
+      params: {
+        userId: userId.value,
+      },
       body: formDataNew,
     });
 

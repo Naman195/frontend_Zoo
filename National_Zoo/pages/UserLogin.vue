@@ -78,10 +78,8 @@ const loginUser = async () => {
       body: form,
     });
 
-    token.value = data.token;
-    // const refreshToken = data.refreshtoken
-    // const
-    refreshToken.value = data.refreshToken;
+    // token.value = data.token;
+    // refreshToken.value = data.refreshToken;
     logIn(data.userId);
     if (data.user) {
       const user: User = data.user;

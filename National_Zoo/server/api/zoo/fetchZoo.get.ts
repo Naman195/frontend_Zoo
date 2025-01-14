@@ -15,6 +15,9 @@ export default defineEventHandler(async (event) => {
         Authorization: `Bearer ${session.data.token}`,
       },
     });
+
+    console.log("In Zoo fetch", session.data.token);
+
     return results;
   } catch (error) {}
 });

@@ -297,7 +297,7 @@ const addAnimal = async () => {
       formBodyData.append("file", formData.value.image);
     }
 
-    const res = await useCustomFetch(`/animal/add`, {
+    const res = await $fetch(`/api/animal/addAnimal`, {
       method: "POST",
       body: formBodyData,
     });
@@ -333,8 +333,11 @@ const updateAnimalHandler = async (fromdata: Animal): Promise<void> => {
       formBodyData.append("file", fromdata.image);
     }
 
-    const res = await useCustomFetch(`/animal/update/${animalId.value}`, {
+    const res = await $fetch(`/api/animal/updateAnimal`, {
       method: "PATCH",
+      params: {
+        animalId: animalId.value,
+      },
       body: formBodyData,
     });
 

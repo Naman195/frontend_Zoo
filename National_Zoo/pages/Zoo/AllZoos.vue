@@ -280,8 +280,6 @@ const addZoo = async () => {
       body: formData,
     });
 
-    console.log("Add Zoo", response);
-
     openModal.value = false;
     intiliazeFormData();
     showToast(response, "green");
@@ -316,11 +314,13 @@ const updateZooHandler = async (formData: Zoo) => {
       formDataNew.append("file", formData.image);
     }
 
-    const response = await useCustomFetch(`/zoo/update/${zooId.value}`, {
+    const response = await $fetch(`/api/zoo/updateZoo`, {
       method: "PATCH",
+      params: {
+        zooId: zooId.value,
+      },
       body: formDataNew,
     });
-    console.log("REsponse is", response);
 
     openUpdateModal.value = false;
     intiliazeFormData();
