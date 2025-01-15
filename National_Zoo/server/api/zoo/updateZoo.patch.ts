@@ -2,6 +2,7 @@ export default defineEventHandler(async (event) => {
   try {
     const zooId = getQuery(event).zooId;
     const formData = await readMultipartFormData(event);
+    console.log("Update Zoo Form data Details", formData);
 
     const forwardFormData = new FormData();
 
@@ -11,7 +12,9 @@ export default defineEventHandler(async (event) => {
         console.log("Parsed user data:", userData);
 
         forwardFormData.append("zoo", userData);
-      } else if (field.name === "file") {
+      } else if (field.name === "file" && field.type != undefined) {
+        console.log("Fle image data decode", field.type);
+
         forwardFormData.append(
           "file",
           new Blob([field.data], { type: field.type }),

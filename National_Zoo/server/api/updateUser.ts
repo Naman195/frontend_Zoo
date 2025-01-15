@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
         const userData = field.data.toString("utf-8");
 
         forwardFormData.append("userUpdate", userData);
-      } else if (field.name === "file") {
+      } else if (field.name === "file" && field.type != undefined) {
         forwardFormData.append(
           "file",
           new Blob([field.data], { type: field.type }),

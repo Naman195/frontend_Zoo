@@ -11,12 +11,8 @@ export default defineEventHandler(async (event) => {
       console.log(`Field: ${field.name}, Type: ${field.type}`);
       if (field.name === "animal") {
         const userData = field.data.toString("utf-8");
-        console.log("Parsed user data:", userData);
         forwardFormData.append("animal", userData);
-      } else if (field.name === "file") {
-        const blob = new Blob([field.data], { type: field.type });
-        // console.log("Image file", field.data.buffer);
-
+      } else if (field.name === "file" && field.type != undefined) {
         forwardFormData.append(
           "file",
           new Blob([field.data], { type: field.type }),

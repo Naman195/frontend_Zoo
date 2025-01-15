@@ -15,8 +15,10 @@ export default defineEventHandler(async (event) => {
       body: { refreshtoken: refreshToken },
     });
     newJwtToken.value = data;
-  } catch (error) {
-    console.error("Error in  validating the token:", error);
+  } catch (error: any) {
+    console.error("Error in  validating the token: hello", error);
+    await session.clear();
+    return error;
   }
 
   await session.update({

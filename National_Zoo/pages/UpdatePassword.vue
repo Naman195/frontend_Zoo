@@ -36,31 +36,25 @@ const newPassword = ref("");
 const oldPassword = ref("");
 const router = useRouter();
 const isLoggedIn = useCookie("isLoggedIn");
-const route = useRoute();
-const uniqueKey = route.query.key as string;
+// const route = useRoute();
+// const uniqueKey = route.query.key as string;
 
 const handleSetPassword = async () => {
   try {
-    const requestBody: { newPassword: string; oldPassword?: string } = {
+    const requestBody: { newPassword: string; oldPassword: string } = {
       newPassword: newPassword.value,
+      oldPassword: oldPassword.value,
     };
 
-    if (isLoggedIn.value) {
-      requestBody.oldPassword = oldPassword.value;
-    }
-
-    const response = await useCustomFetch<string>(`/auth/setpassword`, {
+    const response = await $fetch<string>(`/api/updatePassword`, {
       method: "POST",
-      headers: {
-        Authorization: uniqueKey,
-        "Content-Type": "application/json",
-      },
+
       body: requestBody,
     });
     showToast(response, "green");
     setTimeout(() => {
-      router.push("/userlogin");
-    }, 3000);
+      router.push("/");
+    }, 2000);
   } catch (error: any) {
     showToast(error.data || "An error occurred.", "red");
   }

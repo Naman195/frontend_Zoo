@@ -306,13 +306,14 @@ const registerUser = async () => {
       formDataNew.append("file", form.image);
     }
 
-    const data = await useCustomFetch<string>("/auth/create", {
+    const data = await $fetch<string>("/api/register", {
       method: "POST",
       body: formDataNew,
     });
     showToast(data, "green");
 
-    if (data === "User successfully created") {
+    if (data === "User registered successfully.") {
+      formkey = Math.random();
       form.fullName = "";
       form.email = "";
       form.userName = "";
@@ -330,10 +331,10 @@ const registerUser = async () => {
       setTimeout(() => {
         router.push("/userlogin");
       }, 3000);
-      formkey = Math.random();
-    } else {
-      showToast("Error during SignUp Please Try Again", "red");
     }
+    // else {
+    //   showToast("Error during SignUp Please Try Again", "red");
+    // }
   } catch (err: any) {
     console.log("Exception", err.response._data);
     showToast(err.response._data, "red");

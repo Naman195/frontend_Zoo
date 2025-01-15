@@ -13,10 +13,7 @@ export default defineEventHandler(async (event) => {
         const userData = field.data.toString("utf-8");
         console.log("Parsed user data:", userData);
         forwardFormData.append("zoo", userData);
-      } else if (field.name === "file") {
-        const blob = new Blob([field.data], { type: field.type });
-        // console.log("Image file", field.data.buffer);
-
+      } else if (field.name === "file" && field.type != undefined) {
         forwardFormData.append(
           "file",
           new Blob([field.data], { type: field.type }),
@@ -36,8 +33,6 @@ export default defineEventHandler(async (event) => {
         Authorization: `Bearer ${session.data.token}`,
       },
     });
-
-    console.log("Add Zoo Results are", data);
     return data;
   } catch (error) {}
 });

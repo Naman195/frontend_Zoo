@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <h1>Update Password</h1>
+    <h1>Set Password</h1>
 
     <form @submit.prevent="handleSetPassword" class="login-form">
       <div class="form-group">
@@ -26,7 +26,7 @@ const newPassword = ref("");
 const route = useRoute();
 const uniqueKey = route.query.uniqueKey;
 const router = useRouter();
-console.log("tokenKey in UpdatePass page", uniqueKey);
+console.log("tokenKey in SetPsss page", uniqueKey);
 
 const handleSetPassword = async () => {
   try {
@@ -36,7 +36,7 @@ const handleSetPassword = async () => {
     };
 
     const response = await $fetch<string>(
-      `http://localhost:8080/auth/updatepassword`,
+      `http://localhost:8080/auth/setpassword`,
       {
         method: "POST",
         body: requestBody,

@@ -71,7 +71,7 @@ const submitOtp = async () => {
 
       setTimeout(() => {
         router.push({
-          path: "/UpdatePass",
+          path: "/SetPassword",
           query: { uniqueKey },
         });
       }, 1000);
