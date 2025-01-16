@@ -1,4 +1,3 @@
-import { jwtDecode } from "jwt-decode";
 import { ref } from "vue";
 const newJwtToken = ref("");
 export default defineEventHandler(async (event) => {
@@ -7,7 +6,6 @@ export default defineEventHandler(async (event) => {
   });
 
   const refreshToken = session.data.refreshToken;
-  console.log("Refresh Token", refreshToken);
 
   try {
     const data: any = await $fetch("http://localhost:8080/auth/refresh", {
@@ -16,9 +14,8 @@ export default defineEventHandler(async (event) => {
     });
     newJwtToken.value = data;
   } catch (error: any) {
-    console.error("Error in  validating the token: hello", error);
     await session.clear();
-    return error;
+    return "session expired";
   }
 
   await session.update({

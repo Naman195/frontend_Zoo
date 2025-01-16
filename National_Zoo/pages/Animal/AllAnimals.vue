@@ -25,7 +25,7 @@
   <div class="flex flex-col items-center mx-auto pt-8">
     <div class="w-30">
       <SearchBar
-        v-if="!isLoading"
+        v-if="!isLoading && animals.length !== 0"
         @search="performSearch"
         @clear="resetSearch"
       />
@@ -392,11 +392,12 @@ const performSearch = async (searchQuery: string) => {
     return;
   }
   try {
-    const results = await $fetch<Animal[]>(
-      `/api/animal/search?searchTerm=${encodeURIComponent(
-        trimmedQuery
-      )}&zooId=${encodeURIComponent(route.query.zooId as string)}`
-    );
+    const results = await $fetch<Animal[]>(`/api/animal/search`, {
+      params: {
+        zooId: route.query.zooId,
+        searchQuery: trimmedQuery,
+      },
+    });
     animals.value = results;
     isSearching.value = true;
   } catch (error) {

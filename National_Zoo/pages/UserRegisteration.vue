@@ -336,8 +336,8 @@ const registerUser = async () => {
     //   showToast("Error during SignUp Please Try Again", "red");
     // }
   } catch (err: any) {
-    console.log("Exception", err.response._data);
-    showToast(err.response._data, "red");
+    console.log("Exception", err.response._data.data);
+    showToast(err.response._data.data, "red");
   }
 };
 

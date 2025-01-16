@@ -1,15 +1,10 @@
-// import { useToastNotify } from "~/composables/useToastNotify";
 import { jwtDecode } from "jwt-decode";
 export function useAuth() {
-  const isLoggedIn = useState<boolean>("isLoggedIn", () => false);
   const userId = useState<number | null>("userId", () => null);
   const isAdmin = useState<boolean>("isAdmin", () => false);
-
-  // const { showToast } = useToastNotify();
+  const isLoggedIn = useCookie<Boolean>("isLoggedIn");
 
   const logIn = async (id: number | null) => {
-    const loginCookie = useCookie("isLoggedIn");
-    loginCookie.value = "true";
     const userIdCookie = useCookie("userId");
     userIdCookie.value = String(id);
     isLoggedIn.value = true;
@@ -17,11 +12,12 @@ export function useAuth() {
   };
 
   const logOut = () => {
-    const loginCookie = useCookie("isLoggedIn");
-
     const userIdCookie = useCookie("userId");
+    const user = useCookie("user");
+    const session = useCookie("h3");
+    session.value = null;
+    user.value = null;
 
-    loginCookie.value = "false";
     userIdCookie.value = null;
     isLoggedIn.value = false;
     userId.value = null;

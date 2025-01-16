@@ -92,7 +92,7 @@ const loginUser = async () => {
       router.push("/");
     }, 1000);
   } catch (err: any) {
-    showToast(err.response._data.message, "red");
+    showToast(err.response._data.data.message, "red");
   }
 };
 </script>
