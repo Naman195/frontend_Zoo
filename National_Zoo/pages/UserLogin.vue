@@ -1,10 +1,5 @@
 <template>
   <div class="login-container">
-    <div>
-      <button class="submit-btn" @click="googleLogin">Login with Google</button>
-
-      <button class="submit-btn" @click="gitHubLogin">Login with GitHub</button>
-    </div>
     <h1>Login Page</h1>
 
     <Form @submit="loginUser" class="login-form">
@@ -39,6 +34,16 @@
 
       <button type="submit" class="submit-btn">Login</button>
 
+      <!-- Social Buttons Section -->
+      <div class="social-buttons-container">
+        <button class="social-btn google-btn" @click="googleLogin">
+          <i class="fab fa-google"></i> Sign In with Google
+        </button>
+        <button class="social-btn github-btn" @click="gitHubLogin">
+          <i class="fab fa-github"></i> Sign In with GitHub
+        </button>
+      </div>
+
       <p class="note">
         If new user, please <NuxtLink to="/userregisteration">sign up</NuxtLink>
       </p>
@@ -48,6 +53,7 @@
     </Form>
   </div>
 </template>
+
 
 <script lang="ts" setup>
 import { Field, Form, ErrorMessage } from "vee-validate";
