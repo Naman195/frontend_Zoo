@@ -20,9 +20,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         });
 
         if (data == "session expired") {
-          navigateTo("/userlogin");
           logOut();
-          return;
+          return navigateTo("/userlogin");
         }
       }
     }
@@ -45,7 +44,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
       to.path.startsWith("/animalprofile"))
   ) {
     return navigateTo("/userlogin");
-  } else {
-    return;
+  } else if (!isLoggedIn) {
+    return navigateTo("/userlogin");
   }
 });

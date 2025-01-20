@@ -1,5 +1,10 @@
 <template>
   <div class="login-container">
+    <div>
+      <button class="submit-btn" @click="googleLogin">Login with Google</button>
+
+      <button class="submit-btn" @click="gitHubLogin">Login with GitHub</button>
+    </div>
     <h1>Login Page</h1>
 
     <Form @submit="loginUser" class="login-form">
@@ -64,6 +69,14 @@ const form = reactive({
   username: "",
   password: "",
 });
+
+const googleLogin = () => {
+  window.location.href = "http://localhost:8080/oauth2/authorization/google";
+};
+
+const gitHubLogin = () => {
+  window.location.href = "http://localhost:8080/oauth2/authorization/github";
+};
 
 const userStore = useUserStore();
 
