@@ -34,7 +34,6 @@
 
       <button type="submit" class="submit-btn">Login</button>
 
-      <!-- Social Buttons Section -->
       <div class="social-buttons-container">
         <button class="social-btn google-btn" @click="googleLogin">
           <i class="fab fa-google"></i> Sign In with Google
@@ -53,7 +52,6 @@
     </Form>
   </div>
 </template>
-
 
 <script lang="ts" setup>
 import { Field, Form, ErrorMessage } from "vee-validate";

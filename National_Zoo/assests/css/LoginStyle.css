@@ -2,14 +2,14 @@
     max-width: 400px;
     margin: 100px auto;
     padding: 20px;
-    background-color: #f0f8ff; /* Light blue background */
+    background-color: #f0f8ff; 
     border-radius: 15px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   }
   
   h1 {
     text-align: center;
-    color: #003366; /* Dark blue heading */
+    color: #003366;
     font-size: 2rem;
     margin-bottom: 20px;
   }
@@ -27,28 +27,28 @@
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
-    color: #006699; /* Medium blue for labels */
+    color: #006699;
   }
   
   input {
     width: 100%;
     padding: 10px;
-    max-width: 100%; /* Ensure elements don't exceed container width */
+    max-width: 100%; 
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 1rem;
     transition: border-color 0.3s ease;
-    box-sizing: border-box; /* Ensure padding doesn't overflow the container */
+    box-sizing: border-box; 
   }
   
   input:focus {
     outline: none;
-    border-color: #66afe9; /* Soft blue border on focus */
+    border-color: #66afe9; 
     box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
   }
   
   button.submit-btn {
-    background-color: #28a745; /* Green button */
+    background-color: #28a745; 
     color: white;
     border: none;
     padding: 12px 20px;
@@ -59,7 +59,7 @@
   }
   
   button.submit-btn:hover {
-    background-color: #218838; /* Darker green on hover */
+    background-color: #218838; 
   }
   
   button.submit-btn:active {
@@ -70,16 +70,16 @@
     text-align: center;
     margin-top: 15px;
     font-size: 0.9rem;
-    color: #666; /* Grey text for note */
+    color: #666; 
   }
   
   .note a {
-    color: #007bff; /* Link color */
+    color: #007bff; 
     text-decoration: none;
   }
   
   .note a:hover {
-    text-decoration: underline; /* Underline on hover */
+    text-decoration: underline; 
   }
 
   .password-container {
@@ -99,29 +99,29 @@
   .social-buttons-container {
     margin-top: 20px;
     display: flex;
-    justify-content: space-between; /* Space between the buttons */
-    gap: 10px; /* Add a gap for spacing between buttons */
+    justify-content: space-between; 
+    gap: 10px; 
   }
   
   .social-btn {
-    flex: 1; /* Make buttons equal in width */
-    text-align: center; /* Center-align the text inside the buttons */
+    flex: 1; 
+    text-align: center; 
   }
   
   .google-btn {
-    border-color: #db4437; /* Google red border */
+    border-color: #db4437;
     color: #db4437;
   }
   
   .google-btn:hover {
-    background-color: #fce8e6; /* Google light red on hover */
+    background-color: #fce8e6; 
   }
   
   .github-btn {
-    border-color: #333; /* GitHub black border */
+    border-color: #333; 
     color: #333;
   }
   
   .github-btn:hover {
-    background-color: #e8e8e8; /* Light grey on hover */
+    background-color: #e8e8e8; 
   }

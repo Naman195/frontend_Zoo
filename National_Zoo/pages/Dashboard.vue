@@ -13,9 +13,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-
-const user = ref(null); // Start with null to differentiate between empty and undefined.
+const user = ref(null);
 
 const fetchuserdetail = async () => {
   try {
@@ -24,14 +22,15 @@ const fetchuserdetail = async () => {
       credentials: "include",
     });
 
-    console.log("Fetched user details:", data); // Debug log
+    console.log("Fetched user details:", data);
     user.value = {
       name: data.name,
       email: data.email,
-      picture: data.picture, // Add picture if you want to display it
-    }; // Map the relevant fields
+      picture: data.picture,
+    };
+    return data.json();
   } catch (error) {
-    console.error("Error occurred while fetching user details:", error.message);
+    console.error("Error occurred ", error.message);
   }
 };
 
