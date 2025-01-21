@@ -17,7 +17,7 @@ const user = ref(null);
 
 const fetchuserdetail = async () => {
   try {
-    const data = await $fetch("http://localhost:8080/auth/user-info", {
+    const data = await $fetch("/api/userInfo", {
       method: "GET",
       credentials: "include",
     });
