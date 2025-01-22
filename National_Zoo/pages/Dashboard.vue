@@ -13,29 +13,16 @@
 </template>
 
 <script setup>
-const user = ref(null);
+import { useAuth } from "@/composables/useAuth";
 
-const fetchuserdetail = async () => {
-  try {
-    const data = await $fetch("http://localhost:8080/auth/user-info", {
-      method: "GET",
-      credentials: "include",
-    });
+const route = useRoute();
+const router = useRouter();
+const userId = route.query.userId;
 
-    console.log("Fetched user details:", data);
-    user.value = {
-      name: data.name,
-      email: data.email,
-      picture: data.picture,
-    };
-    return data.json();
-  } catch (error) {
-    console.error("Error occurred ", error.message);
-  }
-};
+const { logIn } = useAuth();
 
 onMounted(() => {
-  fetchuserdetail();
+  logIn(userId);
 });
 </script>
 
