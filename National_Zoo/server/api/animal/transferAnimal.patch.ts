@@ -1,11 +1,11 @@
+import userSession from "../../util/user-session";
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const newZooId = query.newZooId;
   const animalId = query.animalId;
 
-  const session = await useSession(event, {
-    password: "80d42cfb-1cd2-462c-8f17-e3237d9027e9",
-  });
+  const session = await userSession(event);
 
   const apiUrl = `http://localhost:8080/animal/transfer/${animalId}/to/${newZooId}`;
   const results = await $fetch(apiUrl, {

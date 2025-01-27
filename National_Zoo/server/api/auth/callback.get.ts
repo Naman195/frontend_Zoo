@@ -1,11 +1,11 @@
+import userSession from "../../util/user-session";
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
 
   const { token, refreshToken, userId, username } = query;
 
-  const session = await useSession(event, {
-    password: "80d42cfb-1cd2-462c-8f17-e3237d9027e9",
-  });
+  const session = await userSession(event);
 
   if (!token || !refreshToken) {
     throw createError({
@@ -24,5 +24,5 @@ export default defineEventHandler(async (event) => {
     refreshToken: refreshToken,
   });
 
-  return sendRedirect(event, `/dashboard?userId=${userId}`, 302);
+  return sendRedirect(event, `/dashboard?userId=${userId}&token=${token}`, 302);
 });

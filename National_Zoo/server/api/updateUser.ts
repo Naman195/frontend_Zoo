@@ -1,3 +1,5 @@
+import userSession from "../util/user-session";
+
 export default defineEventHandler(async (event) => {
   const userId = getQuery(event).userId;
   const formData = await readMultipartFormData(event);
@@ -18,9 +20,7 @@ export default defineEventHandler(async (event) => {
     }
   });
 
-  const session = await useSession(event, {
-    password: "80d42cfb-1cd2-462c-8f17-e3237d9027e9",
-  });
+  const session = await userSession(event);
 
   const data = await $fetch<string>(
     `http://localhost:8080/auth/update/${userId}`,

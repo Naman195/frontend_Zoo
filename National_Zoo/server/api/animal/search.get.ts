@@ -1,13 +1,12 @@
 import { defineEventHandler, getQuery } from "h3";
+import userSession from "../../util/user-session";
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const searchQuery = query.searchQuery as string | undefined;
   const zooId = query.zooId as string | undefined;
 
-  const session = await useSession(event, {
-    password: "80d42cfb-1cd2-462c-8f17-e3237d9027e9",
-  });
+  const session = await userSession(event);
 
   const apiUrl = `http://localhost:8080/animal/search?searchTerm=${searchQuery}&zooId=${zooId}`;
   const results = await $fetch(apiUrl, {
