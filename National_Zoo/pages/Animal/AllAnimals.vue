@@ -278,7 +278,6 @@ const deleteAnimal = async () => {
 };
 
 const addAnimal = async () => {
-  console.log("Added Animal Data", formData.value);
   try {
     const formBodyData = new FormData();
 

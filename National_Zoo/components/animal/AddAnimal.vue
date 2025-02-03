@@ -142,7 +142,4 @@ const props = defineProps<{
     categoryName: string;
   }[];
 }>();
-
-console.log("Form Animal data", props.fromData);
-
 </script>
