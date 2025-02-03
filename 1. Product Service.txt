@@ -1,239 +1,200 @@
-Sure! Let's break down the Registry part from the article you linked in simple terms.
+Yes, you can store the user details and authorities inside the JWT token to avoid making a database call (loadUserByUsername) on every request. Here’s how you can do it:
 
-What is a Registry in Microservices?
-In a microservice architecture, multiple services work together, but they don't all live on the same machine or have the same network address. This makes it difficult for one service to know where the others are located (since their IPs and ports can change).
+Approach
+Include User Details in JWT: Store the user's roles and any necessary details inside the JWT token when it is generated.
+Extract User Details from JWT: Instead of calling loadUserByUsername, parse the token and retrieve user details.
+Use the Extracted Details for Authentication: Create a UserDetails object directly from the extracted token data.
+Implementation Steps
+1. Modify JWT Generation to Include Authorities
+Modify your JwtService class to include user roles in the JWT payload.
 
-Registry (or Service Registry) helps solve this problem. It acts like a central directory that keeps track of all available services and their addresses.
-
-Think of it as a phonebook where each microservice registers itself so that other services can find it easily.
-
-How does the Registry work?
-Service Registration:
-
-When a microservice starts up, it registers itself with the service registry, including information like its IP address and port.
-It does this automatically (or at the start of the application) using a service like Eureka Server or Consul.
-Service Discovery:
-
-When another microservice needs to communicate with it, it asks the registry for the service's location (its IP and port).
-The registry responds with the available instance details (even if the microservice was restarted with a new IP or port).
-Dynamic Registration/De-registration:
-
-Services can register themselves and also deregister when they shut down or become unavailable.
-This ensures the registry only keeps track of active services.
-Example Scenario
-Imagine you have a User Service and an Order Service.
-When the User Service starts, it registers itself in the registry.
-When the Order Service wants to get user details, it asks the registry for the User Service's address, finds it, and communicates with it.
-In Spring Boot, how is this done?
-In the Spring Boot article, the Registry part uses Spring Cloud Eureka:
-
-Eureka Server acts as the service registry.
-Eureka Client is added to each microservice to register it and to discover other services.
-Key Components:
-Eureka Server (Registry):
-This is the service registry. It's like the central phonebook where all microservices register themselves.
-
-Eureka Client:
-Each microservice has the Eureka Client dependency, which allows it to register itself with the Eureka Server and also discover other services.
-
-Simple Breakdown of Code:
-Eureka Server (Registry) Setup:
-
-You create a Spring Boot application with @EnableEurekaServer to make it a registry.
-This server will listen for services that register and keep track of them.
-Eureka Client Setup (Microservices):
-
-Each microservice will have @EnableEurekaClient or @EnableDiscoveryClient annotation to register itself with the Eureka server.
-They communicate using the application.properties or application.yml file to define the Eureka server's address.
-In short:
-
-Service Registry = A directory of services and their addresses.
-Microservices register themselves in the Registry so that other services can find and talk to them easily.
-Let me know if you'd like a code breakdown of how the registration works! 😊
-
-
-
-
-
-
-
-You said:
-yes 
-ChatGPT said:
-ChatGPT
-Great! Let’s go step-by-step and break down the code for Service Registration and Service Discovery using Spring Cloud Eureka.
-
-1. Setting Up Eureka Server (Service Registry)
-The Eureka Server will act as the central registry where all services register themselves.
-
-Step 1: Add Dependencies for Eureka Server
-In the pom.xml of your Eureka Server project, add the following dependencies:
-
-xml
-Copy
-Edit
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
-</dependency>
-Step 2: Enable Eureka Server
-In your main Spring Boot application class, use the annotation @EnableEurekaServer to enable the Eureka server functionality.
-
+JwtService (Modify JWT Generation)
 java
 Copy
 Edit
-@SpringBootApplication
-@EnableEurekaServer // Enables Eureka Server
-public class EurekaServerApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(EurekaServerApplication.class, args);
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+@Service
+public class JwtService {
+    
+    private final String SECRET_KEY = "your_secret_key";  // Store this securely
+
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = Map.of(
+            "roles", userDetails.getAuthorities().stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList())
+        );
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour expiry
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+    }
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("roles", List.class);
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractClaim(token, Claims::getExpiration).before(new Date());
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
-Step 3: Configuration in application.yml or application.properties
-Create an application.yml (or application.properties) file under src/main/resources/:
+2. Create a Custom UserDetails Class
+Instead of loading from the database, create a custom UserDetails implementation that holds data extracted from the JWT.
 
-yaml
-Copy
-Edit
-server:
-  port: 8761  # Port for Eureka Server (default is 8761)
-
-eureka:
-  client:
-    registerWithEureka: false  # Eureka Server doesn't register itself
-    fetchRegistry: false       # Eureka Server doesn't fetch services from other servers
-  server:
-    enableSelfPreservation: false  # Disable self-preservation if you want faster registration updates
-Here, Eureka Server will run on port 8761.
-
-2. Setting Up Eureka Client (Microservices)
-Now, let’s set up the Eureka Client in your microservices, so they can register with the Eureka Server and discover other services.
-
-Step 1: Add Dependencies for Eureka Client
-In the pom.xml of your microservice (e.g., User Service), add the following dependency:
-
-xml
-Copy
-Edit
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-</dependency>
-Step 2: Enable Eureka Client
-In the main application class of your microservice (e.g., UserServiceApplication), add the annotation @EnableEurekaClient:
-
+CustomUserDetails.java
 java
 Copy
 Edit
-@SpringBootApplication
-@EnableEurekaClient // Enables this service to register with Eureka Server
-public class UserServiceApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(UserServiceApplication.class, args);
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class CustomUserDetails implements UserDetails {
+    
+    private final String username;
+    private final Collection<? extends GrantedAuthority> authorities;
+
+    public CustomUserDetails(String username, List<String> roles) {
+        this.username = username;
+        this.authorities = roles.stream()
+                                .map(SimpleGrantedAuthority::new)
+                                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return null; // No need to store password in JWT
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
-Step 3: Configuration in application.yml or application.properties
-In the application.yml (or application.properties) of your microservice, add the following:
+3. Modify JwtAuthenticationFilter to Use Extracted Data
+Instead of calling userDetailsService.loadUserByUsername, extract details directly from the JWT.
 
-yaml
-Copy
-Edit
-spring:
-  application:
-    name: user-service  # The name that will be used for this service in Eureka Server
-  cloud:
-    discovery:
-      enabled: true  # Enables service discovery via Eureka
-    eureka:
-      client:
-        serviceUrl:
-          defaultZone: http://localhost:8761/eureka/  # Eureka Server URL (change if needed)
-Here, your microservice registers with the Eureka Server at http://localhost:8761/eureka/.
-
-3. How the Registration Works:
-Eureka Server (Registry):
-
-When your Eureka Server starts, it runs on port 8761 and is ready to accept registrations from microservices.
-Microservices Register:
-
-When your User Service (or any other microservice) starts, it registers itself with the Eureka Server using its service name (user-service) and port.
-You can view the registered service by visiting the Eureka Server’s URL in your browser: http://localhost:8761/.
-Service Discovery:
-
-Other microservices (like Order Service) can use the Eureka Client to discover the User Service by its service name (user-service).
-This allows them to call the User Service without needing to know the exact host or port.
-4. Calling Another Service Using Eureka
-Once the services are registered, other services can discover and call them using RestTemplate or Spring Cloud's Feign Client.
-
-Example using RestTemplate:
+JwtAuthenticationFilter.java
 java
 Copy
 Edit
-@RestController
-public class UserController {
+@Override
+protected void doFilterInternal(
+    @NonNull HttpServletRequest request,
+    @NonNull HttpServletResponse response,
+    @NonNull FilterChain filterChain
+) throws ServletException, IOException {
+    final String authHeader = request.getHeader("Authorization");
 
-    @Autowired
-    private RestTemplate restTemplate;
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        filterChain.doFilter(request, response);
+        return;
+    }
 
-    @RequestMapping("/getUserDetails")
-    public String getUserDetails() {
-        String userServiceUrl = "http://user-service/getUser"; // Eureka will resolve "user-service"
-        return restTemplate.getForObject(userServiceUrl, String.class);
+    try {
+        final String jwt = authHeader.substring(7);
+        final String userEmail = jwtService.extractUsername(jwt);
+        final List<String> roles = jwtService.extractRoles(jwt);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (userEmail != null && authentication == null) {
+            UserDetails userDetails = new CustomUserDetails(userEmail, roles);
+
+            if (jwtService.isTokenValid(jwt, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+                return;
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    } catch (Exception exception) {
+        handlerExceptionResolver.resolveException(request, response, null, exception);
     }
 }
-Example using Feign Client:
-Add the dependency for Feign:
+Advantages of This Approach
+✅ Reduces Database Calls: Since roles and authorities are stored in the token, no need to query the database on each request.
+✅ Faster Authentication: Extracting user details from JWT is much faster than fetching from the database.
+✅ Scalable: Works well in distributed environments where multiple services might need user authentication.
 
-xml
-Copy
-Edit
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-openfeign</artifactId>
-</dependency>
-In your main application class, enable Feign:
-
-java
-Copy
-Edit
-@EnableFeignClients // Enable Feign client for communication
-@SpringBootApplication
-public class OrderServiceApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(OrderServiceApplication.class, args);
-    }
-}
-Create a Feign client interface:
-
-java
-Copy
-Edit
-@FeignClient(name = "user-service") // This matches the name registered in Eureka
-public interface UserServiceClient {
-
-    @GetMapping("/getUser")
-    String getUserDetails();
-}
-In your controller:
-
-java
-Copy
-Edit
-@RestController
-public class OrderController {
-
-    @Autowired
-    private UserServiceClient userServiceClient;
-
-    @RequestMapping("/orderDetails")
-    public String getOrderDetails() {
-        return userServiceClient.getUserDetails(); // Call the user service via Feign
-    }
-}
-Summary:
-Eureka Server (Registry) holds all the available services.
-Microservices register themselves with Eureka Server and can discover each other using service names.
-You can call other services using RestTemplate or Feign Client, and Eureka will automatically resolve the service’s location.
-Now you have a fully registered and discoverable microservices architecture with Eureka!
-
-Let me know if you'd like further clarification or help with another part of the implementation! 😊
+Possible Concerns
+Token Size: Storing too much data in the JWT increases its size, affecting request performance.
+Token Revocation: Since tokens are stateless, revoking a token (e.g., user logs out or gets blocked) requires additional handling (e.g., storing blacklisted tokens in Redis or DB).
+Security: Ensure JWT is signed and stored securely to prevent tampering.
+Next Steps
+If you need revokable tokens, maintain a "blacklist" in the database or Redis.
+If roles change dynamically, ensure the token expiration is short enough so a user will reauthenticate when required.
+Would you like to integrate token revocation handling as well? 🚀
