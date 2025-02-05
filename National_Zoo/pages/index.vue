@@ -15,5 +15,16 @@
 </template>
 
 <script setup lang="ts">
-import ShowAlert from "~/components/showAlert.vue";
+import { useAuth } from "@/composables/useAuth";
+const route = useRoute();
+const router = useRouter();
+const userId = route.query.userId;
+
+const { logIn } = useAuth();
+
+onBeforeMount(() => {
+  if (userId != undefined) {
+    logIn(userId);
+  }
+});
 </script>

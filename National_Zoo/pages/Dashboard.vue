@@ -43,8 +43,9 @@ const userProfile = async () => {
 };
 
 onMounted(() => {
-  userProfile();
+  // userProfile();
   logIn(userId);
+  navigateTo("/");
 });
 </script>
 

@@ -22,7 +22,8 @@ export default defineEventHandler(async (event) => {
   await session.update({
     token: token,
     refreshToken: refreshToken,
+    userId: userId,
   });
 
-  return sendRedirect(event, `/dashboard?userId=${userId}&token=${token}`, 302);
+  return sendRedirect(event, `/?userId=${userId}`, 302);
 });

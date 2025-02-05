@@ -21,6 +21,7 @@ export default defineEventHandler(async (event) => {
   await session.update({
     token: data.token,
     refreshToken: data.refreshToken,
+    userId: data.userId,
   });
 
   console.log(session.data.token);

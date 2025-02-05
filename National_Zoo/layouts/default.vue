@@ -58,10 +58,10 @@
       class="absolute right-0 mt-2 w-64 bg-white shadow-md p-4 rounded-lg z-50"
     >
       <h2 class="font-bold text-lg">User Profile</h2>
-      <p><strong>Name:</strong> {{ userProfile.fullName }}</p>
+      <p><strong>Name:</strong> Naman Arora</p>
       <p>
         <strong>City:</strong>
-        {{ userProfile.address.city.cityName }}
+        Noida
       </p>
 
       <!-- Buttons container -->
@@ -73,14 +73,10 @@
           Logout
         </button>
         <button
-          @click="
-            () => {
-              handleProfileModal();
-            }
-          "
+          @click="viewProfile"
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-3 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
-          Update Profile
+          View Profile
         </button>
       </div>
     </div>
@@ -117,6 +113,11 @@ const isProfileVisible = ref(false);
 const isUpdateModalVisible = ref(false);
 const userStore = useUserStore();
 const userProfile = useCookie<User>("user");
+
+const viewProfile = () => {
+  router.push("/userprofileview");
+  isProfileVisible.value = false;
+};
 
 var updatedformData = ref({
   fullName: "",

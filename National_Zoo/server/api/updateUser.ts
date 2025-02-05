@@ -1,7 +1,8 @@
 import userSession from "../util/user-session";
 
 export default defineEventHandler(async (event) => {
-  const userId = getQuery(event).userId;
+  const session = await userSession(event);
+  const userId = session.data.userId;
   const formData = await readMultipartFormData(event);
 
   const forwardFormData = new FormData();
@@ -15,12 +16,10 @@ export default defineEventHandler(async (event) => {
       forwardFormData.append(
         "file",
         new Blob([field.data], { type: field.type }),
-        field.name
+        field.filename
       );
     }
   });
-
-  const session = await userSession(event);
 
   const data = await $fetch<string>(
     `http://localhost:8080/auth/update/${userId}`,
