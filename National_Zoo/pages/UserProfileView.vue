@@ -60,7 +60,8 @@ import type { User } from "~/types/User";
 
 // const userProfile = useCookie<User>("user");
 const userProfile = ref();
-const imageUrl = `http://192.168.0.153:8081/${userProfile?.value?.image}`;
+const filenameImage = ref("");
+const imageUrl = ref("");
 
 const isUpdateModalVisible = ref(false);
 
@@ -93,11 +94,12 @@ const handleProfileModal = () => {
 };
 
 const fetchUserProfile = async () => {
-  const data = await $fetch("/api/userProfileview");
+  const data = await $fetch<User>("/api/userProfileview");
 
   userProfile.value = data;
 
   console.log("Data is ", data);
+  imageUrl.value = `http://192.168.0.153:8081/${data.image}`;
 };
 
 const updateUser = async (formData: User) => {

@@ -80,17 +80,6 @@
         </button>
       </div>
     </div>
-    <!-- Use Modal for Update Profile -->
-    <div v-if="isUpdateModalVisible">
-      <AddZoo
-        :from-data="updatedformData"
-        :update-click="true"
-        :modal-title="'User Profile'"
-        :submit-button-label="'Update Profile'"
-        @save="updateUser"
-        @close="isUpdateModalVisible = false"
-      />
-    </div>
   </nav>
   <div>
     <slot />
@@ -103,47 +92,21 @@ import { useToastNotify } from "~/composables/useToastNotify";
 import "../assests/css/style.css";
 import { useAuth } from "~/composables/useAuth";
 import { useUserStore } from "~/store/user";
-import type { User } from "~/types/User";
 
 const { showToast } = useToastNotify();
 const router = useRouter();
 const { logOut } = useAuth();
 const userToken = useCookie("isLoggedIn");
 const isProfileVisible = ref(false);
-const isUpdateModalVisible = ref(false);
-const userStore = useUserStore();
-const userProfile = useCookie<User>("user");
-
 const viewProfile = () => {
   router.push("/userprofileview");
   isProfileVisible.value = false;
 };
 
-var updatedformData = ref({
-  fullName: "",
-  address: {
-    street: "",
-    zipCode: "",
-    city: {
-      cityId: null as number | null,
-      state: {
-        stateId: null as number | null,
-        country: {
-          countryId: null as number | null,
-        },
-      },
-    },
-  },
-  image: null as File | null,
-});
-
 const logoutUser = async () => {
-  console.log("Logout User");
-
   const res = await $fetch("/api/logout", {
     method: "POST",
   });
-  userStore.removeUser();
   logOut();
   router.push("/userlogin");
   isProfileVisible.value = false;
@@ -151,60 +114,5 @@ const logoutUser = async () => {
 
 const toggleProfile = () => {
   isProfileVisible.value = !isProfileVisible.value;
-};
-
-let compareUserProfileData = {};
-
-const handleProfileModal = () => {
-  isUpdateModalVisible.value = true;
-  isProfileVisible.value = false;
-  updatedformData.value = { ...userProfile.value };
-  compareUserProfileData = { ...userProfile.value };
-  compareUserProfileData = JSON.parse(JSON.stringify(compareUserProfileData));
-};
-
-const userId = useCookie("userId");
-
-const updateUser = async (formData: User) => {
-  if (JSON.stringify(formData) == JSON.stringify(compareUserProfileData)) {
-    return;
-  }
-
-  try {
-    const formDataNew = new FormData();
-
-    formDataNew.append(
-      "userUpdate",
-      JSON.stringify({
-        fullName: formData.fullName,
-        address: {
-          street: formData.address.street,
-          zipCode: formData.address.zipCode,
-          city: {
-            cityId: formData.address.city.cityId,
-          },
-        },
-      })
-    );
-    if (formData.image) {
-      formDataNew.append("file", formData.image);
-    }
-
-    const data = await $fetch<User>(`/api/updateUser`, {
-      method: "PATCH",
-      params: {
-        userId: userId.value,
-      },
-      body: formDataNew,
-    });
-
-    userStore.setUser(data);
-    const userCookie = useCookie("user");
-    userCookie.value = JSON.stringify(data);
-
-    isUpdateModalVisible.value = false;
-  } catch (error) {
-    console.error("Error updating user:", error);
-  }
 };
 </script>
